@@ -33,7 +33,7 @@ public class JMXProxyResource {
 
     private String encode(Object item) {
         try {
-            return URLEncoder.encode(item.toString(), "UTF-8");
+            return URLEncoder.encode(item.toString(), "UTF-8").replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
             return item.toString();
         }
