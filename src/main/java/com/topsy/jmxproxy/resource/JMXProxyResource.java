@@ -55,7 +55,7 @@ public class JMXProxyResource {
             sb.append("\n</ul></body></html>");
             return Response.ok(sb.toString()).build();
         } catch (Exception e) {
-            logger.debug(e.fillInStackTrace());
+            logger.debug("failed parameters: " + host, e);
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
@@ -79,7 +79,7 @@ public class JMXProxyResource {
             sb.append("\n</ul></body></html>");
             return Response.ok(sb.toString()).build();
         } catch (Exception e) {
-            logger.debug(e.fillInStackTrace());
+            logger.debug("failed parameters: " + host + "/" + object, e);
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
@@ -93,7 +93,7 @@ public class JMXProxyResource {
             Object value = manager.getAttributeValue(host, mbean, attribute);
             return Response.ok(Attribute.toJSONString(value)).build();
         } catch (Exception e) {
-            logger.debug(e.fillInStackTrace());
+            logger.debug("failed parameters: " + host + "/" + mbean + "/" + attribute, e);
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
