@@ -27,6 +27,7 @@ import com.topsy.jmxproxy.domain.MBean;
 public class JMXConnectionWorker {
     private static final Logger logger = Logger.getLogger(JMXConnectionWorker.class);
 
+    private boolean connected;
     private JMXServiceURL url;
     private JMXConnector connection;
     private MBeanServerConnection server;
@@ -37,33 +38,53 @@ public class JMXConnectionWorker {
     public JMXConnectionWorker(String host) throws Exception {
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + "/jmxrmi");
         mbeans = new HashMap<ObjectName, MBean>();
+    }
 
-        connection = JMXConnectorFactory.connect(url, null);
-        server = connection.getMBeanServerConnection();
-        logger.debug("connected to mbean server " + url);
-
-        domains = server.getDomains();
-        for (String domain : domains) {
-            logger.debug("discovered domain " + domain);
-            for (ObjectName mbean : server.queryNames(new ObjectName(domain + ":*"), null)) {
-                logger.debug("discovered mbean " + mbean);
-                mbeans.put(mbean, new MBean(server.getMBeanInfo(mbean).getAttributes()));
-            }
+    private void connect() {
+        if (connected) {
+            return;
         }
 
-        fetchAttributeValues();
+        try {
+            connection = JMXConnectorFactory.connect(url, null);
+            server = connection.getMBeanServerConnection();
+            logger.debug("connected to mbean server " + url);
+
+            domains = server.getDomains();
+            for (String domain : domains) {
+                logger.debug("discovered domain " + domain);
+                for (ObjectName mbean : server.queryNames(new ObjectName(domain + ":*"), null)) {
+                    logger.debug("discovered mbean " + mbean);
+                    mbeans.put(mbean, new MBean(server.getMBeanInfo(mbean).getAttributes()));
+                }
+            }
+
+            connected = true;
+        } catch (Exception e) {
+            logger.error("failed to connect to " + url, e);
+            disconnect();
+        }
     }
+
 
     public void disconnect() {
         try {
+            connected = false;
+            domains = new String[0];
+            mbeans.clear();
+            server = null;
+
             connection.close();
+            connection = null;
+
             logger.debug("disconnected from " + url);
         } catch (IOException e) {
-            logger.error("failed to disconnect from " + url);
+            logger.error("failed to disconnect from " + url, e);
         }
     }
 
     public String[] getDomains() {
+        connect();
         return domains;
     }
 
@@ -72,6 +93,8 @@ public class JMXConnectionWorker {
     }
 
     public String[] getMBeans(String domain) {
+        connect();
+
         List mbeans = new ArrayList();
         for (ObjectName mbean : this.mbeans.keySet()) {
             String name = mbean.toString();
@@ -83,6 +106,8 @@ public class JMXConnectionWorker {
     }
 
     public String[] getAttributes(String mbean) {
+        connect();
+
         try {
             return mbeans.get(new ObjectName(mbean)).getAttributes();
         } catch (MalformedObjectNameException e) {
@@ -91,15 +116,15 @@ public class JMXConnectionWorker {
     }
 
     public void setAttributeValue(ObjectName mbeanKey, String attributeKey) {
+        connect();
+
         Attribute attribute = mbeans.get(mbeanKey).getAttribute(attributeKey);
         try {
             attribute.setValue(server.getAttribute(mbeanKey, attributeKey));
             attribute.setMonitored(true);
         } catch (Exception e) {
-            logger.error("mbean error fetching attribute " + attributeKey + " for " + mbeanKey + " on " + url);
-            logger.debug(e.fillInStackTrace());
-            attribute.setMonitored(false);
-            attribute.setValue(null);
+            logger.error("mbean error fetching attribute " + attributeKey + " for " + mbeanKey + " on " + url, e);
+            disconnect();
         }
     }
 
@@ -112,6 +137,8 @@ public class JMXConnectionWorker {
     }
 
     public Object getAttributeValue(ObjectName mbeanKey, String attributeKey) {
+        connect();
+
         if (! mbeans.get(mbeanKey).hasAttribute(attributeKey)) {
             return null;
         }
