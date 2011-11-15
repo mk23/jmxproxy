@@ -30,6 +30,13 @@ function ss_hadoop($host, $type, $jmxproxy = 'localhost:8080') {
         'writes_from_local_client' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'writes_from_local_client'),
         'reads_from_remote_client' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'reads_from_remote_client'),
         'writes_from_remote_client' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'writes_from_remote_client'),
+        'ops_block_copy' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'copyBlockOpNumOps'),
+        'ops_block_read' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'readBlockOpNumOps'),
+        'ops_block_write' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'writeBlockOpNumOps'),
+        'ops_block_replace' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'replaceBlockOpNumOps'),
+        'ops_block_checksum' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'blockChecksumOpNumOps'),
+        'ops_block_reports' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'blockReportsNumOps'),
+        'ops_heartbeat' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'heartBeatsNumOps'),
     );
     $hadoop_stats['master'] = array(
         'cluster_requests' => array('hadoop:service=Master,name=MasterStatistics', 'cluster_requests'),
