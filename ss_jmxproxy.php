@@ -57,5 +57,5 @@ function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $extra_stats = array()
         }
     }
 
-    return implode(' ', array_map(function($k,$v) { return $k . ':' . (is_numeric($v) ? $v : 'U'); }, array_keys($data), array_values($data)));
+    return implode(' ', array_map(function($k,$v) { return $k . ':' . (is_numeric($v) ? (int)$v : 'U'); }, array_keys($data), array_values($data)));
 }
