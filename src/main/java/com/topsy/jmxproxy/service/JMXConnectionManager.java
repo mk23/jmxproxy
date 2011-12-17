@@ -96,7 +96,7 @@ public class JMXConnectionManager {
                     logger.info("Host " + hostKey + " access time expired, disconnecting");
                     host.disconnect();
                     synchronized(hosts) {
-                        hosts.remove(host);
+                        hosts.remove(hostKey);
                     }
                 } else {
                     hosts.get(hostKey).fetchAttributeValues();
