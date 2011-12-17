@@ -154,12 +154,14 @@ public class JMXConnectionWorker {
             setAttributeValue(mbeanKey, attributeKey);
         }
 
+        logger.debug("updating access time");
+        accessTime = System.currentTimeMillis();
+
         return attribute.getValue();
     }
 
     public void fetchAttributeValues() {
         logger.debug("fetching attribute values from " + url);
-        accessTime = System.currentTimeMillis();
         for (ObjectName mbeanKey : mbeans.keySet()) {
             MBean mbean = mbeans.get(mbeanKey);
             for (String attributeKey : mbean.getAttributes()) {
