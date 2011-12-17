@@ -1,5 +1,6 @@
 package com.topsy.jmxproxy.service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +51,14 @@ public class JMXConnectionManager {
     })
     public String[] getDomains(String host) throws Exception {
         return getJMXConnection(host).getDomains();
+    }
+
+    @ManagedOperation(description="Get last access time for specified host")
+    @ManagedOperationParameters({
+        @ManagedOperationParameter(name="host", description="host[:port]")
+    })
+    public String getAccessTime(String host) throws Exception {
+        return new Date(getJMXConnection(host).getAccessTime()).toString();
     }
 
     @ManagedOperation(description="Get mbeans for specified host and domain")
