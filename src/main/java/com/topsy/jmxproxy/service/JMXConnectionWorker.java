@@ -154,7 +154,7 @@ public class JMXConnectionWorker {
             setAttributeValue(mbeanKey, attributeKey);
         }
 
-        logger.debug("updating access time");
+        logger.debug("updating access time on " + url);
         accessTime = System.currentTimeMillis();
 
         return attribute.getValue();
