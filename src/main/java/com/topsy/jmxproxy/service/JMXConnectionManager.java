@@ -38,7 +38,9 @@ public class JMXConnectionManager {
     public void removeHost(String host) {
         if (hosts.containsKey(host)) {
             hosts.get(host).disconnect();
-            hosts.remove(host);
+            synchronized(hosts) {
+                hosts.remove(host);
+            }
         }
     }
 
@@ -78,8 +80,18 @@ public class JMXConnectionManager {
     @Scheduled(fixedRate=60000)
     private void fetchAttributeValues() {
         for (String hostKey : hosts.keySet()) {
+            JMXConnectionWorker host = hosts.get(hostKey);
+
             try {
-                hosts.get(hostKey).fetchAttributeValues();
+                if (System.currentTimeMillis() - host.getAccessTime() > 1000 * 60 * 60) {
+                    logger.info("Host " + hostKey + " access time expired, disconnecting");
+                    host.disconnect();
+                    synchronized(hosts) {
+                        hosts.remove(host);
+                    }
+                } else {
+                    hosts.get(hostKey).fetchAttributeValues();
+                }
             } catch (Exception e) {
                 removeHost(hostKey);
             }

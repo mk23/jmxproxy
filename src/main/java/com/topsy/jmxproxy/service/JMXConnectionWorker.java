@@ -31,6 +31,7 @@ public class JMXConnectionWorker {
     private JMXServiceURL url;
     private JMXConnector connection;
     private MBeanServerConnection server;
+    private Long accessTime;
 
     private String[] domains;
     private Map<ObjectName, MBean> mbeans;
@@ -38,6 +39,7 @@ public class JMXConnectionWorker {
     public JMXConnectionWorker(String host) throws Exception {
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + "/jmxrmi");
         mbeans = new HashMap<ObjectName, MBean>();
+        accessTime = System.currentTimeMillis();
     }
 
     private void connect() {
@@ -66,8 +68,7 @@ public class JMXConnectionWorker {
         }
     }
 
-
-    public void disconnect() {
+    public synchronized void disconnect() {
         try {
             connected = false;
             domains = new String[0];
@@ -115,6 +116,10 @@ public class JMXConnectionWorker {
         }
     }
 
+    public Long getAccessTime() {
+        return accessTime;
+    }
+
     public void setAttributeValue(ObjectName mbeanKey, String attributeKey) {
         connect();
 
@@ -154,6 +159,7 @@ public class JMXConnectionWorker {
 
     public void fetchAttributeValues() {
         logger.debug("fetching attribute values from " + url);
+        accessTime = System.currentTimeMillis();
         for (ObjectName mbeanKey : mbeans.keySet()) {
             MBean mbean = mbeans.get(mbeanKey);
             for (String attributeKey : mbean.getAttributes()) {
