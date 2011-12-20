@@ -38,6 +38,20 @@ function ss_hadoop($host, $type, $jmxproxy = 'localhost:8080') {
         'ops_block_reports' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'blockReportsNumOps'),
         'ops_heartbeat' => array('hadoop:service=DataNode,name=DataNodeActivity-.*', 'heartBeatsNumOps'),
     );
+    $hadoop_stats['jobtracker'] = array(
+        'nodes_total' => array('hadoop:service=JobTracker,name=JobTrackerInfo', 'SummaryJson', 'nodes'),
+        'nodes_alive' => array('hadoop:service=JobTracker,name=JobTrackerInfo', 'SummaryJson', 'alive'),
+        'map_slots' => array('hadoop:service=JobTracker,name=JobTrackerInfo', 'SummaryJson', 'slots', 'map_slots'),
+        'map_slots_used' => array('hadoop:service=JobTracker,name=JobTrackerInfo', 'SummaryJson', 'slots', 'map_slots_used'),
+        'reduce_slots' => array('hadoop:service=JobTracker,name=JobTrackerInfo', 'SummaryJson', 'slots', 'reduce_slots'),
+        'reduce_slots_used' => array('hadoop:service=JobTracker,name=JobTrackerInfo', 'SummaryJson', 'slots', 'reduce_slots_used'),
+        'jobs' => array('hadoop:service=JobTracker,name=JobTrackerInfo', 'SummaryJson', 'jobs'),
+    );
+    $hadoop_stats['tasktracker'] = array(
+        'tasks_running' => array('hadoop:service=TaskTracker,name=TaskTrackerInfo', 'TasksInfoJson', 'running'),
+        'tasks_failed' => array('hadoop:service=TaskTracker,name=TaskTrackerInfo', 'TasksInfoJson', 'failed'),
+        'commit_pending' => array('hadoop:service=TaskTracker,name=TaskTrackerInfo', 'TasksInfoJson', 'commit_pending'),
+    );
     $hadoop_stats['master'] = array(
         'cluster_requests' => array('hadoop:service=Master,name=MasterStatistics', 'cluster_requests'),
     );
@@ -51,6 +65,12 @@ function ss_hadoop($host, $type, $jmxproxy = 'localhost:8080') {
         'requests' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'requests'),
         'stores' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'stores'),
         'storefiles' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'storefiles'),
+    );
+    $hadoop_stats['zookeeper'] = array(
+        'packets_received' => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=Follower', 'PacketsReceived'),
+        'packets_sent' => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=Follower', 'PacketsSent'),
+        'outstanding_requests' => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=Follower', 'OutstandingRequests'),
+        'avg_request_latency' => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=Follower', 'AvgRequestLatency'),
     );
 
     return ss_jmxproxy($host, $jmxproxy, $hadoop_stats[$type]);
