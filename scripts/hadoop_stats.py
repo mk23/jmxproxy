@@ -78,6 +78,12 @@ HADOOP_STATS = {
         'hbase.regionserver.stores':                ('hadoop:service=RegionServer,name=RegionServerStatistics', 'stores'),
         'hbase.regionserver.storefiles':            ('hadoop:service=RegionServer,name=RegionServerStatistics', 'storefiles'),
     },
+    'zookeeper': {
+        'packets_received':                         ('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=Follower', 'PacketsReceived'),
+        'packets_sent':                             ('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=Follower', 'PacketsSent'),
+        'outstanding_requests':                     ('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=Follower', 'OutstandingRequests'),
+        'avg_request_latency':                      ('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=Follower', 'AvgRequestLatency'),
+    },
 }
 
 
