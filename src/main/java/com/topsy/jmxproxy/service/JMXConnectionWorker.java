@@ -27,11 +27,10 @@ import com.topsy.jmxproxy.domain.MBean;
 public class JMXConnectionWorker {
     private static final Logger logger = Logger.getLogger(JMXConnectionWorker.class);
 
-    private boolean connected;
     private JMXServiceURL url;
-    private JMXConnector connection;
+    private JMXConnector connection = null;
     private MBeanServerConnection server;
-    private Long accessTime;
+    private Long connectTime = Long.MAX_VALUE;
 
     private String[] domains;
     private Map<ObjectName, MBean> mbeans;
@@ -39,12 +38,15 @@ public class JMXConnectionWorker {
     public JMXConnectionWorker(String host) throws Exception {
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + "/jmxrmi");
         mbeans = new HashMap<ObjectName, MBean>();
-        accessTime = System.currentTimeMillis();
     }
 
     private void connect() {
-        if (connected) {
+        if (connection != null && System.currentTimeMillis() - connectTime < 1000 * 60) {
+            logger.debug("using cached connection to " + url);
             return;
+        } else if (connection != null) {
+            logger.info("reconnecting to " + url);
+            disconnect();
         }
 
         try {
@@ -61,7 +63,7 @@ public class JMXConnectionWorker {
                 }
             }
 
-            connected = true;
+            connectTime = System.currentTimeMillis();
         } catch (Exception e) {
             logger.error("failed to connect to " + url, e);
             disconnect();
@@ -70,13 +72,11 @@ public class JMXConnectionWorker {
 
     public synchronized void disconnect() {
         try {
-            connected = false;
-            domains = new String[0];
             mbeans.clear();
-            server = null;
 
             connection.close();
             connection = null;
+            connectTime = Long.MAX_VALUE;
 
             logger.debug("disconnected from " + url);
         } catch (IOException e) {
@@ -116,61 +116,23 @@ public class JMXConnectionWorker {
         }
     }
 
-    public Long getAccessTime() {
-        return accessTime;
-    }
-
-    public void setAttributeValue(ObjectName mbeanKey, String attributeKey) {
-        connect();
-
-        Attribute attribute = mbeans.get(mbeanKey).getAttribute(attributeKey);
-        try {
-            attribute.setValue(server.getAttribute(mbeanKey, attributeKey));
-            attribute.setMonitored(true);
-        } catch (Exception e) {
-            logger.error("mbean error fetching attribute " + attributeKey + " for " + mbeanKey + " on " + url, e);
-            disconnect();
-        }
-    }
-
     public Object getAttributeValue(String mbean, String attributeKey) {
-        try {
-            return getAttributeValue(new ObjectName(mbean), attributeKey);
-        } catch (MalformedObjectNameException e) {
-            return null;
-        }
-    }
-
-    public Object getAttributeValue(ObjectName mbeanKey, String attributeKey) {
         connect();
 
-        if (! mbeans.get(mbeanKey).hasAttribute(attributeKey)) {
-            return null;
-        }
+        try {
+            ObjectName mbeanKey = new ObjectName(mbean);
 
-        Attribute attribute = mbeans.get(mbeanKey).getAttribute(attributeKey);
-        if (! attribute.isMonitored()) {
-            logger.debug("adding new attribute monitor (" + mbeanKey + ") " + attributeKey);
-            setAttributeValue(mbeanKey, attributeKey);
-        }
-
-        logger.debug("updating access time on " + url);
-        accessTime = System.currentTimeMillis();
-
-        return attribute.getValue();
-    }
-
-    public void fetchAttributeValues() {
-        logger.debug("fetching attribute values from " + url);
-        for (ObjectName mbeanKey : mbeans.keySet()) {
-            MBean mbean = mbeans.get(mbeanKey);
-            for (String attributeKey : mbean.getAttributes()) {
-                Attribute attribute = mbean.getAttribute(attributeKey);
-                if (attribute.isMonitored()) {
-                    logger.debug("found monitored attribute (" + mbeanKey + ") " + attributeKey);
-                    setAttributeValue(mbeanKey, attributeKey);
-                }
+            if (! mbeans.get(mbeanKey).hasAttribute(attributeKey)) {
+                return null;
             }
+            Attribute attribute = mbeans.get(mbeanKey).getAttribute(attributeKey);
+            attribute.setValue(server.getAttribute(mbeanKey, attributeKey));
+
+            return attribute.getValue();
+        } catch (Exception e) {
+            logger.error("mbean error fetching attribute " + attributeKey + " for " + mbean + " on " + url, e);
+            return null;
         }
     }
 }
+

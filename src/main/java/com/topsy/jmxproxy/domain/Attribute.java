@@ -15,16 +15,7 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 public class Attribute {
-    private boolean monitored = false;
     private Object value = null;
-
-    public void setMonitored(boolean monitored) {
-        this.monitored = monitored;
-    }
-
-    public boolean isMonitored() {
-        return monitored;
-    }
 
     public void setValue(Object value) {
         this.value = value;

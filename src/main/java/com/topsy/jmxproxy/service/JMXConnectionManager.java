@@ -53,14 +53,6 @@ public class JMXConnectionManager {
         return getJMXConnection(host).getDomains();
     }
 
-    @ManagedOperation(description="Get last access time for specified host")
-    @ManagedOperationParameters({
-        @ManagedOperationParameter(name="host", description="host[:port]")
-    })
-    public String getAccessTime(String host) throws Exception {
-        return new Date(getJMXConnection(host).getAccessTime()).toString();
-    }
-
     @ManagedOperation(description="Get mbeans for specified host and domain")
     @ManagedOperationParameters({
         @ManagedOperationParameter(name="host", description="host[:port]"),
@@ -84,26 +76,5 @@ public class JMXConnectionManager {
         }
 
         return hosts.get(host);
-    }
-
-    @Scheduled(fixedRate=60000)
-    private void fetchAttributeValues() {
-        for (String hostKey : hosts.keySet()) {
-            JMXConnectionWorker host = hosts.get(hostKey);
-
-            try {
-                if (System.currentTimeMillis() - host.getAccessTime() > 1000 * 60 * 60) {
-                    logger.info("Host " + hostKey + " access time expired, disconnecting");
-                    host.disconnect();
-                    synchronized(hosts) {
-                        hosts.remove(hostKey);
-                    }
-                } else {
-                    hosts.get(hostKey).fetchAttributeValues();
-                }
-            } catch (Exception e) {
-                removeHost(hostKey);
-            }
-        }
     }
 }
