@@ -57,7 +57,7 @@ function ss_hadoop($host, $type, $jmxproxy = 'localhost:8080') {
     );
     $hadoop_stats['regionserver'] = array(
         'cache_capacity' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'blockCacheSize'),
-        'cache_remianing' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'blockCacheFree'),
+        'cache_remaining' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'blockCacheFree'),
         'cache_used' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'blockCacheCount'),
         'cache_hit_count' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'blockCacheHitCount'),
         'cache_miss_count' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'blockCacheMissCount'),
@@ -65,6 +65,8 @@ function ss_hadoop($host, $type, $jmxproxy = 'localhost:8080') {
         'requests' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'requests'),
         'stores' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'stores'),
         'storefiles' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'storefiles'),
+        'compaction_queue' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'compactionQueueSize'),
+        'flush_queue' => array('hadoop:service=RegionServer,name=RegionServerStatistics', 'flushQueueSize'),
     );
     $hadoop_stats['zookeeper'] = array(
         'packets_received' => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=Follower', 'PacketsReceived'),
