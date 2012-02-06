@@ -25,10 +25,13 @@ function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $extra_stats = array()
         'classes_unloaded' => array('java.lang:type=ClassLoading', 'UnloadedClassCount'),
     );
 
-    $stats = array_merge($jvm_stats, $extra_stats);
     $beans = array();
+    $stats = array_merge($jvm_stats, $extra_stats);
+    $cntxt = stream_context_create();
+
+    stream_context_set_option($cntxt, 'http', 'timeout', 3.0);
     foreach (array_unique(array_map(function($name) { return array_shift(explode(':', $name[0])); }, $stats)) as $domain) {
-        preg_match_all('/<a href=.+?>(.+?)<\/a>/', file_get_contents("http://{$jmxproxy}/jmxproxy/{$host}/{$domain}"), $found);
+        preg_match_all('/<a href=.+?>(.+?)<\/a>/', file_get_contents("http://{$jmxproxy}/jmxproxy/{$host}/{$domain}", FILE_USE_INCLUDE_PATH, $cntxt), $found);
         $beans = array_merge($beans, $found[1]);
     }
 
@@ -42,15 +45,14 @@ function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $extra_stats = array()
                 "http://%s/jmxproxy/%s/%s/%s", $jmxproxy,
                 rawurlencode($host), rawurlencode($mbean), rawurlencode($val[1])
             );
-            $attribute = json_decode(file_get_contents($request));
+            $attribute = json_decode(file_get_contents($request, FILE_USE_INCLUDE_PATH, $cntxt));
             if (is_object($attribute)) {
-                if (sizeof($val) == 3) {
-                    if (array_key_exists($key, $data)) {
-                        $data[$key] += $attribute->$val[2];
-                    } else {
-                        $data[$key] = $attribute->$val[2];
-                    }
+                for ($i = 2; $i < sizeof($val); $i++) {
+                    $attribute = $attribute->$val[$i];
                 }
+            }
+            if (array_key_exists($key, $data)) {
+                $data[$key] += $attribute;
             } else {
                 $data[$key] = $attribute;
             }
