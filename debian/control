@@ -1,0 +1,12 @@
+Source: jmxproxy
+Section: java
+Priority: extra
+Maintainer: Max Kalika <max@topsy.com>
+Build-Depends: debhelper (>= 7), maven2
+Standards-Version: 3.8.3
+
+Package: jmxproxy
+Architecture: any
+Depends: tomcat6
+Description: Topsy jmxproxy
+ Topsy jmxproxy
