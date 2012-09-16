@@ -18,8 +18,8 @@
 
   <properties>
     <jersey.version>1.14</jersey.version>
-    <springframework.version>3.0.3.RELEASE</springframework.version>
     <grizzly.version>1.9.45</grizzly.version>
+    <springframework.version>3.0.3.RELEASE</springframework.version>
   </properties>
   <dependencies>
     <!-- Spring -->
