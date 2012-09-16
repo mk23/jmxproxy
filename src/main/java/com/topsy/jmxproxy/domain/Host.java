@@ -15,27 +15,24 @@ import org.apache.log4j.Logger;
 public class Host {
     private static final Logger LOG = Logger.getLogger(Host.class);
 
-    @XmlAttribute
-    private String host;
+    @XmlAttribute(name="host")
+    private String hostName;
 
     @XmlElement
     private List<Domain> domains;
 
-    public Host(String hostName) {
+    public Host() {
         domains = new ArrayList<Domain>();
-        host = hostName;
     }
 
-    public List<Domain> getDomains() {
-        return domains;
-    }
-
-    public String getHost() {
-        return host;
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
     public Domain addDomain(String domainName) {
-        Domain domain = new Domain(domainName);
+        Domain domain = new Domain();
+        domain.setDomainName(domainName);
+
         domains.add(domain);
 
         return domain;

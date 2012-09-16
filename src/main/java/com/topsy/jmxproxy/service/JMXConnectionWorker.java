@@ -1,6 +1,6 @@
 package com.topsy.jmxproxy.service;
 
-import com.topsy.jmxproxy.domain.Domain;
+import com.topsy.jmxproxy.domain.MBean;
 import com.topsy.jmxproxy.domain.Host;
 
 import java.io.IOException;
@@ -25,28 +25,72 @@ public class JMXConnectionWorker {
     private static final Logger LOG = Logger.getLogger(JMXConnectionWorker.class);
 
     private Host host;
+    private String hostName;
 
     private JMXServiceURL url;
     private JMXConnector connection;
     private MBeanServerConnection server;
     private Long connectTime = Long.MAX_VALUE;
 
-    public JMXConnectionWorker(String host) throws Exception {
-        Domain dom;
-
-        url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + "/jmxrmi");
-
-        this.host = new Host(host);
-        dom = this.host.addDomain("domain1");
-        dom.addMBean("mbean1");
-        dom.addMBean("mbean2");
-        dom = this.host.addDomain("domain2");
-        dom.addMBean("mbean3");
-        dom.addMBean("mbean4");
+    public JMXConnectionWorker(String hostName) throws Exception {
+        url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + "/jmxrmi");
+        this.connection = null;
+        this.hostName = hostName;
     }
 
     public Host getHost() {
+        connect();
         return host;
+    }
+
+    private void connect() {
+        if (connection != null && System.currentTimeMillis() - connectTime < 1000 * 60) {
+            LOG.debug("using cached connection to " + url);
+            return;
+        } else if (connection != null) {
+            LOG.info("reconnecting to " + url);
+            disconnect();
+        }
+
+        host = new Host();
+        host.setHostName(hostName);
+
+        try {
+            connection = JMXConnectorFactory.connect(url, null);
+            server = connection.getMBeanServerConnection();
+            LOG.debug("connected to mbean server " + url);
+
+            for (String domainName : server.getDomains()) {
+                LOG.debug("discovered domain " + domainName);
+
+                for (ObjectName mbeanName : server.queryNames(new ObjectName(domainName + ":*"), null)) {
+                    LOG.debug("discovered mbean " + mbeanName);
+
+                    MBean mbean = host.addMBean(mbeanName.toString());
+//                    mbeans.put(mbean, new MBean(server.getMBeanInfo(mbean).getAttributes()));
+                }
+            }
+
+            connectTime = System.currentTimeMillis();
+        } catch (Exception e) {
+            LOG.error("failed to connect to " + url, e);
+        } finally {
+            if (connection != null) {
+                disconnect();
+            }
+        }
+    }
+
+    public synchronized void disconnect() {
+        try {
+            connection.close();
+            connection = null;
+            connectTime = Long.MAX_VALUE;
+
+            LOG.debug("disconnected from " + url);
+        } catch (IOException e) {
+            LOG.error("failed to disconnect from " + url, e);
+        }
     }
 }
 /*

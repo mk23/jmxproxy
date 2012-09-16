@@ -1,11 +1,11 @@
 package com.topsy.jmxproxy.domain;
 
+// import com.topsy.jmxproxy.domain.Attribute;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.management.MBeanAttributeInfo;
-
-import com.topsy.jmxproxy.domain.Attribute;
 
 public class MBean {
     private Map<String, Attribute> attributes;
