@@ -10,9 +10,9 @@ import java.util.Map;
 
 import javax.management.openmbean.CompositeData;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+//import net.sf.json.JSONArray;
+//import net.sf.json.JSONObject;
+//import net.sf.json.JSONSerializer;
 
 public class Attribute {
     private Object value = null;
@@ -25,6 +25,7 @@ public class Attribute {
         return value;
     }
 
+    /*
     public String toJSONString() {
         return Attribute.toJSON(this.value).toString();
     }
@@ -66,4 +67,5 @@ public class Attribute {
             return value;
         }
     }
+    */
 }

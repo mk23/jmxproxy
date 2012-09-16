@@ -1,11 +1,14 @@
 package com.topsy.jmxproxy.service;
 
+import com.topsy.jmxproxy.domain.Domain;
+import com.topsy.jmxproxy.domain.Host;
+
 import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+//import java.util.ArrayList;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
 
 import javax.management.MalformedObjectNameException;
 
@@ -18,12 +21,35 @@ import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.Logger;
 
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
+public class JMXConnectionWorker {
+    private static final Logger LOG = Logger.getLogger(JMXConnectionWorker.class);
 
-import com.topsy.jmxproxy.domain.Attribute;
-import com.topsy.jmxproxy.domain.MBean;
+    private Host host;
 
+    private JMXServiceURL url;
+    private JMXConnector connection;
+    private MBeanServerConnection server;
+    private Long connectTime = Long.MAX_VALUE;
+
+    public JMXConnectionWorker(String host) throws Exception {
+        Domain dom;
+
+        url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + "/jmxrmi");
+
+        this.host = new Host(host);
+        dom = this.host.addDomain("domain1");
+        dom.addMBean("mbean1");
+        dom.addMBean("mbean2");
+        dom = this.host.addDomain("domain2");
+        dom.addMBean("mbean3");
+        dom.addMBean("mbean4");
+    }
+
+    public Host getHost() {
+        return host;
+    }
+}
+/*
 public class JMXConnectionWorker {
     private static final Logger logger = Logger.getLogger(JMXConnectionWorker.class);
 
@@ -135,4 +161,4 @@ public class JMXConnectionWorker {
         }
     }
 }
-
+*/

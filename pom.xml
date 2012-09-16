@@ -17,45 +17,57 @@
   </profiles>
 
   <properties>
-    <jersey.version>1.13-SNAPSHOT</jersey.version>
-    <org.springframework.version>3.0.3.RELEASE</org.springframework.version>
-    <grizzly.version>1.9.18-i</grizzly.version>
+    <jersey.version>1.14</jersey.version>
+    <springframework.version>3.0.3.RELEASE</springframework.version>
+    <grizzly.version>1.9.45</grizzly.version>
   </properties>
   <dependencies>
     <!-- Spring -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>${org.springframework.version}</version>
+      <version>${springframework.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>${org.springframework.version}</version>
+      <version>${springframework.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-aop</artifactId>
-      <version>${org.springframework.version}</version>
+      <version>${springframework.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>${org.springframework.version}</version>
+      <version>${springframework.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>${org.springframework.version}</version>
+      <version>${springframework.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-json</artifactId>
+      <version>${jersey.version}</version>
     </dependency>
 
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-servlet</artifactId>
       <version>${jersey.version}</version>
     </dependency>
 
@@ -138,12 +150,14 @@
       <scope>test</scope>
     </dependency>
 
+    <!--
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <version>1.0</version>
       <classifier>jdk15</classifier>
     </dependency>
+    -->
 
   </dependencies>
 
