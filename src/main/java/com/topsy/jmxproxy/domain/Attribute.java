@@ -1,7 +1,11 @@
 package com.topsy.jmxproxy.domain;
 
-import java.lang.reflect.Array;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+/*
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,21 +13,34 @@ import java.util.List;
 import java.util.Map;
 
 import javax.management.openmbean.CompositeData;
+*/
 
 //import net.sf.json.JSONArray;
 //import net.sf.json.JSONObject;
 //import net.sf.json.JSONSerializer;
 
+@XmlRootElement
 public class Attribute {
-    private Object value = null;
+    @XmlAttribute(name="name")
+    private String attributeName;
 
-    public void setValue(Object value) {
-        this.value = value;
+//    @XmlElement
+    private Object attributeValue;
+
+//	@XmlElement
+//    private Object value;
+
+    public void setAttributeName(String attributeName) {
+		this.attributeName = attributeName;
+	}
+
+    public void setAttributeValue(Object attributeValue) {
+        this.attributeValue = attributeValue;
     }
 
-    public Object getValue() {
-        return value;
-    }
+//    public void setValue(Object value) {
+//        this.value = value;
+//    }
 
     /*
     public String toJSONString() {

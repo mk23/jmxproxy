@@ -1,7 +1,8 @@
 package com.topsy.jmxproxy.service;
 
-import com.topsy.jmxproxy.domain.MBean;
+import com.topsy.jmxproxy.domain.Attribute;
 import com.topsy.jmxproxy.domain.Host;
+import com.topsy.jmxproxy.domain.MBean;
 
 import java.io.IOException;
 
@@ -10,8 +11,7 @@ import java.io.IOException;
 //import java.util.List;
 //import java.util.Map;
 
-import javax.management.MalformedObjectNameException;
-
+import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
@@ -67,6 +67,20 @@ public class JMXConnectionWorker {
                     LOG.debug("discovered mbean " + mbeanName);
 
                     MBean mbean = host.addMBean(mbeanName.toString());
+                    for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {
+                        if (attributeObject.isReadable()) {
+                            try {
+                                Attribute attribute = mbean.addAttribute(attributeObject.getName());
+                                attribute.setAttributeValue(server.getAttribute(mbeanName, attributeObject.getName()));
+                            } catch (java.rmi.UnmarshalException e) {
+                                LOG.error("failed to add attribute " + attributeObject.toString(), e);
+                            } catch (javax.management.AttributeNotFoundException e) {
+                                LOG.error("failed to add attribute " + attributeObject.toString(), e);
+                            } catch (javax.management.RuntimeMBeanException e) {
+                                LOG.error("failed to add attribute " + attributeObject.toString(), e);
+                            }
+                        }
+                    }
 //                    mbeans.put(mbean, new MBean(server.getMBeanInfo(mbean).getAttributes()));
                 }
             }

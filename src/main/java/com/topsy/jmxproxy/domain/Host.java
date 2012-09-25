@@ -1,6 +1,6 @@
 package com.topsy.jmxproxy.domain;
 
-import com.topsy.jmxproxy.domain.Domain;
+import com.topsy.jmxproxy.domain.MBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,22 +19,22 @@ public class Host {
     private String hostName;
 
     @XmlElement
-    private List<Domain> domains;
+    private List<MBean> mbeans;
 
     public Host() {
-        domains = new ArrayList<Domain>();
+        mbeans = new ArrayList<MBean>();
     }
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
     }
 
-    public Domain addDomain(String domainName) {
-        Domain domain = new Domain();
-        domain.setDomainName(domainName);
+    public MBean addMBean(String mbeanName) {
+        MBean mbean = new MBean();
+        mbean.setMBeanName(mbeanName);
 
-        domains.add(domain);
+        mbeans.add(mbean);
 
-        return domain;
+        return mbean;
     }
 }
