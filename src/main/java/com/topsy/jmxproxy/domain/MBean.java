@@ -1,65 +1,35 @@
 package com.topsy.jmxproxy.domain;
 
-import com.topsy.jmxproxy.domain.Attribute;
+import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.JsonSerializable;
+import org.codehaus.jackson.map.SerializerProvider;
 
-import org.apache.log4j.Logger;
-
-public class MBean {
-	private static final Logger LOG = Logger.getLogger(MBean.class);
-
-	@XmlAttribute(name="mbean")
-	private String mbeanName;
-
-	@XmlElement
-	private List<Attribute> attributes;
-
-	public MBean() {
-		this.attributes = new ArrayList<Attribute>();
-	}
-
-	public void setMBeanName(String mbeanName) {
-		this.mbeanName = mbeanName;
-	}
-
-	public Attribute addAttribute(String attributeName) {
-		Attribute attribute = new Attribute();
-		attribute.setAttributeName(attributeName);
-
-		attributes.add(attribute);
-
-		return attribute;
-	}
-    /*
+public class MBean implements JsonSerializable {
     private Map<String, Attribute> attributes;
 
-    public MBean(MBeanAttributeInfo[] attributes) {
+    public MBean() {
         this.attributes = new HashMap<String, Attribute>();
+    }
 
-        for (MBeanAttributeInfo attribute : attributes) {
-            if (attribute.isReadable()) {
-                this.attributes.put(attribute.getName(), new Attribute());
-            }
+    public Attribute addAttribute(String attributeName) {
+        Attribute attribute = new Attribute();
+        attributes.put(attributeName, attribute);
+
+        return attribute;
+    }
+
+    @Override
+    public void serialize(JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+        jgen.writeStartObject();
+        for (Map.Entry<String, Attribute>attributeEntry : attributes.entrySet()) {
+            jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue());
         }
+        jgen.writeEndObject();
     }
-
-    public String[] getAttributes() {
-        return (String[])attributes.keySet().toArray(new String[0]);
-    }
-
-    public boolean hasAttribute(String attribute) {
-        return attributes.containsKey(attribute);
-    }
-
-    public Attribute getAttribute(String attribute) {
-        return attributes.get(attribute);
-    }
-    */
 }
-
-

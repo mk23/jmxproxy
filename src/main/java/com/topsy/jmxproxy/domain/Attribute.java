@@ -1,88 +1,65 @@
 package com.topsy.jmxproxy.domain;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
 
-/*
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.management.openmbean.CompositeData;
-*/
+import javax.management.openmbean.TabularData;
 
-//import net.sf.json.JSONArray;
-//import net.sf.json.JSONObject;
-//import net.sf.json.JSONSerializer;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.JsonSerializable;
+import org.codehaus.jackson.map.SerializerProvider;
 
-@XmlRootElement
-public class Attribute {
-    @XmlAttribute(name="name")
-    private String attributeName;
-
-//    @XmlElement
+public class Attribute implements JsonSerializable {
     private Object attributeValue;
 
-//	@XmlElement
-//    private Object value;
-
-    public void setAttributeName(String attributeName) {
-		this.attributeName = attributeName;
-	}
+    public Object getAttributeValue() {
+        return attributeValue;
+    }
 
     public void setAttributeValue(Object attributeValue) {
         this.attributeValue = attributeValue;
     }
 
-//    public void setValue(Object value) {
-//        this.value = value;
-//    }
-
-    /*
-    public String toJSONString() {
-        return Attribute.toJSON(this.value).toString();
+    @Override
+    public void serialize(JsonGenerator jgen, SerializerProvider providor)
+            throws IOException, JsonProcessingException {
+        serialize(jgen, attributeValue);
     }
 
-    public static String toJSONString(Object value) {
-        return Attribute.toJSON(value).toString();
-    }
-
-    private static Object toJSON(Object value) {
-        if (value == null) {
-            return "null";
-        } else if (value.getClass().isArray()) {
-            List list = new ArrayList();
-            int length = Array.getLength(value);
+    private void serialize(JsonGenerator jgen, Object objectValue) throws IOException, JsonProcessingException {
+        if (objectValue == null) {
+            jgen.writeNull();
+        } else if (objectValue.getClass().isArray()) {
+            jgen.writeStartArray();
+            int length = Array.getLength(objectValue);
             for (int i = 0; i < length; i++) {
-                list.add(toJSON(Array.get(value, i)));
+                serialize(jgen, Array.get(objectValue, i));
             }
-            return (JSONArray)JSONSerializer.toJSON(list);
-        } else if (Collection.class.isAssignableFrom(value.getClass())) {
-            List list = new ArrayList();
-            for (Object obj : ((Collection<?>)value)) {
-                list.add(toJSON(obj));
+            jgen.writeEndArray();
+        } else if (objectValue instanceof TabularData) {
+            TabularData data = (TabularData) objectValue;
+            jgen.writeStartArray();
+            for (Object objectEntry : data.values()) {
+                serialize(jgen, objectEntry);
             }
-            return (JSONArray)JSONSerializer.toJSON(list);
-        } else if (Map.class.isAssignableFrom(value.getClass())) {
-            Map map = new HashMap();
-            for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
-                map.put(toJSON(entry.getKey()), toJSON(entry.getValue()));
+            jgen.writeEndArray();
+        } else if (objectValue instanceof CompositeData) {
+            CompositeData data = (CompositeData) objectValue;
+            jgen.writeStartObject();
+            for (String objectEntry : data.getCompositeType().keySet()) {
+                jgen.writeFieldName(objectEntry);
+                serialize(jgen, data.get(objectEntry));
             }
-            return (JSONObject)JSONSerializer.toJSON(map);
-        } else if (CompositeData.class.isAssignableFrom(value.getClass())) {
-            Map map = new HashMap();
-            CompositeData data = (CompositeData)value;
-            for (Object key : data.getCompositeType().keySet()) {
-                map.put((String)key, toJSON(data.get((String)key)));
-            }
-            return (JSONObject)JSONSerializer.toJSON(map);
+            jgen.writeEndObject();
+        } else if (objectValue instanceof Number) {
+            jgen.writeNumber(((Number)objectValue).toString());
+        } else if (objectValue instanceof Boolean) {
+            jgen.writeBoolean((Boolean)objectValue);
         } else {
-            return value;
+            jgen.writeString(objectValue.toString());
         }
     }
-    */
 }

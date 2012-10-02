@@ -7,46 +7,33 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
 import org.springframework.stereotype.Service;
 
-import com.sun.jersey.spi.inject.Inject;
+import com.sun.jersey.api.core.InjectParam;
 
 @Service
 @Path("/")
 public class JMXProxyResource {
     private static Logger LOG = Logger.getLogger(JMXProxyResource.class);
 
-    @Inject
+    @InjectParam
     private static JMXConnectionManager manager;
 
     @GET
-    @Path("/{host}.json")
-    @Produces("application/json")
-    public Response getJMXDataJSON(@PathParam("host") String host) {
-        LOG.debug("request jmx domains as json for " + host);
+    @Path("/{host}:{port:\\d+}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getJMXDataJSON(@PathParam("host") String host, @PathParam("port") int port) {
+        LOG.debug("request jmx domains as json for " + host + ":" + port);
 
         try {
-            return Response.ok(manager.getHost(host)).build();
+            return Response.ok(manager.getHost(host + ":" + port)).build();
         } catch (Exception e) {
-            LOG.debug("failed parameters: " + host, e);
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-    }
-
-    @GET
-    @Path("/{host}.xml")
-    @Produces("application/xml")
-    public Response getJMXDataXML(@PathParam("host") String host) {
-        LOG.debug("request jmx domains as xml for " + host);
-
-        try {
-            return Response.ok(manager.getHost(host)).build();
-        } catch (Exception e) {
-            LOG.debug("failed parameters: " + host, e);
+            LOG.debug("failed parameters: " + host + ":" + port, e);
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
