@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.topsy.jmxproxy</groupId>
   <artifactId>jmxproxy</artifactId>
@@ -11,7 +11,7 @@
     <profile>
       <id>jdk-1.6</id>
       <activation>
-	<jdk>1.6</jdk>
+        <jdk>1.6</jdk>
       </activation>
     </profile>
   </profiles>
@@ -164,35 +164,35 @@
   <build>
     <resources>
       <resource>
-	<directory>src/main/resources</directory>
+        <directory>src/main/resources</directory>
       </resource>
     </resources>
     <plugins>
       <!--  Maven Exec Plug-In: http://mojo.codehaus.org/exec-maven-plugin/  -->
       <plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>exec-maven-plugin</artifactId>
-	<version>1.1</version>
-	<executions>
-	  <execution>
-	    <goals>
-	      <goal>java</goal>
-	    </goals>
-	  </execution>
-	</executions>
-	<configuration>
-	  <mainClass>com.sun.jersey.samples.console.Main</mainClass>
-	</configuration>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>com.sun.jersey.samples.console.Main</mainClass>
+        </configuration>
       </plugin>
 
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<inherited>true</inherited>
-	<configuration>
-	  <source>1.6</source>
-	  <target>1.6</target>
-	</configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <inherited>true</inherited>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
       </plugin>
     </plugins>
   </build>
