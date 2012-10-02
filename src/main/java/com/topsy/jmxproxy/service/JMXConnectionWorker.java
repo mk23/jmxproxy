@@ -20,16 +20,16 @@ public class JMXConnectionWorker {
     private static final Logger LOG = Logger.getLogger(JMXConnectionWorker.class);
 
     private Host host;
-    private Long fetchTime;
     private JMXServiceURL url;
+    private long fetchTime;
 
     public JMXConnectionWorker(String hostName) throws Exception {
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + "/jmxrmi");
     }
 
     public Host getHost() {
-        if (host == null || System.currentTimeMillis() - fetchTime < 1000 * 60 * 5) {
-            LOG.debug("fetching new values for " + url);
+        if (host == null || System.currentTimeMillis() - fetchTime > 1000 * 60 * 5) {
+            LOG.debug("fetching new values for " + url + ": " + (System.currentTimeMillis() - fetchTime));
             fetchJMXValues();
         }
 
