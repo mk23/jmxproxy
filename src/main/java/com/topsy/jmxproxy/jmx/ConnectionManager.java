@@ -14,6 +14,7 @@ public class ConnectionManager implements Managed {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManager.class);
 
     private Map<String, ConnectionWorker> hosts;
+    private boolean started = false;
 
     public ConnectionManager() {
         hosts = new HashMap<String, ConnectionWorker>();
@@ -30,14 +31,20 @@ public class ConnectionManager implements Managed {
         return hosts.get(host).getHost();
     }
 
+    public boolean isStarted() {
+        return started;
+    }
+
     @Override
     public void start() {
         LOG.info("starting jmx connection manager");
+        started = true;
     }
 
     @Override
     public void stop() {
         LOG.info("stopping jmx connection manager");
+        started = false;
         hosts.clear();
     }
 }
