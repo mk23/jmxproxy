@@ -1,39 +1,43 @@
-package com.topsy.jmxproxy.service;
+package com.topsy.jmxproxy.jmx;
 
-import com.topsy.jmxproxy.domain.Host;
-import com.topsy.jmxproxy.service.JMXConnectionWorker;
+import com.topsy.jmxproxy.core.Host;
 
-import java.util.ArrayList;
+import com.yammer.dropwizard.lifecycle.Managed;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.springframework.jmx.export.annotation.ManagedResource;
-import org.springframework.jmx.export.annotation.ManagedAttribute;
+public class ConnectionManager implements Managed {
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionManager.class);
 
-@ManagedResource(objectName="jmxproxy:service=JMXConnectionManager")
-public class JMXConnectionManager {
-    private static final Logger LOG = Logger.getLogger(JMXConnectionManager.class);
+    private Map<String, ConnectionWorker> hosts;
 
-    private Map<String, JMXConnectionWorker> hosts;
-
-    @ManagedAttribute(description="List of cached hosts")
-    public List<String> getHosts() {
-        return new ArrayList<String>(hosts.keySet());
+    public ConnectionManager() {
+        hosts = new HashMap<String, ConnectionWorker>();
     }
 
-    public JMXConnectionManager() {
-        hosts = new HashMap<String, JMXConnectionWorker>();
-    }
-
-    public synchronized Host getHost(String host) throws Exception {
-        if (!hosts.containsKey(host)) {
-            LOG.debug("creating new jmx connection worker");
-            hosts.put(host, new JMXConnectionWorker(host));
+    public Host getHost(String host) throws Exception {
+        synchronized (hosts) {
+            if (!hosts.containsKey(host)) {
+                LOG.info("creating new worker for " + host);
+                hosts.put(host, new ConnectionWorker(host));
+            }
         }
 
         return hosts.get(host).getHost();
+    }
+
+    @Override
+    public void start() {
+        LOG.info("starting jmx connection manager");
+    }
+
+    @Override
+    public void stop() {
+        LOG.info("stopping jmx connection manager");
+        hosts.clear();
     }
 }

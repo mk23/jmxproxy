@@ -1,8 +1,8 @@
-package com.topsy.jmxproxy.service;
+package com.topsy.jmxproxy.jmx;
 
-import com.topsy.jmxproxy.domain.Attribute;
-import com.topsy.jmxproxy.domain.Host;
-import com.topsy.jmxproxy.domain.MBean;
+import com.topsy.jmxproxy.core.Attribute;
+import com.topsy.jmxproxy.core.Host;
+import com.topsy.jmxproxy.core.MBean;
 
 import java.io.IOException;
 
@@ -14,20 +14,21 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class JMXConnectionWorker {
-    private static final Logger LOG = Logger.getLogger(JMXConnectionWorker.class);
+public class ConnectionWorker {
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionWorker.class);
 
     private Host host;
     private JMXServiceURL url;
     private long fetchTime;
 
-    public JMXConnectionWorker(String hostName) throws Exception {
+    public ConnectionWorker(String hostName) throws Exception {
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + "/jmxrmi");
     }
 
-    public Host getHost() {
+    public synchronized Host getHost() {
         if (host == null || System.currentTimeMillis() - fetchTime > 1000 * 60 * 5) {
             LOG.debug("fetching new values for " + url + ": " + (System.currentTimeMillis() - fetchTime));
             fetchJMXValues();
