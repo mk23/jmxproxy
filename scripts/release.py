@@ -102,6 +102,7 @@ def main(argv=sys.argv[1:]):
             data = open(name, 'w')
             data.write(orig.replace(find.group('PATTERN'), find.group('PATTERN').replace(find.group('VERSION'), version)))
             data.close()
+            changed.append(name)
 
     if args.commit:
         print 'updating git ...'
