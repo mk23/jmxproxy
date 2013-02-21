@@ -1,6 +1,7 @@
-package com.topsy.jmxproxy.resource;
+package com.topsy.jmxproxy;
 
-import com.topsy.jmxproxy.service.JMXConnectionManager;
+import com.topsy.jmxproxy.core.Host;
+import com.topsy.jmxproxy.jmx.ConnectionManager;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -9,32 +10,31 @@ import javax.ws.rs.Produces;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.WebApplicationException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.springframework.stereotype.Service;
-
-import com.sun.jersey.api.core.InjectParam;
-
-@Service
-@Path("/")
+@Path("/{host}:{port:\\d+}")
+@Produces(MediaType.APPLICATION_JSON)
 public class JMXProxyResource {
-    private static Logger LOG = Logger.getLogger(JMXProxyResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JMXProxyResource.class);
 
-    @InjectParam
-    private static JMXConnectionManager manager;
+    private final ConnectionManager manager;
+
+    public JMXProxyResource(ConnectionManager manager) {
+        this.manager = manager;
+    }
 
     @GET
-    @Path("/{host}:{port:\\d+}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getJMXDataJSON(@PathParam("host") String host, @PathParam("port") int port) {
-        LOG.debug("request jmx domains as json for " + host + ":" + port);
+    public Host getJMXHostData(@PathParam("host") String host, @PathParam("port") int port) {
+        LOG.debug("fetching jmx data for " + host + ":" + port);
 
         try {
-            return Response.ok(manager.getHost(host + ":" + port)).build();
+            return manager.getHost(host + ":" + port);
         } catch (Exception e) {
             LOG.debug("failed parameters: " + host + ":" + port, e);
-            return Response.status(Response.Status.NOT_FOUND).build();
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }
 }
