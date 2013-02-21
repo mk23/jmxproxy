@@ -1,19 +1,14 @@
-package com.topsy.jmxproxy.domain;
+package com.topsy.jmxproxy.core;
 
-import com.topsy.jmxproxy.domain.MBean;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.JsonSerializable;
-import org.codehaus.jackson.map.SerializerProvider;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-public class Host implements JsonSerializable{
+@JsonSerialize(using=HostSerializer.class)
+public class Host {
     private Map<String, MBean> mbeans;
     private Map<String, List<String>> domains;
 
@@ -34,16 +29,11 @@ public class Host implements JsonSerializable{
         return mbean;
     }
 
-    @Override
-    public void serialize(JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-        jgen.writeStartObject();
-        for (Map.Entry<String, List<String>>domainEntry : domains.entrySet()) {
-            jgen.writeObjectFieldStart(domainEntry.getKey());
-            for (String mbeanName : domainEntry.getValue()) { 
-                jgen.writeObjectField(mbeanName, mbeans.get(mbeanName));
-            }
-            jgen.writeEndObject();
-        }
-        jgen.writeEndObject();
+    public Map<String, MBean> getMBeans() {
+        return mbeans;
+    }
+
+    public Map<String, List<String>> getDomains() {
+        return domains;
     }
 }

@@ -1,16 +1,14 @@
-package com.topsy.jmxproxy.domain;
+package com.topsy.jmxproxy.core;
 
 import java.io.IOException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.JsonSerializable;
-import org.codehaus.jackson.map.SerializerProvider;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-public class MBean implements JsonSerializable {
+@JsonSerialize(using=MBeanSerializer.class)
+public class MBean {
     private Map<String, Attribute> attributes;
 
     public MBean() {
@@ -24,12 +22,7 @@ public class MBean implements JsonSerializable {
         return attribute;
     }
 
-    @Override
-    public void serialize(JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-        jgen.writeStartObject();
-        for (Map.Entry<String, Attribute>attributeEntry : attributes.entrySet()) {
-            jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue());
-        }
-        jgen.writeEndObject();
+    public Map<String, Attribute> getAttributes() {
+        return attributes;
     }
 }
