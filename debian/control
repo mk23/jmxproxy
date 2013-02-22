@@ -7,6 +7,6 @@ Standards-Version: 3.8.3
 
 Package: jmxproxy
 Architecture: any
-Depends: tomcat6
+Depends: default-jre
 Description: Topsy jmxproxy
  Topsy jmxproxy
