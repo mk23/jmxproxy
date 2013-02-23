@@ -1,17 +1,17 @@
 package com.topsy.jmxproxy.core;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+
 import java.io.IOException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.JsonSerializableWithType;
-import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.TypeSerializer;
-
-public class MBean implements JsonSerializableWithType {
+public class MBean implements JsonSerializable {
     private Map<String, Attribute> attributes;
 
     public MBean() {
@@ -25,12 +25,10 @@ public class MBean implements JsonSerializableWithType {
         return attribute;
     }
 
-    @Override
     public void serialize(JsonGenerator jgen, SerializerProvider sp) throws IOException, JsonProcessingException {
         buildJson(jgen);
     }
 
-    @Override
     public void serializeWithType(JsonGenerator jgen, SerializerProvider sp, TypeSerializer ts) throws IOException, JsonProcessingException {
         buildJson(jgen);
     }
