@@ -55,7 +55,7 @@ public class Host implements JsonSerializable {
     public void buildJson(JsonGenerator jgen) throws IOException, JsonProcessingException {
         jgen.writeStartObject();
         if (includeDomains) {
-            LOG.info("including domains");
+            LOG.debug("including domains");
             for (Map.Entry<String, List<String>>domainEntry : domains.entrySet()) {
                 jgen.writeObjectFieldStart(domainEntry.getKey());
                 for (String mbeanName : domainEntry.getValue()) {
@@ -64,7 +64,7 @@ public class Host implements JsonSerializable {
                 jgen.writeEndObject();
             }
         } else {
-            LOG.info("excluding domains");
+            LOG.debug("excluding domains");
             for (Map.Entry<String, MBean>mbeanEntry : mbeans.entrySet()) {
                 jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue());
             }
