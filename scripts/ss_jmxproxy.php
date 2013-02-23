@@ -4,8 +4,6 @@ $no_http_headers = true;
 
 /* display only fatal errors */
 error_reporting(E_ERROR);
-include_once(dirname(__FILE__) . "/../include/config.php");
-include_once(dirname(__FILE__) . "/../lib/snmp.php");
 
 if (!isset($called_by_script_server)) {
     error_reporting(E_ALL);
@@ -25,31 +23,21 @@ function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $extra_stats = array()
         'classes_unloaded' => array('java.lang:type=ClassLoading', 'UnloadedClassCount'),
     );
 
-    $beans = array();
     $stats = array_merge($jvm_stats, $extra_stats);
     $cntxt = stream_context_create();
 
-    stream_context_set_option($cntxt, 'http', 'timeout', 3.0);
-    foreach (array_unique(array_map(function($name) { return array_shift(explode(':', $name[0])); }, $stats)) as $domain) {
-        preg_match_all('/<a href=.+?>(.+?)<\/a>/', file_get_contents("http://{$jmxproxy}/jmxproxy/{$host}/{$domain}", FILE_USE_INCLUDE_PATH, $cntxt), $found);
-        $beans = array_merge($beans, $found[1]);
-    }
+    stream_context_set_option($cntxt, 'http', 'timeout', 10.0);
+    $beans = json_decode(file_get_contents("http://{$jmxproxy}/{$host}", FILE_USE_INCLUDE_PATH, $cntxt), true);
 
     $data = array();
     foreach ($stats as $key => $val) {
         if (is_null($val) || sizeof($val) < 2) {
             continue;
         }
-        foreach (array_filter($beans, function($name) use ($val) { return preg_match("/^{$val[0]}\$/", $name); }) as $mbean) {
-            $request = sprintf(
-                "http://%s/jmxproxy/%s/%s/%s", $jmxproxy,
-                rawurlencode($host), rawurlencode($mbean), rawurlencode($val[1])
-            );
-            $attribute = json_decode(file_get_contents($request, FILE_USE_INCLUDE_PATH, $cntxt));
-            if (is_object($attribute)) {
-                for ($i = 2; $i < sizeof($val); $i++) {
-                    $attribute = $attribute->$val[$i];
-                }
+        foreach (array_filter(array_keys($beans), function($name) use ($val) { return preg_match("/^{$val[0]}\$/", $name); }) as $mbean) {
+            $attribute = $beans[$mbean];
+            for ($i = 1; $i < sizeof($val); $i++) {
+                $attribute = $attribute[$val[$i]];
             }
             if (array_key_exists($key, $data)) {
                 $data[$key] += $attribute;
