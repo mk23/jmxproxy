@@ -1,5 +1,7 @@
 package com.topsy.jmxproxy;
 
+import com.google.common.base.Optional;
+
 import com.topsy.jmxproxy.core.Host;
 import com.topsy.jmxproxy.jmx.ConnectionManager;
 
@@ -7,6 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,13 +30,14 @@ public class JMXProxyResource {
     }
 
     @GET
-    public Host getJMXHostData(@PathParam("host") String host, @PathParam("port") int port) {
-        LOG.debug("fetching jmx data for " + host + ":" + port);
+    public Host getJMXHostData(@PathParam("host") String hostName, @PathParam("port") int port, @QueryParam("domains") Optional<Boolean> includeDomains) {
+        LOG.debug("fetching jmx data for " + hostName + ":" + port + " (domains:" + includeDomains.or(false) + ")");
 
         try {
-            return manager.getHost(host + ":" + port);
+            Host host = manager.getHost(hostName + ":" + port);
+            host.toggleDomains(includeDomains.or(false));
+            return host;
         } catch (Exception e) {
-            LOG.debug("failed parameters: " + host + ":" + port, e);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }

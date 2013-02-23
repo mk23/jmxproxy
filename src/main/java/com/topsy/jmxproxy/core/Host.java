@@ -21,6 +21,7 @@ public class Host implements JsonSerializable {
 
     private Map<String, MBean> mbeans;
     private Map<String, List<String>> domains;
+    private boolean includeDomains = false;
 
     public Host() {
         this.mbeans = new HashMap<String, MBean>();
@@ -39,24 +40,34 @@ public class Host implements JsonSerializable {
         return mbean;
     }
 
+    public void toggleDomains(boolean includeDomains) {
+        this.includeDomains = includeDomains;
+    }
+
     public void serialize(JsonGenerator jgen, SerializerProvider sp) throws IOException, JsonProcessingException {
-        LOG.info("serializing");
         buildJson(jgen);
     }
 
     public void serializeWithType(JsonGenerator jgen, SerializerProvider sp, TypeSerializer ts) throws IOException, JsonProcessingException {
-        LOG.info("serializing with type");
         buildJson(jgen);
     }
 
     public void buildJson(JsonGenerator jgen) throws IOException, JsonProcessingException {
         jgen.writeStartObject();
-        for (Map.Entry<String, List<String>>domainEntry : domains.entrySet()) {
-            jgen.writeObjectFieldStart(domainEntry.getKey());
-            for (String mbeanName : domainEntry.getValue()) {
-                jgen.writeObjectField(mbeanName, mbeans.get(mbeanName));
+        if (includeDomains) {
+            LOG.info("including domains");
+            for (Map.Entry<String, List<String>>domainEntry : domains.entrySet()) {
+                jgen.writeObjectFieldStart(domainEntry.getKey());
+                for (String mbeanName : domainEntry.getValue()) {
+                    jgen.writeObjectField(mbeanName, mbeans.get(mbeanName));
+                }
+                jgen.writeEndObject();
             }
-            jgen.writeEndObject();
+        } else {
+            LOG.info("excluding domains");
+            for (Map.Entry<String, MBean>mbeanEntry : mbeans.entrySet()) {
+                jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue());
+            }
         }
         jgen.writeEndObject();
     }
