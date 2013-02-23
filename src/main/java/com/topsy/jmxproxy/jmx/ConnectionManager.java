@@ -35,13 +35,11 @@ public class ConnectionManager implements Managed {
         return started;
     }
 
-    @Override
     public void start() {
         LOG.info("starting jmx connection manager");
         started = true;
     }
 
-    @Override
     public void stop() {
         LOG.info("stopping jmx connection manager");
         started = false;
