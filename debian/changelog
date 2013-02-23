@@ -1,3 +1,59 @@
+jmxproxy (2.0.0) precise; urgency=low
+
+  * Tagging 2.0.0
+  * [78758d5] Exit if chdir fails and chdir to the right path before
+    calling release.py.
+  * [f406557] Create release wrapper that updates pom.xml with the
+    latest version.
+  * [f7ade69] Modernize and update graphite poller script to the new
+    object format.
+  * [e3a01fc] Update cacti poller script to the new object format.
+  * [5e59940] Lower logging threshold.
+  * [04538c4] Having beans wrapped in domains is actually awkward.  Make
+    domain wrapping only enabled when the optional domains queryparam is
+    set to true.
+  * [df25d90] Upgrade to the dropwizard version of jackson.
+  * [9d0033d] Add source and target configs. Remove unneeded dependency.
+  * [a8a92b1] Interface implementations don't override methods, but
+    implement them.
+  * [66957bb] Merge branch 'dropwizard' of github.com:mk23/jmxproxy into
+    dropwizard
+  * [70383a8] Try to fix serialization.
+  * [289a7e7] Dropwizard needs a jre, not tomcat6.
+  * [aac1022] Make sure extra files are also checked in.
+  * [fd97d9c] Add a release helper script.
+  * [24a6827] Local maven2 repo is now hidden.
+  * [8c25ee6] Update/simplify debian build steps.
+  * [7806a4e] Add simple dropwizard health check.
+  * [8bcc1c5] Convert Connection Manager and Worker to support
+    dropwizard service.
+  * [b6b1e7d] Reflect new dropwizard package path and convert to new
+    jackson json serializer functionality.
+  * [0c2af1f] Convert Resource to support dropwizard service.
+  * [1d41901] Implement dropwizard service.
+  * [63f7223] Move Resource to top level to better reflect
+    functionality.
+  * [33c2604] Rename files to better reflect functionality.
+  * [036b146] Rename directory to better reflect functionality.
+  * [0ae5814] log4j test is not needed for dropwizard.
+  * [5a52954] Add dropwizard startup banner.
+  * [e6a1ea8] Sprint and log4j are not needed for dropwizard.
+  * [6fe5a8c] web.xml isn't needed for dropwizard.
+  * [6e79ad9] Prepare maven for dropwizard conversion.
+  * [7b3eeaf] Fix caching logic.
+  * [8c38b39] Clean up the manager too.
+  * [4004165] Drop support for xml and go to pure json notation using
+    jackson pojo mapping
+  * [c215a43] unneeded object
+  * [55ccbcf] tabs to spaces
+  * [a748bdf] Add MBean and Attribute to the xml/json tree.
+  * [89f489b] Fix schema URLs to new Oracle locations.
+  * [79ca031] Cosmetic property order.
+  * [c8094a0] Adding domains and mbeans to the host pojo.
+  * [229a792] Checkpoint refactor branch.
+
+ -- Max Kalika <max@topsy.com>  Fri, 22 Feb 2013 16:36:49 -0800
+
 jmxproxy (20120524.001) lucid; urgency=low
 
   * Tagging 20120524.001.
