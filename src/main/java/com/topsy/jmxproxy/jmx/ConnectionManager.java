@@ -7,6 +7,10 @@ import com.yammer.dropwizard.lifecycle.Managed;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +18,13 @@ public class ConnectionManager implements Managed {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManager.class);
 
     private Map<String, ConnectionWorker> hosts;
+    private ScheduledExecutorService purge;
+
     private boolean started = false;
 
     public ConnectionManager() {
         hosts = new HashMap<String, ConnectionWorker>();
+        purge = Executors.newSingleThreadScheduledExecutor();
     }
 
     public Host getHost(String host) throws Exception {
@@ -37,12 +44,29 @@ public class ConnectionManager implements Managed {
 
     public void start() {
         LOG.info("starting jmx connection manager");
+
+        purge.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                LOG.debug("begin expiring stale hosts");
+                synchronized (hosts) {
+                    for (Map.Entry<String, ConnectionWorker>hostEntry : hosts.entrySet()) {
+                        if (hostEntry.getValue().isExpired()) {
+                            LOG.debug("purging " + hostEntry.getKey());
+                            hosts.remove(hostEntry.getKey());
+                        }
+                    }
+                }
+                LOG.debug("end expiring stale hosts");
+            }
+        }, 1, 1, TimeUnit.MINUTES);
         started = true;
     }
 
     public void stop() {
         LOG.info("stopping jmx connection manager");
-        started = false;
+        purge.shutdown();
         hosts.clear();
+        started = false;
     }
 }
