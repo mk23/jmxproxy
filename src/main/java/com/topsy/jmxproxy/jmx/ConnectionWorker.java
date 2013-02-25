@@ -23,6 +23,7 @@ public class ConnectionWorker {
     private Host host;
     private JMXServiceURL url;
     private long fetchTime;
+    private long accessTime;
 
     public ConnectionWorker(String hostName) throws Exception {
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + "/jmxrmi");
@@ -34,7 +35,12 @@ public class ConnectionWorker {
             fetchJMXValues();
         }
 
+        accessTime = System.currentTimeMillis();
         return host;
+    }
+
+    public boolean isExpired() {
+        return System.currentTimeMillis() - accessTime > 1000 * 60 * 5;
     }
 
     private void fetchJMXValues() {
