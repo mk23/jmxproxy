@@ -1,3 +1,4 @@
 target
 *.sw*
+*.pyc
 .m2
