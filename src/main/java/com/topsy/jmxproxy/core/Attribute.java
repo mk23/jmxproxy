@@ -13,7 +13,12 @@ import java.lang.reflect.Array;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Attribute implements JsonSerializable {
+    private static final Logger LOG = LoggerFactory.getLogger(Attribute.class);
+
     private Object attributeValue;
 
     public void setAttributeValue(Object attributeValue) {
@@ -54,7 +59,14 @@ public class Attribute implements JsonSerializable {
             }
             jgen.writeEndObject();
         } else if (objectValue instanceof Number) {
-            jgen.writeNumber(((Number)objectValue).toString());
+            Double data = ((Number) objectValue).doubleValue();
+            if (data.isNaN()) {
+                jgen.writeString("NaN");
+            } else if (data.isInfinite()) {
+                jgen.writeString("Infinity");
+            } else {
+                jgen.writeNumber(((Number)objectValue).toString());
+            }
         } else if (objectValue instanceof Boolean) {
             jgen.writeBoolean((Boolean)objectValue);
         } else {
