@@ -24,9 +24,11 @@ public class JMXProxyResource {
     private static final Logger LOG = LoggerFactory.getLogger(JMXProxyResource.class);
 
     private final ConnectionManager manager;
+    private final JMXProxyServiceConfiguration config;
 
-    public JMXProxyResource(ConnectionManager manager) {
+    public JMXProxyResource(ConnectionManager manager, JMXProxyServiceConfiguration config) {
         this.manager = manager;
+        this.config = config;
     }
 
     @GET

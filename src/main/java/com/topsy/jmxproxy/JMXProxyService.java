@@ -28,7 +28,7 @@ public class JMXProxyService extends Service<JMXProxyConfiguration> {
         final ConnectionManager manager = new ConnectionManager();
 
         environment.manage(manager);
-        environment.addResource(new JMXProxyResource(manager));
+        environment.addResource(new JMXProxyResource(manager, configuration.getJMXProxyServiceConfiguration()));
         environment.addHealthCheck(new JMXProxyHealthCheck(manager));
     }
 }
