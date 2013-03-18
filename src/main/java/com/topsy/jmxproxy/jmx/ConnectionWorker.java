@@ -23,7 +23,7 @@ public class ConnectionWorker {
     private Host host;
     private JMXServiceURL url;
     private int cacheDuration;
-    private long fetchTime;
+    private long cacheTime;
     private long accessTime;
 
     public ConnectionWorker(String hostName) throws Exception {
@@ -37,8 +37,8 @@ public class ConnectionWorker {
     }
 
     public synchronized Host getHost() {
-        if (host == null || System.currentTimeMillis() - fetchTime > cacheDuration) {
-            LOG.debug("fetching new values for " + url + ": " + (System.currentTimeMillis() - fetchTime));
+        if (host == null || System.currentTimeMillis() - cacheTime > cacheDuration) {
+            LOG.debug("fetching new values for " + url + ": " + (System.currentTimeMillis() - cacheTime));
             fetchJMXValues();
         }
 
@@ -86,7 +86,7 @@ public class ConnectionWorker {
                 }
             }
 
-            fetchTime = System.currentTimeMillis();
+            cacheTime = System.currentTimeMillis();
         } catch (Exception e) {
             LOG.error("failed to connect to " + url, e);
         } finally {
