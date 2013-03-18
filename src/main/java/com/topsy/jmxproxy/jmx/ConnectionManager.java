@@ -36,11 +36,11 @@ public class ConnectionManager implements Managed {
         synchronized (hosts) {
             if (!hosts.containsKey(host)) {
                 LOG.info("creating new worker for " + host);
-                hosts.put(host, new ConnectionWorker(host, config.getCacheDuration()));
+                hosts.put(host, new ConnectionWorker(host));
             }
         }
 
-        return hosts.get(host).getHost();
+        return hosts.get(host).getHost(config.getCacheDuration());
     }
 
     public boolean isStarted() {

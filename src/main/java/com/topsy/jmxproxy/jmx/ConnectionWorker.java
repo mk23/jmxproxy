@@ -22,21 +22,18 @@ public class ConnectionWorker {
 
     private Host host;
     private JMXServiceURL url;
-    private int cacheDuration;
     private long cacheTime;
     private long accessTime;
 
     public ConnectionWorker(String hostName) throws Exception {
-        ConnectionWorker(hostName, 1000 * 60 * 5);
-    }
-
-    public ConnectionWorker(String hostName, int cacheDuration) throws Exception {
-        this.cacheDuration = cacheDuration;
-
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + "/jmxrmi");
     }
 
     public synchronized Host getHost() {
+        return getHost(1000 * 60 * 5);
+    }
+
+    public Host getHost(int cacheDuration) {
         if (host == null || System.currentTimeMillis() - cacheTime > cacheDuration) {
             LOG.debug("fetching new values for " + url + ": " + (System.currentTimeMillis() - cacheTime));
             fetchJMXValues();
