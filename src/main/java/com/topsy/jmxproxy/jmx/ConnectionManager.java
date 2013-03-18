@@ -17,12 +17,16 @@ import org.slf4j.LoggerFactory;
 public class ConnectionManager implements Managed {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManager.class);
 
+    private final JMXProxyServiceConfiguration config;
+
     private Map<String, ConnectionWorker> hosts;
     private ScheduledExecutorService purge;
 
     private boolean started = false;
 
-    public ConnectionManager() {
+    public ConnectionManager(JMXProxyServiceConfiguration config) {
+        this.config = config;
+
         hosts = new HashMap<String, ConnectionWorker>();
         purge = Executors.newSingleThreadScheduledExecutor();
     }
