@@ -72,9 +72,9 @@ Example Clients
         localhost.jvm.thread_count 36 1363021890
         localhost.jvm.thread_peak 36 1363021890
 
-    This script allows easy extensions by creating another script that imports `jmxproxy`, sets up a dictionary of desired beans, and passes it to the `jmxproxy.main()` function.  One such extenion, `hadoopy.py`, exists to demonstrate this behavior and usage:
+    This script allows easy extensions by creating another script that imports `jmxproxy`, sets up a dictionary of desired beans, and passes it to the `jmxproxy.main()` function.  One such extension, `hadoopy.py`, exists to demonstrate this behavior and usage:
 
-        $ scripts/graphite/hadoop.py --service-port 8003 --service-host hdpa301 --jmxproxy-host localhost --jmxproxy-port 8080 --service-name datanode -n # dry-run output
+        $ scripts/graphite/hadoop.py --service-port 8003 --service-host datanode001 --jmxproxy-host localhost --jmxproxy-port 8080 --service-name datanode -n # dry-run output
         datanode001.datanode.blocks_read 1839 1363022233
         datanode001.datanode.blocks_removed 1584 1363022233
         datanode001.datanode.blocks_replicated 0 1363022233
