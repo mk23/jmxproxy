@@ -12,23 +12,23 @@ public class JMXProxyServiceConfiguration {
     @JsonProperty
     private int cleanInterval = 1;
 
-    @Min(1)
-    @JsonProperty
-    private int accessExpires = 5;
-
     @Min(0)
     @JsonProperty
     private int cacheDuration = 5;
+
+    @Min(1)
+    @JsonProperty
+    private int accessDuration = 5;
 
     public int getCleanInterval() {
         return cleanInterval;
     }
 
-    public int getAccessExpires() {
-        return accessExpires;
-    }
-
     public int getCacheDuration() {
         return cacheDuration;
+    }
+
+    public int getAccessDuration() {
+        return accessDuration;
     }
 }

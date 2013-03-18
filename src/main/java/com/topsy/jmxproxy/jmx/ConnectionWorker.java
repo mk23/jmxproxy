@@ -47,7 +47,11 @@ public class ConnectionWorker {
     }
 
     public boolean isExpired() {
-        return System.currentTimeMillis() - accessTime > 1000 * 60 * 5;
+        return isExpired(1000 * 60 * 5);
+    }
+
+    public boolean isExpired(int accessDuration) {
+        return System.currentTimeMillis() - accessTime > accessDuration
     }
 
     private void fetchJMXValues() {

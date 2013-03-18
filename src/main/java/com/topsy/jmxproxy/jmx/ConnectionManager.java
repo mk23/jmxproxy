@@ -55,7 +55,7 @@ public class ConnectionManager implements Managed {
                 LOG.debug("begin expiring stale hosts");
                 synchronized (hosts) {
                     for (Map.Entry<String, ConnectionWorker>hostEntry : hosts.entrySet()) {
-                        if (hostEntry.getValue().isExpired()) {
+                        if (hostEntry.getValue().isExpired(config.getAccessDuration())) {
                             LOG.debug("purging " + hostEntry.getKey());
                             hosts.remove(hostEntry.getKey());
                         }
