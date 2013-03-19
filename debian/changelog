@@ -1,3 +1,40 @@
+jmxproxy (2.1.0) precise; urgency=low
+
+  * Tagging 2.1.0
+  * [3379cbb] Simplify cache duration config item.
+  * [e2f49f6] Fix syntax.
+  * [4bc9133] Fix missing import.
+  * [f1b667b] Fix syntax.
+  * [05ad2ea] Issue #3: Hook up access duration configuration item.
+  * [dae32f5] Rename variable for consistency.
+  * [c4743a5] Issue #3: Hook up cache duration configuration item.
+  * [c5cc852] Issue #3: Hook up cache clean interval configuration item.
+  * [778dd91] Issue #3: On second thought, configuration belongs in the
+    manager instead of the resource.
+  * [17435b7] Fix typos.
+  * [c53b2a1] Add missing file from the configuration refactor commit.
+  * [55069a0] Use sandbox release.py directly from github.
+  * [9b83cf1] Issue #3: Stub out configuration and propagate to the
+    resource.  Not hooked up anywhere yet though.
+  * [6597063] Fill out some more documentation.
+  * [44f98c9] Issue #2: Generalize graphite poller and add hadoop as an
+    extension example.
+  * [c2bc744] Issue #1: Convert Double NaN and +/-Infinity values to
+    strings to comply with json spec.
+  * [10b8f5f] Group cacti scripts into their own directory for better
+    organization.
+  * [f31770e] Add initial README.md.
+  * [dd74ccc] Add a purge thread that periodically removes stale
+    connection workers to prevent user-induced memory leaks.
+  * [a049a00] Add per-worker isExpired() method that returns true when a
+    worker hasn't been accessed for more than 5 minutes.
+  * [0df1ffd] Pass extra flags (i.e. --major/minor/patch, etc) to
+    release script.
+  * [f333109] Start on 2.0.1
+  * [c3b964e] Tagging 2.0.0
+
+ -- Max Kalika <max@topsy.com>  Tue, 19 Mar 2013 16:28:30 -0700
+
 jmxproxy (2.0.0) precise; urgency=low
 
   * Tagging 2.0.0
