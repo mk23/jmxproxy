@@ -12,18 +12,6 @@ The build is simple maven2 invocation.
     $ mvn clean package
 
 
-Execution
----------
-
-The result is a single jar file that contains all the bits necessary to start and run the server.
-
-    $ java -jar target/jmxproxy-2.0.1-SNAPSHOT.jar server
-
-A more complex example that enables the [JMX Agent](http://docs.oracle.com/javase/7/docs/technotes/guides/management/agent.html) and limits heap may look something like this:
-
-    $ java -Xmx100m -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=1123 -jar target/jmxproxy-2.0.1-SNAPSHOT.jar server
-
-
 Configuration
 -------------
 
@@ -33,7 +21,33 @@ Configuration is handled entirely by [Dropwizard](http://dropwizard.codahale.com
 
 For more complex configuration settings, create a yaml file and point to it at startup by adding it to the command-line as the last parameter.
 
-    $ java -jar target/jmxproxy-2.0.1-SNAPSHOT.jar server config.yaml
+    $ java -jar target/jmxproxy-2.1.1-SNAPSHOT.jar server config.yaml
+
+
+Execution
+---------
+
+The result is a single jar file that contains all the bits necessary to start and run the server.
+
+    $ java -jar target/jmxproxy-2.1.1-SNAPSHOT.jar server
+
+A more complex example that enables the [JMX Agent](http://docs.oracle.com/javase/7/docs/technotes/guides/management/agent.html) and limits heap may look something like this:
+
+    $ java -Xmx100m -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=1123 -jar target/jmxproxy-2.1.1-SNAPSHOT.jar server
+
+
+Usage
+-----
+
+The server responds to a standard HTTP GET request, where the URI specifies the destination JMX agent to contact.  For example, using `curl`:
+
+    $ curl http://localhost:8080/localhost:1123
+    {"java.lang:type=MemoryPool,name=PS Old Gen": ...
+
+This standard request returns dictionary where keys are the full mbean path and the value is a dictionary of all attribute key/values for that mbean.  Alternatively, a user can pass a boolean query parameter, `domains`, to group mbeans together.
+
+    $ curl 'http://localhost:8080/localhost:1123?domains=true'
+    {"java.lang":{"java.lang:type=MemoryPool,name=PS Old Gen": ...
 
 
 Limitations
@@ -105,3 +119,8 @@ Example Clients
         datanode001.datanode.reads_from_remote_client 282 1363022233
         datanode001.datanode.writes_from_local_client 50 1363022233
         datanode001.datanode.writes_from_remote_client 142 1363022233
+
+
+License
+-------
+TBD
