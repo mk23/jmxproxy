@@ -1,3 +1,54 @@
+jmxproxy (2.1.1) precise; urgency=low
+
+  * Tagging 2.1.1
+  * [5ab7220] Fix config syntax in the docs.
+  * [1f26450] Consistency in the docs.
+  * [6285bfd] Add jmxproxy configuration to the docs.
+  * [1782099] Add start script info to the docs.
+  * [47fa4e2] Cleanup example clients docs.
+  * [712a473] Issue #4: Update documentation with new authentication
+    support.
+  * [cebb664] Issue #4: close security hole that allows unauthenticated
+    access after a successful auth for a whole cache duration.
+  * [543fc59] Fix test failure.
+  * [4aa74be] Make the test a bit less idiotic.
+  * [f73cd66] Add first simple unit tests.
+  * [5d46edc] Handle null credentials object in the comparison.
+  * [5752104] Add comparison function for credentials class.
+  * [c2ca340] Add start script version processing in release.sh.
+  * [edfbff2] Merge branch 'master' of
+    git+ssh://github.com/mk23/jmxproxy
+  * [6367ab7] Add an example server start script that enables jmx with a
+    username (ro) and password (public), increases heap size, and
+    enables debug logs.
+  * [a9e8217] Issue #4: Add support for jmx authentication in the
+    resource. Return HTTP 401 when missing/invalid credentials are
+    given.  Currently there's a security hole where a successful auth
+    caches the results and any subsequent request can get data
+    regardless of credentials until the cache expires.
+  * [2fb7abf] Fix syntax.
+  * [26f4d46] Use @DefaultValue() instead of @Optional for better
+    clarity.
+  * [ef27b09] Fix class name.
+  * [b6f82dd] Issue #4: Add support for jmx authentication in the
+    manager.
+  * [1a5114d] Issue #4: Add support class for username/password
+    processing.
+  * [eca136e] Issue #4: Add support for jmx authentication in the
+    worker.
+  * [b322cc0] Fix confusion with cache timings properly this time.
+  * [c305248] Fix confusion with cache timings.
+  * [1a6597a] Fix compile warning.
+  * [8f94655] Move synchronization to the correct function.
+  * [a3ed5e4] Upgrade to dropwizard 0.6.2.
+  * [3503d63] Documentation updates.
+  * [e291fd9] Start on 2.1.1.
+  * [cd09c36] Merge branch 'master' of
+    git+ssh://github.com/mk23/jmxproxy
+  * [f36d98d] Update docs at release time too.
+
+ -- Max Kalika <max@topsy.com>  Fri, 22 Mar 2013 15:34:49 -0700
+
 jmxproxy (2.1.0) precise; urgency=low
 
   * Tagging 2.1.0

@@ -7,4 +7,4 @@ exec java \
 	-D'com.sun.management.jmxremote.ssl=false' \
 	-D'com.sun.management.jmxremote.access.file=access.txt' \
 	-D'com.sun.management.jmxremote.password.file=passwd.txt' \
-	-jar ../../target/jmxproxy-2.1.1-SNAPSHOT.jar server jmxproxy.yml
+	-jar ../../target/jmxproxy-2.1.1.jar server jmxproxy.yml
