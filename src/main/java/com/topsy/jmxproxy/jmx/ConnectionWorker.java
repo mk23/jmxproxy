@@ -29,11 +29,11 @@ public class ConnectionWorker {
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + "/jmxrmi");
     }
 
-    public synchronized Host getHost() {
+    public Host getHost() {
         return getHost(1000 * 60 * 5);
     }
 
-    public Host getHost(int cacheDuration) {
+    public synchronized Host getHost(int cacheDuration) {
         if (host == null || System.currentTimeMillis() - cacheTime > cacheDuration) {
             LOG.debug("fetching new values for " + url + ": " + (System.currentTimeMillis() - cacheTime));
             fetchJMXValues();
