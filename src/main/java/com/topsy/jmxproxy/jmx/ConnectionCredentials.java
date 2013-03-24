@@ -30,6 +30,6 @@ public class ConnectionCredentials {
     public boolean equals(Object peer) {
         ConnectionCredentials auth = (ConnectionCredentials) peer;
 
-        return username == auth.getUsername() && password == auth.getPassword();
+        return auth != null && username == auth.getUsername() && password == auth.getPassword();
     }
 }
