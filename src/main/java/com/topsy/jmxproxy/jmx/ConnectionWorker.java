@@ -30,12 +30,12 @@ public class ConnectionWorker {
     }
 
     public Host getHost() {
-        return getHost(1000 * 60 * 5);
+        return getHost(5);
     }
 
     public synchronized Host getHost(int cacheDuration) {
-        if (host == null || System.currentTimeMillis() - cacheTime > cacheDuration) {
-            LOG.debug("fetching new values for " + url + ": " + (System.currentTimeMillis() - cacheTime));
+        if (host == null || System.currentTimeMillis() - cacheTime * 60 * 1000 > cacheDuration) {
+            LOG.debug("fetching new values for " + url);
             fetchJMXValues();
         }
 
@@ -44,11 +44,11 @@ public class ConnectionWorker {
     }
 
     public boolean isExpired() {
-        return isExpired(1000 * 60 * 5);
+        return isExpired(5);
     }
 
     public boolean isExpired(int accessDuration) {
-        return System.currentTimeMillis() - accessTime > accessDuration;
+        return System.currentTimeMillis() - accessTime * 60 * 1000 > accessDuration;
     }
 
     private void fetchJMXValues() {
