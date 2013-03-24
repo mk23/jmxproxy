@@ -25,4 +25,11 @@ public class ConnectionCredentials {
     public String getPassword() {
         return password;
     }
+
+    @Override
+    public boolean equals(Object peer) {
+        ConnectionCredentials auth = (ConnectionCredentials) peer;
+
+        return username == auth.getUsername() && password == auth.getPassword();
+    }
 }
