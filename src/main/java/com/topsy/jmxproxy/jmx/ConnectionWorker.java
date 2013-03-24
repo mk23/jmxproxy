@@ -32,19 +32,19 @@ public class ConnectionWorker {
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + "/jmxrmi");
     }
 
-    public Host getHost() {
+    public Host getHost() throws SecurityException {
         return getHost(5, null);
     }
 
-    public Host getHost(ConnectionCredentials auth) {
+    public Host getHost(ConnectionCredentials auth) throws SecurityException {
         return getHost(5, auth);
     }
 
-    public Host getHost(int cacheDuration) {
+    public Host getHost(int cacheDuration) throws SecurityException {
         return getHost(cacheDuration, null);
     }
 
-    public synchronized Host getHost(int cacheDuration, ConnectionCredentials auth) {
+    public synchronized Host getHost(int cacheDuration, ConnectionCredentials auth) throws SecurityException {
         if (host == null || System.currentTimeMillis() - cacheTime > cacheDuration * 60 * 1000) {
             LOG.debug("fetching new values for " + url);
             fetchJMXValues(auth);
@@ -62,7 +62,7 @@ public class ConnectionWorker {
         return System.currentTimeMillis() - accessTime > accessDuration * 60 * 1000;
     }
 
-    private void fetchJMXValues(ConnectionCredentials auth) {
+    private void fetchJMXValues(ConnectionCredentials auth) throws SecurityException {
         JMXConnector connection = null;
         MBeanServerConnection server = null;
         Map<String, Object> environment = null;
@@ -81,32 +81,46 @@ public class ConnectionWorker {
             for (String domainName : server.getDomains()) {
                 LOG.debug("discovered domain " + domainName);
 
-                for (ObjectName mbeanName : server.queryNames(new ObjectName(domainName + ":*"), null)) {
-                    LOG.debug("discovered mbean " + mbeanName);
+                try {
+                    for (ObjectName mbeanName : server.queryNames(new ObjectName(domainName + ":*"), null)) {
+                        LOG.debug("discovered mbean " + mbeanName);
 
-                    MBean mbean = host.addMBean(domainName, mbeanName.toString());
-                    for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {
-                        if (attributeObject.isReadable()) {
-                            try {
-                                Attribute attribute = mbean.addAttribute(attributeObject.getName());
-                                attribute.setAttributeValue(server.getAttribute(mbeanName, attributeObject.getName()));
-                            } catch (java.rmi.UnmarshalException e) {
-                                LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                            } catch (javax.management.AttributeNotFoundException e) {
-                                LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                            } catch (javax.management.RuntimeMBeanException e) {
-                                LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                            } catch (java.lang.NullPointerException e) {
-                                LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                        MBean mbean = host.addMBean(domainName, mbeanName.toString());
+                        try {
+                            for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {
+                                if (attributeObject.isReadable()) {
+                                    try {
+                                        Attribute attribute = mbean.addAttribute(attributeObject.getName());
+                                        attribute.setAttributeValue(server.getAttribute(mbeanName, attributeObject.getName()));
+                                    } catch (java.lang.NullPointerException e) {
+                                        LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                    } catch (java.rmi.UnmarshalException e) {
+                                        LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                    } catch (javax.management.AttributeNotFoundException e) {
+                                        LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                    } catch (javax.management.MBeanException e) {
+                                        LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                    } catch (javax.management.RuntimeMBeanException e) {
+                                        LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                    }
+                                }
                             }
+                        } catch (javax.management.InstanceNotFoundException e) {
+                            LOG.error("failed to get mbean info for " + mbeanName, e);
+                        } catch (javax.management.IntrospectionException e) {
+                            LOG.error("failed to get mbean info for " + mbeanName, e);
+                        } catch (javax.management.ReflectionException e) {
+                            LOG.error("failed to get mbean info for " + mbeanName, e);
                         }
                     }
+                } catch (javax.management.MalformedObjectNameException e) {
+                    LOG.error("invalid object name: " + domainName + ":*", e);
                 }
             }
 
             cacheTime = System.currentTimeMillis();
-        } catch (Exception e) {
-            LOG.error("failed to connect to " + url, e);
+        } catch (IOException e) {
+            LOG.error("communication failure with " + url, e);
         } finally {
             if (connection != null) {
                 try {
