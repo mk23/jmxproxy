@@ -23,7 +23,8 @@ import org.slf4j.LoggerFactory;
 public class ConnectionWorker {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionWorker.class);
 
-    private Host host;
+    private ConnectionCredentials auth = null;
+    private Host host = null;
     private JMXServiceURL url;
     private long cacheTime;
     private long accessTime;
@@ -45,8 +46,17 @@ public class ConnectionWorker {
     }
 
     public synchronized Host getHost(int cacheDuration, ConnectionCredentials auth) throws SecurityException {
-        if (host == null || System.currentTimeMillis() - cacheTime > cacheDuration * 60 * 1000) {
-            LOG.debug("fetching new values for " + url);
+        String reason = null;
+        if (host == null) {
+            reason = "new host requested";
+        } else if (auth != null && !auth.equals(this.auth) || this.auth != null && !this.auth.equals(auth)) {
+            reason = "credentials changed";
+        } else if (System.currentTimeMillis() - cacheTime > cacheDuration * 60 * 1000) {
+            reason = "cache expired";
+        }
+
+        if (reason != null) {
+            LOG.info("fetching new values for " + url + " because " + reason);
             fetchJMXValues(auth);
         }
 
@@ -67,6 +77,7 @@ public class ConnectionWorker {
         MBeanServerConnection server = null;
         Map<String, Object> environment = null;
 
+        this.auth = auth;
         if (auth != null) {
             environment = new HashMap<String, Object>();
             environment.put(JMXConnector.CREDENTIALS, new String[]{auth.getUsername(), auth.getPassword()});
