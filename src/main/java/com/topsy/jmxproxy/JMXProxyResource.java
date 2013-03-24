@@ -31,7 +31,7 @@ public class JMXProxyResource {
     }
 
     @GET
-    public Host getJMXHostData(@PathParam("host") String hostName, @PathParam("port") int port, @QueryParam("domains") @DefaultValue("false") domains) {
+    public Host getJMXHostData(@PathParam("host") String hostName, @PathParam("port") int port, @QueryParam("domains") @DefaultValue("false") BooleanParam domains) {
         LOG.debug("fetching jmx data for " + hostName + ":" + port + " (domains:" + domains.get() + ")");
 
         try {
