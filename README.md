@@ -49,14 +49,19 @@ This standard request returns dictionary where keys are the full mbean path and 
     $ curl 'http://localhost:8080/localhost:1123?domains=true'
     {"java.lang":{"java.lang:type=MemoryPool,name=PS Old Gen": ...
 
+For jmx agent requiring authentication, `jmxproxy` allows the user to submit credentials via `HTTP POST` as either `application/json` or `application/x-www-form-urlencoded` content type:
+
+    $ curl -d'username=ro&password=public' 'http://localhost:8080/localhost:1123'
+    {"java.lang:type=MemoryPool,name=PS Old Gen": ...
+
+    $ curl -d'{"username":"ro","password":"public"}' -H'Content-Type: application/json' 'http://localhost:8080/localhost:1123'
+    {"java.lang:type=MemoryPool,name=PS Old Gen": ...
+
 
 Limitations
 -----------
 
-* Agent authentication is currently not supported.  Remote JVM must be started with `-Dcom.sun.management.jmxremote.authentication=false`.
 * SSL agent connections are currently not supported.  Remote JVM must be started with `-Dcom.sun.management.jmxremote.ssl=false`.
-
-These may be implemented in future versions.
 
 
 Example Clients
