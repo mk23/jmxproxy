@@ -33,6 +33,10 @@ public class ConnectionManager implements Managed {
     }
 
     public Host getHost(String host) throws Exception {
+        return getHost(host, null);
+    }
+
+    public Host getHost(String host, ConnectionCredential auth) throws Exception {
         synchronized (hosts) {
             if (!hosts.containsKey(host)) {
                 LOG.info("creating new worker for " + host);
@@ -40,7 +44,7 @@ public class ConnectionManager implements Managed {
             }
         }
 
-        return hosts.get(host).getHost(config.getCacheDuration());
+        return hosts.get(host).getHost(config.getCacheDuration(), auth);
     }
 
     public boolean isStarted() {
