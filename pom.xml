@@ -29,6 +29,9 @@
           <target>1.6</target>
           <encoding>UTF-8</encoding>
           <showDeprecation>true</showDeprecation>
+          <compilerArguments>
+            <bootclasspath>${java.home}/lib/rt.jar</bootclasspath>
+          </compilerArguments>
         </configuration>
       </plugin>
       <plugin>
