@@ -48,11 +48,11 @@ The result is a single jar file that contains all the bits necessary to start an
 
     $ java -jar target/jmxproxy-2.1.1-SNAPSHOT.jar server
 
-A more complex example that enables the [JMX Agent](http://docs.oracle.com/javase/7/docs/technotes/guides/management/agent.html) and limits heap may look something like this:
+A more complex example that enables the [JMX](http://docs.oracle.com/javase/7/docs/technotes/guides/management/agent.html) agent and limits heap may look something like this:
 
     $ java -Xmx100m -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=1123 -jar target/jmxproxy-2.1.1-SNAPSHOT.jar server
 
-An example startup script exists that will launch the server listening on port 8080 and enable authenticated jmx agent in the jvm on port 1123:
+An example startup script exists that will launch the server listening on port 8080 and enable authenticated JMX agent in the jvm on port 1123:
 
     $ scripts/server/start.sh
     INFO  [2013-03-24 23:25:01,705] com.yammer.dropwizard.cli.ServerCommand: Starting jmxproxy
@@ -78,7 +78,7 @@ This standard request returns dictionary where keys are the full mbean path and 
     $ curl 'http://localhost:8080/localhost:1123?domains=true'
     {"java.lang":{"java.lang:type=MemoryPool,name=PS Old Gen": ...
 
-For jmx agent requiring authentication, jmxproxy allows the user to submit credentials via HTTP POST as either `application/json` or `application/x-www-form-urlencoded` content type:
+For JMX agents that require authentication, jmxproxy allows the user to submit credentials via HTTP POST as either `application/json` or `application/x-www-form-urlencoded` content type:
 
     $ curl -d'username=ro&password=public' 'http://localhost:8080/localhost:1123'
     {"java.lang:type=MemoryPool,name=PS Old Gen": ...
