@@ -34,7 +34,7 @@ public class ConnectionWorker {
     }
 
     public synchronized Host getHost(int cacheDuration) {
-        if (host == null || System.currentTimeMillis() - cacheTime * 60 * 1000 > cacheDuration) {
+        if (host == null || System.currentTimeMillis() - cacheTime > cacheDuration * 60 * 1000) {
             LOG.debug("fetching new values for " + url);
             fetchJMXValues();
         }
@@ -48,7 +48,7 @@ public class ConnectionWorker {
     }
 
     public boolean isExpired(int accessDuration) {
-        return System.currentTimeMillis() - accessTime * 60 * 1000 > accessDuration;
+        return System.currentTimeMillis() - accessTime > accessDuration * 60 * 1000;
     }
 
     private void fetchJMXValues() {
