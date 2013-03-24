@@ -6,6 +6,9 @@ import com.topsy.jmxproxy.core.MBean;
 
 import java.io.IOException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -30,13 +33,21 @@ public class ConnectionWorker {
     }
 
     public Host getHost() {
-        return getHost(5);
+        return getHost(5, null);
     }
 
-    public synchronized Host getHost(int cacheDuration) {
+    public Host getHost(ConnectionCredentials auth) {
+        return getHost(5, auth);
+    }
+
+    public Host getHost(int cacheDuration) {
+        return getHost(cacheDuration, null);
+    }
+
+    public synchronized Host getHost(int cacheDuration, ConnectionCredentials auth) {
         if (host == null || System.currentTimeMillis() - cacheTime > cacheDuration * 60 * 1000) {
             LOG.debug("fetching new values for " + url);
-            fetchJMXValues();
+            fetchJMXValues(auth);
         }
 
         accessTime = System.currentTimeMillis();
@@ -51,12 +62,18 @@ public class ConnectionWorker {
         return System.currentTimeMillis() - accessTime > accessDuration * 60 * 1000;
     }
 
-    private void fetchJMXValues() {
+    private void fetchJMXValues(ConnectionCredentials auth) {
         JMXConnector connection = null;
         MBeanServerConnection server = null;
+        Map<String, Object> environment = null;
+
+        if (auth != null) {
+            environment = new HashMap<String, Object>();
+            environment.put(JMXConnector.CREDENTIALS, new String[]{auth.getUsername(), auth.getPassword()});
+        }
 
         try {
-            connection = JMXConnectorFactory.connect(url, null);
+            connection = JMXConnectorFactory.connect(url, environment);
             server = connection.getMBeanServerConnection();
             LOG.debug("connected to mbean server " + url);
 
