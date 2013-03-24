@@ -35,6 +35,18 @@ A more complex example that enables the [JMX Agent](http://docs.oracle.com/javas
 
     $ java -Xmx100m -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=1123 -jar target/jmxproxy-2.1.1-SNAPSHOT.jar server
 
+An example startup script exists that will launch the server listening on port 8080 and enable authenticated jmx agent in the jvm on port 1123:
+
+    $ scripts/server/start.sh
+    INFO  [2013-03-24 23:25:01,705] com.yammer.dropwizard.cli.ServerCommand: Starting jmxproxy
+       __     __    __     __  __     ______   ______     ______     __  __     __  __    
+      /\ \   /\ "-./  \   /\_\_\_\   /\  == \ /\  == \   /\  __ \   /\_\_\_\   /\ \_\ \   
+     _\_\ \  \ \ \-./\ \  \/_/\_\/_  \ \  _-/ \ \  __<   \ \ \/\ \  \/_/\_\/_  \ \____ \  
+    /\_____\  \ \_\ \ \_\   /\_\/\_\  \ \_\    \ \_\ \_\  \ \_____\   /\_\/\_\  \/\_____\ 
+    \/_____/   \/_/  \/_/   \/_/\/_/   \/_/     \/_/ /_/   \/_____/   \/_/\/_/   \/_____/ 
+    ...
+
+
 
 Usage
 -----
@@ -49,7 +61,7 @@ This standard request returns dictionary where keys are the full mbean path and 
     $ curl 'http://localhost:8080/localhost:1123?domains=true'
     {"java.lang":{"java.lang:type=MemoryPool,name=PS Old Gen": ...
 
-For jmx agent requiring authentication, `jmxproxy` allows the user to submit credentials via `HTTP POST` as either `application/json` or `application/x-www-form-urlencoded` content type:
+For jmx agent requiring authentication, jmxproxy allows the user to submit credentials via HTTP POST as either `application/json` or `application/x-www-form-urlencoded` content type:
 
     $ curl -d'username=ro&password=public' 'http://localhost:8080/localhost:1123'
     {"java.lang:type=MemoryPool,name=PS Old Gen": ...
@@ -82,6 +94,7 @@ This plugin allows easy extensions by creating another PHP file that includes `s
     thread_count:165 thread_peak:593 memory_heap_used:158213848 memory_heap_max:1908932608 gc_count:27465 classes_loaded:2717 classes_total:2775 classes_unloaded:58 ds_capacity:2869079572480 ds_remaining:1665482752 ds_used:2750974428881 ds_failed:0 blocks_read:1230 blocks_removed:167 blocks_replicated:0 blocks_verified:28 blocks_written:133 bytes_read:222298772 bytes_written:8175757632 reads_from_local_client:1165 writes_from_local_client:36 reads_from_remote_client:65 writes_from_remote_client:97 ops_block_copy:0 ops_block_read:1230 ops_block_write:133 ops_block_replace:0 ops_block_checksum:0 ops_block_reports:0 ops_heartbeat:100
 
 ### [Graphite](http://graphite.wikidot.com) Poller Script
+
     scripts/graphite/jmxproxy.py [-h] [--service-host SERVICE_HOST] --service-port
                                  SERVICE_PORT [--graphite-key GRAPHITE_KEY]
                                  [--graphite-host GRAPHITE_HOST]
