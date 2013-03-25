@@ -25,20 +25,20 @@ For more complex configuration settings, create a yaml file and point to it at s
 
 JMXProxy itself has the following configuration parameters:
 
-    ```yaml
-    jmxproxy:
-        # how often (in minutes) for the cleaner thread to
-        # wake up to purge unaccessed hosts
-        clean_interval: 1
+```yaml
+jmxproxy:
+    # how often (in minutes) for the cleaner thread to
+    # wake up to purge unaccessed hosts
+    clean_interval: 1
 
-        # how long to keep unaccessed hosts before purging
-        # by the cleaner thread
-        access_duration: 5
+    # how long to keep unaccessed hosts before purging
+    # by the cleaner thread
+    access_duration: 5
 
-        # how long to cache JMX attribute values before
-        # reconnecting to the agent and pulling new data
-        cache_duration: 5
-    ```
+    # how long to cache JMX attribute values before
+    # reconnecting to the agent and pulling new data
+    cache_duration: 5
+```
 
 
 Execution
