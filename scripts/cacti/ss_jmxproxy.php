@@ -34,10 +34,10 @@ function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $extra_stats = array()
         if (is_null($val) || sizeof($val) < 2) {
             continue;
         }
-        foreach (array_filter(array_keys($beans), function($name) use ($val) { return preg_match("/^{$val[0]}\$/", $name); }) as $mbean) {
+        foreach (preg_grep("/^{$val[0]}\$/i", array_keys($beans)) as $mbean) {
             $attribute = $beans[$mbean];
-            for ($i = 1; $i < sizeof($val); $i++) {
-                $attribute = $attribute[$val[$i]];
+            foreach (array_slice($val, 1) as $part) {
+                $attribute = $attribute[array_shift(preg_grep("/^{$part}\$/i", array_keys($attribute)))];
             }
             if (array_key_exists($key, $data)) {
                 $data[$key] += $attribute;
