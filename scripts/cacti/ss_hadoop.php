@@ -72,7 +72,7 @@ function ss_hadoop($host, $type, $jmxproxy = 'localhost:8080') {
         'packets_received'     => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=(Leader|Follower)', 'PacketsReceived'),
         'packets_sent'         => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=(Leader|Follower)', 'PacketsSent'),
         'outstanding_requests' => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=(Leader|Follower)', 'OutstandingRequests'),
-        'avg_request_latency' => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=(Leader|Follower)', 'AvgRequestLatency'),
+        'avg_request_latency'  => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=(Leader|Follower)', 'AvgRequestLatency'),
     );
 
     return ss_jmxproxy($host, $jmxproxy, $hadoop_stats[$type]);
