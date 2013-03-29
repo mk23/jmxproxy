@@ -7,6 +7,6 @@ Standards-Version: 3.8.3
 
 Package: jmxproxy
 Architecture: any
-Depends: default-jre
+Depends: java-runtime
 Description: Topsy jmxproxy
  Topsy jmxproxy
