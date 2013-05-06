@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,6 @@ public class Host implements JsonSerializable {
 
     private Map<String, MBean> mbeans;
     private Map<String, List<String>> domains;
-    private boolean includeDomains = false;
 
     public Host() {
         this.mbeans = new HashMap<String, MBean>();
@@ -40,8 +40,8 @@ public class Host implements JsonSerializable {
         return mbean;
     }
 
-    public void toggleDomains(boolean includeDomains) {
-        this.includeDomains = includeDomains;
+    public Set<String> getDomains() {
+        return domains.keySet();
     }
 
     public void serialize(JsonGenerator jgen, SerializerProvider sp) throws IOException, JsonProcessingException {
@@ -54,20 +54,12 @@ public class Host implements JsonSerializable {
 
     public void buildJson(JsonGenerator jgen) throws IOException, JsonProcessingException {
         jgen.writeStartObject();
-        if (includeDomains) {
-            LOG.debug("including domains");
-            for (Map.Entry<String, List<String>>domainEntry : domains.entrySet()) {
-                jgen.writeObjectFieldStart(domainEntry.getKey());
-                for (String mbeanName : domainEntry.getValue()) {
-                    jgen.writeObjectField(mbeanName, mbeans.get(mbeanName));
-                }
-                jgen.writeEndObject();
+        for (Map.Entry<String, List<String>>domainEntry : domains.entrySet()) {
+            jgen.writeObjectFieldStart(domainEntry.getKey());
+            for (String mbeanName : domainEntry.getValue()) {
+                jgen.writeObjectField(mbeanName, mbeans.get(mbeanName));
             }
-        } else {
-            LOG.debug("excluding domains");
-            for (Map.Entry<String, MBean>mbeanEntry : mbeans.entrySet()) {
-                jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue());
-            }
+            jgen.writeEndObject();
         }
         jgen.writeEndObject();
     }

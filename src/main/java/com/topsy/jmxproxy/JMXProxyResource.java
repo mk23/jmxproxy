@@ -39,33 +39,30 @@ public class JMXProxyResource {
     }
 
     @GET
-    public Host getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @QueryParam("full") @DefaultValue("true") BooleanParam full) {
+    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @QueryParam("full") @DefaultValue("true") BooleanParam full) {
         LOG.debug("fetching jmx data for " + host + ":" + port + " (full:" + full.get() + ")");
         return getJMXHost(host, port, full.get(), null);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Host getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @FormParam("username") String username, @FormParam("password") String password, @QueryParam("full") @DefaultValue("false") BooleanParam full) {
+    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @FormParam("username") String username, @FormParam("password") String password, @QueryParam("full") @DefaultValue("false") BooleanParam full) {
         LOG.debug("fetching jmx data for " + username + "@" + host + ":" + port + " (full:" + full.get() + ")");
         return getJMXHost(host, port, full.get(), new ConnectionCredentials(username, password));
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Host getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @QueryParam("full") @DefaultValue("false") BooleanParam full, @Valid ConnectionCredentials auth) {
+    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @QueryParam("full") @DefaultValue("false") BooleanParam full, @Valid ConnectionCredentials auth) {
         LOG.debug("fetching jmx data for " + auth.getUsername() + "@" + host + ":" + port + " (full:" + full.get() + ")");
 
         return getJMXHost(host, port, full.get(), auth);
     }
 
-    private Host getJMXHost(String hostName, int port, boolean full, ConnectionCredentials auth) {
+    private Response getJMXHost(String hostName, int port, boolean full, ConnectionCredentials auth) {
         try {
             Host host = manager.getHost(hostName + ":" + port, auth);
-            if (full) {
-                return host;
-            }
-            return null; // temporary
+            return Response.ok(full ? host : host.getDomains()).build();
         } catch (java.lang.SecurityException e) {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         } catch (Exception e) {
