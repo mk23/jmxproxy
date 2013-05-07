@@ -131,6 +131,7 @@ public class ConnectionWorker {
 
             cacheTime = System.currentTimeMillis();
         } catch (IOException e) {
+            host = null;
             LOG.error("communication failure with " + url, e);
         } finally {
             if (connection != null) {
