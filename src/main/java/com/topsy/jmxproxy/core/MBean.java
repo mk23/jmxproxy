@@ -10,12 +10,13 @@ import java.io.IOException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class MBean implements JsonSerializable {
     private Map<String, Attribute> attributes;
 
     public MBean() {
-        this.attributes = new HashMap<String, Attribute>();
+        attributes = new HashMap<String, Attribute>();
     }
 
     public Attribute addAttribute(String attributeName) {
@@ -23,6 +24,14 @@ public class MBean implements JsonSerializable {
         attributes.put(attributeName, attribute);
 
         return attribute;
+    }
+
+    public Set<String> getAttributes() {
+        return attributes.keySet();
+    }
+
+    public Attribute getAttribute(String attribute) {
+        return attributes.get(attribute);
     }
 
     public void serialize(JsonGenerator jgen, SerializerProvider sp) throws IOException, JsonProcessingException {
