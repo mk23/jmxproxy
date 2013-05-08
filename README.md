@@ -74,50 +74,50 @@ JMXProxy provides fine-grained access to MBeans exposed by a target JVM.  Client
 
 1. Get the list of domains available on a target JVM
 
-    $ curl http://localhost:8080/localhost:1123
-    [ "java.lang", ...
+        $ curl -s http://localhost:8080/localhost:1123
+        [ "java.lang", ...
 
 2. Get the dictionary of all mbeans, attributes, and values available on a target JVM
 
-    $ curl http://localhost:8080/localhost:1123?full=true
-    {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
+        $ curl -s http://localhost:8080/localhost:1123?full=true
+        {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
 
 3. Get the list of mbeans available for a specific domain on a target JVM
 
-    $ curl http://localhost:8080/localhost:1123/java.lang
-    [ "java.lang:type=OperatingSystem", ...
+        $ curl -s http://localhost:8080/localhost:1123/java.lang
+        [ "java.lang:type=OperatingSystem", ...
 
 4. Get the dictionary of all mbeans, attributes, and values available for a specific domain on a target JVM
 
-    $ curl http://localhost:8080/localhost:1123/java.lang?full=true
-    {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
+        $ curl -s http://localhost:8080/localhost:1123/java.lang?full=true
+        {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
 
 5. Get the list of attributes available for a specific mbean on a target JVM
 
-    $ curl http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem
-    [ "Name", "Arch", ...
+        $ curl -s http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem
+        [ "Name", "Arch", ...
 
 6. Get the dictionary of all attributes and values available for a specific mbean on a target JVM
 
-    $ curl http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem?full=true
-    {"name": "Mac OS X", "arch": "x86_64" ...
+        $ curl -s http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem?full=true
+        {"name": "Mac OS X", "arch": "x86_64" ...
 
 7. Get the attribute value available for a specific mbean on a target JVM
 
-    $ curl http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem/Name
-    "Mac OS X"
+        $ curl -s http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem/Name
+        "Mac OS X"
 
 For JMX agents that require authentication, JMXProxy allows clients to submit credentials via HTTP POST as either `application/json` or `application/x-www-form-urlencoded` content-type:
 
 1. Get the list of domains available on a target JVM with form-urlencoded credentials
 
-    $ curl -d'username=ro&password=public' 'http://localhost:8080/localhost:1123?full=true'
-    {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
+        $ curl -s -d'username=ro&password=public' 'http://localhost:8080/localhost:1123?full=true'
+        {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
 
 2. Get the list of domains available on a target JVM with form-urlencoded credentials
 
-    $ curl -d'{"username":"ro","password":"public"}' -H'Content-Type: application/json' 'http://localhost:8080/localhost:1123?full=true'
-    {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
+        $ curl -s -d'{"username":"ro","password":"public"}' -H'Content-Type: application/json' 'http://localhost:8080/localhost:1123?full=true'
+        {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
 
 
 Limitations
