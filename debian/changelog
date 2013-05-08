@@ -1,3 +1,39 @@
+jmxproxy (2.2.0) precise; urgency=low
+
+  * Tagging 2.2.0
+  * [d7c04fa] Fix typo in the docs.
+  * [61500a1] Automatically commit changelog and tag when running
+    release.sh.
+  * [88e3da0] Issue #8: Request the full mbean dictionary and add
+    support authenticated jmx agents in the graphite script.
+  * [b913a7e] Path consistency for the cacti script in the doc.
+  * [de2c1f4] Fix graphite poller help labels.
+  * [b5f8244] Issue #8: Request the full mbean dictionary and add
+    support authenticated jmx agents in the cacti script.
+  * [4cc5ccf] Issue #6: Update documentation for targetted URIs.
+  * [453c70f] Fix critical attribute fetching bug.
+  * [7e7e20d] Issue #7: Add tests for the ConfigurationManager.
+  * [fadd6ea] Issue #7: Add jmx support for the jvm running tests.
+  * [adcd91a] Issue #6: Add support for url targetting domains, mbeans,
+    and attributes.
+  * [acdd69c] Don't wrap mbeans into domains in the json.
+  * [d806f18] If jmx connection fails, destroy the host object.
+  * [2f978b7] Add utility script for pretty-printing json.
+  * [da1a669] Issue #6: Return a list of domains for a bare host:port
+    requrest if full != true.
+  * [dc8c388] Issue #6: Drop domains query param in favor of a full
+    param that will retreive the whole host object if requested or just
+    a list of domains otherwise.
+  * [93744b5] Fix package dependency.
+  * [45b6801] Whitespace.
+  * [7fe68ca] Support hadoop 1.0 / cdh4 stats.
+  * [106f2be] Treat the attribute name as a regex.
+  * [bd141fe] Add --no-dch flag to skip updating debian changelog.
+    Useful for creating in-progress/snapshot versions.
+  * [417e3fe] Start on 2.1.2.
+
+ -- Max Kalika <max@topsy.com>  Tue, 07 May 2013 21:18:40 -0700
+
 jmxproxy (2.1.1) precise; urgency=low
 
   * Tagging 2.1.1
