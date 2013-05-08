@@ -139,6 +139,7 @@ The script defaults to using `localhost:8080` as the JMXProxy address.  For exam
     thread_count:35 thread_peak:35 memory_heap_used:6763352 memory_heap_max:101384192 gc_count:19 classes_loaded:3679 classes_total:3679 classes_unloaded:0
 
 It is also possible to supply JMX credentials and a remote JMXProxy to use:
+
     $ php -q scripts/cacti/ss_jmxproxy.php localhost:1123 ro:public localhost:8080
     thread_count:35 thread_peak:35 memory_heap_used:6763352 memory_heap_max:101384192 gc_count:19 classes_loaded:3679 classes_total:3679 classes_unloaded:0
 
