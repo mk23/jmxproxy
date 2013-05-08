@@ -11,7 +11,7 @@ if (!isset($called_by_script_server)) {
     echo call_user_func_array($self, $_SERVER["argv"]), "\n";
 }
 
-function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $extra_stats = array()) {
+function ss_jmxproxy($host, $auth = '', $jmxproxy = 'localhost:8080', $extra_stats = array()) {
     $jvm_stats = array(
         'thread_count' => array('java.lang:type=Threading', 'ThreadCount'),
         'thread_peak' => array('java.lang:type=Threading', 'PeakThreadCount'),
@@ -24,10 +24,23 @@ function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $extra_stats = array()
     );
 
     $stats = array_merge($jvm_stats, $extra_stats);
-    $cntxt = stream_context_create();
+    if (!empty($auth)) {
+        $cntxt = stream_context_create(array(
+            'http' => array(
+                'method'  => 'POST',
+                'header'  => 'Content-type: application/x-www-form-urlencoded',
+                'content' => http_build_query(array(
+                    'username' => urldecode(array_shift(explode(':', $auth))),
+                    'password' => urldecode(array_pop(explode(':', $auth))),
+                )),
+            ),
+        ));
+    } else {
+        $cntxt = stream_context_create();
+    }
 
     stream_context_set_option($cntxt, 'http', 'timeout', 10.0);
-    $beans = json_decode(file_get_contents("http://{$jmxproxy}/{$host}", FILE_USE_INCLUDE_PATH, $cntxt), true);
+    $beans = json_decode(file_get_contents("http://{$jmxproxy}/{$host}?full=true", FILE_USE_INCLUDE_PATH, $cntxt), true);
 
     $data = array();
     foreach ($stats as $key => $val) {
