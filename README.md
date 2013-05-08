@@ -148,7 +148,8 @@ Likewise, JMX credentials and remote JMXProxy address are also supported:
 ### [Graphite](http://graphite.wikidot.com) Poller Script
 
     scripts/graphite/jmxproxy.py [-h] [--service-host SERVICE_HOST] --service-port
-                                 SERVICE_PORT [--graphite-key GRAPHITE_KEY]
+                                 SERVICE_PORT [--service-auth SERVICE_AUTH]
+                                 [--graphite-key GRAPHITE_KEY]
                                  [--graphite-host GRAPHITE_HOST]
                                  [--graphite-port GRAPHITE_PORT]
                                  [--jmxproxy-host JMXPROXY_HOST]

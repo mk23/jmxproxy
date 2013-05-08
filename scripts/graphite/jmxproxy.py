@@ -5,6 +5,7 @@ import json
 import re
 import socket
 import time
+import urllib
 import urllib2
 
 mbeans = {
@@ -23,6 +24,8 @@ parser.add_argument('--service-host', default=socket.gethostname(),
                     help='jvm jmx agent service host')
 parser.add_argument('--service-port', type=int, required=True,
                     help='jvm jmx agent service port')
+parser.add_argument('--service-auth',
+                    help='jvm jmx agent service auth as username:password')
 parser.add_argument('--graphite-key',
                     help='graphite key prefix')
 parser.add_argument('--graphite-host', default='localhost',
@@ -36,9 +39,10 @@ parser.add_argument('--jmxproxy-port', type=int, default=8080,
 parser.add_argument('-n', '--dry-run', default=False, action='store_true',
                     help='print results instead of sending to graphite')
 
-def fetch_jmx(data, service_host, service_port, jmxproxy_host, jmxproxy_port):
+def fetch_jmx(data, service_host, service_port, service_auth, jmxproxy_host, jmxproxy_port):
     attrs = {}
-    beans = json.loads(urllib2.urlopen('http://%s:%d/%s:%d' % (jmxproxy_host, jmxproxy_port, service_host, service_port)).read())
+    creds = None if not service_auth else urllib.urlencode(zip(('username', 'password'), service_auth.split(':')))
+    beans = json.loads(urllib2.urlopen('http://%s:%d/%s:%d?full=true' % (jmxproxy_host, jmxproxy_port, service_host, service_port), creds).read())
 
     for key, val in data.items():
         for mbean in beans:
@@ -71,7 +75,7 @@ def main(args=None, service='', extra_stats={}):
         args = parser.parse_args()
 
     mbeans.update(extra_stats)
-    data = fetch_jmx(mbeans, args.service_host, args.service_port, args.jmxproxy_host, args.jmxproxy_port)
+    data = fetch_jmx(mbeans, args.service_host, args.service_port, args.service_auth, args.jmxproxy_host, args.jmxproxy_port)
     path = '.'.join(i for i in (args.graphite_key, args.service_host, service) if i)
 
     send_data(data, path, args.graphite_host, args.graphite_port, send=not args.dry_run)
