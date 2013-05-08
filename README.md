@@ -126,22 +126,22 @@ Example Clients
 
 The script defaults to using `localhost:8080` as the JMXProxy address.  For example, to request basic stats from the JVM running JMXProxy itself:
 
-    $ php -q ss_jmxproxy.php localhost:1123
+    $ php -q scripts/cacti/ss_jmxproxy.php localhost:1123
     thread_count:35 thread_peak:35 memory_heap_used:6763352 memory_heap_max:101384192 gc_count:19 classes_loaded:3679 classes_total:3679 classes_unloaded:0
 
 It is also possible to supply JMX credentials and a remote JMXProxy to use:
-    $ php -q ss_jmxproxy.php localhost:1123 ro:public localhost:8080
+    $ php -q scripts/cacti/ss_jmxproxy.php localhost:1123 ro:public localhost:8080
     thread_count:35 thread_peak:35 memory_heap_used:6763352 memory_heap_max:101384192 gc_count:19 classes_loaded:3679 classes_total:3679 classes_unloaded:0
 
 
 This plugin allows easy extensions by creating another PHP file that includes `ss_jmxproxy.php`, sets up an array of desired beans to fetch, and passes it to the `ss_jmxproxy()` function.  One such extension, `ss_hadoop.php`, exists to demonstrate this behavior and usage:
 
-    $ php -q ss_hadoop.php datanode001:8003 datanode
+    $ php -q scripts/cacti/ss_hadoop.php datanode001:8003 datanode
     thread_count:165 thread_peak:593 memory_heap_used:158213848 memory_heap_max:1908932608 gc_count:27465 classes_loaded:2717 classes_total:2775 classes_unloaded:58 ds_capacity:2869079572480 ds_remaining:1665482752 ds_used:2750974428881 ds_failed:0 blocks_read:1230 blocks_removed:167 blocks_replicated:0 blocks_verified:28 blocks_written:133 bytes_read:222298772 bytes_written:8175757632 reads_from_local_client:1165 writes_from_local_client:36 reads_from_remote_client:65 writes_from_remote_client:97 ops_block_copy:0 ops_block_read:1230 ops_block_write:133 ops_block_replace:0 ops_block_checksum:0 ops_block_reports:0 ops_heartbeat:100
 
 Likewise, JMX credentials and remote JMXProxy address are also supported:
 
-    $ php -q ss_hadoop.php datanode001:8003 datanode ro:public localhost:8080
+    $ php -q scripts/cacti/ss_hadoop.php datanode001:8003 datanode ro:public localhost:8080
     thread_count:165 thread_peak:593 memory_heap_used:158213848 memory_heap_max:1908932608 gc_count:27465 classes_loaded:2717 classes_total:2775 classes_unloaded:58 ds_capacity:2869079572480 ds_remaining:1665482752 ds_used:2750974428881 ds_failed:0 blocks_read:1230 blocks_removed:167 blocks_replicated:0 blocks_verified:28 blocks_written:133 bytes_read:222298772 bytes_written:8175757632 reads_from_local_client:1165 writes_from_local_client:36 reads_from_remote_client:65 writes_from_remote_client:97 ops_block_copy:0 ops_block_read:1230 ops_block_write:133 ops_block_replace:0 ops_block_checksum:0 ops_block_reports:0 ops_heartbeat:100
 
 
