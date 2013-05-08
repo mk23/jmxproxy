@@ -66,7 +66,7 @@ public class JMXProxyResource {
 
     @GET
     @Path("{host}:{port:\\d+}/{name}")
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("name") String name, @QueryParam("full") @DefaultValue("true") BooleanParam full) {
+    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("name") String name, @QueryParam("full") @DefaultValue("false") BooleanParam full) {
         LOG.debug("fetching jmx data for " + host + ":" + port + "/" + name + " (full:" + full.get() + ")");
         return getJMXHost(host, port, name, full.get(), null);
     }
@@ -90,7 +90,7 @@ public class JMXProxyResource {
 
     @GET
     @Path("{host}:{port:\\d+}")
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @QueryParam("full") @DefaultValue("true") BooleanParam full) {
+    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @QueryParam("full") @DefaultValue("false") BooleanParam full) {
         LOG.debug("fetching jmx data for " + host + ":" + port + " (full:" + full.get() + ")");
         return getJMXHost(host, port, full.get(), null);
     }
