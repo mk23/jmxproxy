@@ -20,9 +20,9 @@ mbeans = {
 
 parser = argparse.ArgumentParser(description='jmxproxy poller for graphite')
 parser.add_argument('--service-host', default=socket.gethostname(),
-                    help='hadoop service hostname')
+                    help='jvm jmx agent service host')
 parser.add_argument('--service-port', type=int, required=True,
-                    help='hadoop service jmx port')
+                    help='jvm jmx agent service port')
 parser.add_argument('--graphite-key',
                     help='graphite key prefix')
 parser.add_argument('--graphite-host', default='localhost',
