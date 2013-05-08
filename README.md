@@ -1,15 +1,17 @@
 JMXPROXY
 ========
 
-JMXProxy exposes all available mbean attributes available on a given JVM via simple HTTP request.  The results are in easily-parsable json format.  The server component is built using [Dropwizard](http://dropwizard.codahale.com/).
+JMXProxy exposes all available MBean attributes on a given JVM via simple HTTP request.  The results are in easily-parsable JSON format.  The server component is built using [Dropwizard](http://dropwizard.codahale.com/).
 
 
 Compiling
 ---------
 
-The build is simple maven2 invocation.
+The build is simple [maven](http://maven.apache.org) invocation.  To compile, test, and package JMXProxy execute the following.
 
     $ mvn clean package
+
+The resulting package is a self-executable "fat jar" file located at `target/jmxproxy-2.1.2-SNAPSHOT/jar`
 
 
 Configuration
@@ -44,7 +46,7 @@ jmxproxy:
 Execution
 ---------
 
-The result is a single jar file that contains all the bits necessary to start and run the server.
+The self-executing fat jar file contains all the bits necessary to start and run the server.
 
     $ java -jar target/jmxproxy-2.1.2-SNAPSHOT.jar server
 
@@ -68,23 +70,45 @@ An example startup script exists that will launch the server listening on port 8
 Usage
 -----
 
-The server responds to a standard HTTP GET request, where the URI specifies the destination JMX agent to contact.  For example, using `curl`:
+JMXProxy provides fine-grained access to MBeans exposed by a target JVM.  Clients can request anything from a whole dictionary of all the attributes down to specific attribute values.  Clients can also supply JMX authentication credentials for JMXProxy to pass to the target JVM.  Here are examples of how to access JMXProxy, using the JVM running the server as the target.
 
+1. Get the list of domains available on a target JVM
     $ curl http://localhost:8080/localhost:1123
-    {"java.lang:type=MemoryPool,name=PS Old Gen": ...
+    [ "java.lang", ...
 
-This standard request returns dictionary where keys are the full mbean path and the value is a dictionary of all attribute key/values for that mbean.  Alternatively, a user can pass a boolean query parameter, `domains`, to group mbeans together.
+2. Get the dictionary of all mbeans, attributes, and values available on a target JVM
+    $ curl http://localhost:8080/localhost:1123?full=true
+    {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
 
-    $ curl 'http://localhost:8080/localhost:1123?domains=true'
-    {"java.lang":{"java.lang:type=MemoryPool,name=PS Old Gen": ...
+3. Get the list of mbeans available for a specific domain on a target JVM
+    $ curl http://localhost:8080/localhost:1123/java.lang
+    [ "java.lang:type=OperatingSystem", ...
 
-For JMX agents that require authentication, jmxproxy allows the user to submit credentials via HTTP POST as either `application/json` or `application/x-www-form-urlencoded` content type:
+4. Get the dictionary of all mbeans, attributes, and values available for a specific domain on a target JVM
+    $ curl http://localhost:8080/localhost:1123/java.lang?full=true
+    {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
 
-    $ curl -d'username=ro&password=public' 'http://localhost:8080/localhost:1123'
-    {"java.lang:type=MemoryPool,name=PS Old Gen": ...
+5. Get the list of attributes available for a specific mbean on a target JVM
+    $ curl http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem
+    [ "Name", "Arch", ...
 
-    $ curl -d'{"username":"ro","password":"public"}' -H'Content-Type: application/json' 'http://localhost:8080/localhost:1123'
-    {"java.lang:type=MemoryPool,name=PS Old Gen": ...
+6. Get the dictionary of all attributes and values available for a specific mbean on a target JVM
+    $ curl http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem?full=true
+    {"name": "Mac OS X", "arch": "x86_64" ...
+
+7. Get the attribute value available for a specific mbean on a target JVM
+    $ curl http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem/Name
+    "Mac OS X"
+
+For JMX agents that require authentication, JMXProxy allows clients to submit credentials via HTTP POST as either `application/json` or `application/x-www-form-urlencoded` content-type:
+
+1. Get the list of domains available on a target JVM with form-urlencoded credentials
+    $ curl -d'username=ro&password=public' 'http://localhost:8080/localhost:1123?full=true'
+    {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
+
+2. Get the list of domains available on a target JVM with form-urlencoded credentials
+    $ curl -d'{"username":"ro","password":"public"}' -H'Content-Type: application/json' 'http://localhost:8080/localhost:1123?full=true'
+    {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
 
 
 Limitations
