@@ -11,7 +11,7 @@ The build is simple [maven](http://maven.apache.org) invocation.  To compile, te
 
     $ mvn clean package
 
-The resulting package is a self-executable "fat jar" file located at `target/jmxproxy-2.1.2-SNAPSHOT/jar`
+The resulting package is a self-executable "fat jar" file located at `target/jmxproxy-2.1.2-SNAPSHOT.jar`
 
 
 Configuration
