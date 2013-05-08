@@ -114,7 +114,7 @@ For JMX agents that require authentication, JMXProxy allows clients to submit cr
         $ curl -s -d'username=ro&password=public' 'http://localhost:8080/localhost:1123?full=true'
         {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
 
-2. Get the list of domains available on a target JVM with form-urlencoded credentials
+2. Get the list of domains available on a target JVM with JSON credentials
 
         $ curl -s -d'{"username":"ro","password":"public"}' -H'Content-Type: application/json' 'http://localhost:8080/localhost:1123?full=true'
         {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
