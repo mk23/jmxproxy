@@ -126,6 +126,28 @@ Limitations
 * SSL agent connections are currently not supported.  Remote JVM must be started with `-Dcom.sun.management.jmxremote.ssl=false`.
 
 
+Load Balancing
+--------------
+
+Because JMXProxy caches results for a configurable amount of time to quickly service consecutive requests, load balancers should be configured to balance traffic based on the first component of the request path.  Below is an example [haproxy](http://haproxy.1wt.eu) configuration snippet.  It shows how to balance traffic between five JMXProxy servers as well as check health each instance's health.
+
+```conf
+listen  SRV_JMXPROXY:8080       :8080
+        balance         uri     depth 1
+
+        cookie          SRVID   insert indirect
+
+        option          httplog
+        option          httpchk GET /healthcheck
+
+        server          srv001:8080 srv001:8080 cookie srv001:8080 check port 8081 observe layer7
+        server          srv002:8080 srv002:8080 cookie srv001:8080 check port 8081 observe layer7
+        server          srv003:8080 srv003:8080 cookie srv001:8080 check port 8081 observe layer7
+        server          srv004:8080 srv004:8080 cookie srv001:8080 check port 8081 observe layer7
+        server          srv005:8080 srv005:8080 cookie srv001:8080 check port 8081 observe layer7
+```
+
+
 Example Clients
 ---------------
 
