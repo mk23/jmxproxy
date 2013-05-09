@@ -1,3 +1,21 @@
+jmxproxy (2.2.1) precise; urgency=low
+
+  * Tagging 2.2.1
+  * [44f790f] Issue #9: Add nagios health check script example client.
+  * [907af66] Fix cookie id in the haproxy doc example.
+  * [2660b66] Merge branch 'master' of
+    git+ssh://github.com/mk23/jmxproxy
+  * [220551d] Issue #10: Ditch domains as an unncessary level of
+    indirection.
+  * [fbd55ff] Issue #5: Add load balancing docs.
+  * [f9395fe] Default to full=false for domain and host fetching.
+  * [329274b] Last copy/paste doc fix.
+  * [23ef4f3] Last set of doc fixes.
+  * [5a38030] More doc formatting.
+  * [17d3341] Fix doc formatting.
+
+ -- Max Kalika <max@topsy.com>  Wed, 08 May 2013 19:30:46 -0700
+
 jmxproxy (2.2.0) precise; urgency=low
 
   * Tagging 2.2.0
