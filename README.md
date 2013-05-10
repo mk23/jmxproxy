@@ -141,6 +141,29 @@ listen  SRV_JMXPROXY:8080       :8080
 Example Clients
 ---------------
 
+### [Nagios](http://www.nagios.org) Health Plugin
+
+    scripts/nagios/check_jmxproxy.py [-h] -a HOST -p PORT [-c AUTH] -e EXPR [-j PROXY]
+                                     [-i] [-f FORMAT] {textual,metrics} ...
+
+The script supports two modes of operation: textual string match of an attribute value and metrics calculation based on a RPN expression.  In metrics mode, if any specified expression component yields an attribute that has a list value, the result will be the count of items in the list for that position.  The script defaults to using `localhost:8080` as the JMXProxy address.  Some practical usage examples are provided below.
+
+Check JVM memory thresholds:
+
+    scripts/nagios/check_jmxproxy.py -a localhost -p 1123 -c ro:public -e 'java.lang:type=Memory//HeapMemoryUsage//max java.lang:type=Memory//HeapMemoryUsage//used / 100 *' -f 'JVM heap memory {result:.02f}% used' metrics -c 95 -w 90
+    JVM heap memory 19.40% used
+
+Check a Hadoop namenode active state:
+
+    scripts/nagios/check_jmxproxy.py -a namenode001 -p 8001 -e 'Hadoop:service=NameNode,name=FSNamesystem//tag.HAState' -f 'HA State: {result}' textual active
+    HA State: active
+
+Check a Hadoop datanode failed volume count:
+
+    scripts/nagios/check_jmxproxy.py -a datanode001 -p 8003 -e 'Hadoop:service=DataNode,name=FSDatasetState.*//NumFailedVolumes' -f '{result:.0f} volume failures' metrics -c 0 -w 0
+    0 volume failures
+
+
 ### [Cacti](http://www.cacti.net) ScriptServer Plugin
 
     scripts/cacti/ss_jmxproxy.php <host:port> [username:password] [jmxproxy-host:port]
