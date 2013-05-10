@@ -131,10 +131,10 @@ listen  SRV_JMXPROXY:8080       :8080
         option          httpchk GET /healthcheck
 
         server          srv001:8080 srv001:8080 cookie srv001:8080 check port 8081 observe layer7
-        server          srv002:8080 srv002:8080 cookie srv001:8080 check port 8081 observe layer7
-        server          srv003:8080 srv003:8080 cookie srv001:8080 check port 8081 observe layer7
-        server          srv004:8080 srv004:8080 cookie srv001:8080 check port 8081 observe layer7
-        server          srv005:8080 srv005:8080 cookie srv001:8080 check port 8081 observe layer7
+        server          srv002:8080 srv002:8080 cookie srv002:8080 check port 8081 observe layer7
+        server          srv003:8080 srv003:8080 cookie srv003:8080 check port 8081 observe layer7
+        server          srv004:8080 srv004:8080 cookie srv004:8080 check port 8081 observe layer7
+        server          srv005:8080 srv005:8080 cookie srv005:8080 check port 8081 observe layer7
 ```
 
 
