@@ -3,11 +3,8 @@ package com.topsy.jmxproxy.jmx.tests;
 import com.topsy.jmxproxy.JMXProxyConfiguration;
 import com.topsy.jmxproxy.jmx.ConnectionManager;
 
-import javax.ws.rs.core.Response;
-
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -16,11 +13,8 @@ public class ConnectionManagerTest {
     private final String validHost        = "localhost:" + System.getProperty("com.sun.management.jmxremote.port");
     private final String invalidHost      = "localhost:0";
 
-    private final String validDomain      = "java.lang";
-    private final String invalidDomain    = "invalid.domain";
-
     private final String validMBean       = "java.lang:type=OperatingSystem";
-    private final String invalidMBean     = "java.lang:type=InvalidDomain";
+    private final String invalidMBean     = "java.lang:type=InvalidMBean";
 
     private final String validAttribute   = "Name";
     private final String invalidAttribute = "InvalidAttribute";
@@ -40,34 +34,12 @@ public class ConnectionManagerTest {
         assertNull(manager.getHost(invalidHost, null));
     }
 
-    /* Domain tests */
-    @Test
-    public void checkValidHostDomains() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
-
-        assertTrue(manager.getHost(validHost, null).getDomains().contains(validDomain));
-    }
-
-    @Test
-    public void checkValidHostValidDomain() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
-
-        assertNotNull(manager.getHost(validHost, null).getDomain(validDomain));
-    }
-
-    @Test
-    public void checkValidHostInvalidDomain() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
-
-        assertNull(manager.getHost(validHost, null).getDomain(invalidDomain));
-    }
-
     /* MBean tests */
     @Test
-    public void checkValidHostValidDomainMBeans() throws Exception {
+    public void checkValidHostMBeans() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
 
-        assertTrue(manager.getHost(validHost, null).getDomain(validDomain).getMBeans().contains(validMBean));
+        assertTrue(manager.getHost(validHost, null).getMBeans().contains(validMBean));
     }
 
     @Test
