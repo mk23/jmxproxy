@@ -1,6 +1,5 @@
 package com.topsy.jmxproxy;
 
-import com.topsy.jmxproxy.core.Domain;
 import com.topsy.jmxproxy.core.Host;
 import com.topsy.jmxproxy.core.MBean;
 import com.topsy.jmxproxy.jmx.ConnectionCredentials;
@@ -65,27 +64,27 @@ public class JMXProxyResource {
     }
 
     @GET
-    @Path("{host}:{port:\\d+}/{name}")
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("name") String name, @QueryParam("full") @DefaultValue("false") BooleanParam full) {
-        LOG.debug("fetching jmx data for " + host + ":" + port + "/" + name + " (full:" + full.get() + ")");
-        return getJMXHost(host, port, name, full.get(), null);
+    @Path("{host}:{port:\\d+}/{mbean}")
+    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("mbean") String mbean, @QueryParam("full") @DefaultValue("false") BooleanParam full) {
+        LOG.debug("fetching jmx data for " + host + ":" + port + "/" + mbean + " (full:" + full.get() + ")");
+        return getJMXHost(host, port, mbean, full.get(), null);
     }
 
     @POST
-    @Path("{host}:{port:\\d+}/{name}")
+    @Path("{host}:{port:\\d+}/{mbean}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("name") String name, @FormParam("username") String username, @FormParam("password") String password, @QueryParam("full") @DefaultValue("false") BooleanParam full) {
-        LOG.debug("fetching jmx data for " + username + "@" + host + ":" + port + "/" + name + " (full:" + full.get() + ")");
-        return getJMXHost(host, port, name, full.get(), new ConnectionCredentials(username, password));
+    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("mbean") String mbean, @FormParam("username") String username, @FormParam("password") String password, @QueryParam("full") @DefaultValue("false") BooleanParam full) {
+        LOG.debug("fetching jmx data for " + username + "@" + host + ":" + port + "/" + mbean + " (full:" + full.get() + ")");
+        return getJMXHost(host, port, mbean, full.get(), new ConnectionCredentials(username, password));
     }
 
     @POST
-    @Path("{host}:{port:\\d+}/{name}")
+    @Path("{host}:{port:\\d+}/{mbean}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("name") String name, @QueryParam("full") @DefaultValue("false") BooleanParam full, @Valid ConnectionCredentials auth) {
-        LOG.debug("fetching jmx data for " + auth.getUsername() + "@" + host + ":" + port + "/" + name + " (full:" + full.get() + ")");
+    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("mbean") String mbean, @QueryParam("full") @DefaultValue("false") BooleanParam full, @Valid ConnectionCredentials auth) {
+        LOG.debug("fetching jmx data for " + auth.getUsername() + "@" + host + ":" + port + "/" + mbean + " (full:" + full.get() + ")");
 
-        return getJMXHost(host, port, name, full.get(), auth);
+        return getJMXHost(host, port, mbean, full.get(), auth);
     }
 
     @GET
@@ -119,7 +118,7 @@ public class JMXProxyResource {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
-            return Response.ok(full ? host : host.getDomains()).build();
+            return Response.ok(full ? host : host.getMBeans()).build();
         } catch (java.lang.SecurityException e) {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         } catch (Exception e) {
@@ -127,28 +126,19 @@ public class JMXProxyResource {
         }
     }
 
-    private Response getJMXHost(String hostName, int port, String name, boolean full, ConnectionCredentials auth) {
+    private Response getJMXHost(String hostName, int port, String mbeanName, boolean full, ConnectionCredentials auth) {
         try {
             Host host = manager.getHost(hostName + ":" + port, auth);
             if (host == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
-            if (!name.contains(":")) {
-                Domain domain = host.getDomain(name);
-                if (domain == null) {
-                    return Response.status(Response.Status.NOT_FOUND).build();
-                }
-
-                return Response.ok(full ? domain : domain.getMBeans()).build();
-            } else {
-                MBean mbean = host.getMBean(name);
-                if (mbean == null) {
-                    return Response.status(Response.Status.NOT_FOUND).build();
-                }
-
-                return Response.ok(full ? mbean : mbean.getAttributes()).build();
+            MBean mbean = host.getMBean(mbeanName);
+            if (mbean == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
             }
+
+            return Response.ok(full ? mbean : mbean.getAttributes()).build();
         } catch (java.lang.SecurityException e) {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         } catch (Exception e) {

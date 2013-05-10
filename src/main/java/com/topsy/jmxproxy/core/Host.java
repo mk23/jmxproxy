@@ -8,9 +8,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,30 +19,20 @@ public class Host implements JsonSerializable {
     private static final Logger LOG = LoggerFactory.getLogger(Host.class);
 
     private Map<String, MBean> mbeans;
-    private Map<String, Domain> domains;
 
     public Host() {
         mbeans = new HashMap<String, MBean>();
-        domains = new HashMap<String, Domain>();
     }
 
     public MBean addMBean(String domain, String mbeanName) {
-        if (!domains.containsKey(domain)) {
-            domains.put(domain, new Domain());
-        }
-
-        MBean mbean = domains.get(domain).addMBean(mbeanName);
+        MBean mbean = new MBean();
         mbeans.put(mbeanName, mbean);
 
         return mbean;
     }
 
-    public Set<String> getDomains() {
-        return domains.keySet();
-    }
-
-    public Domain getDomain(String domain) {
-        return domains.get(domain);
+    public Set<String> getMBeans() {
+        return mbeans.keySet();
     }
 
     public MBean getMBean(String mbean) {
