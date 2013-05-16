@@ -40,16 +40,19 @@ function ss_jmxproxy($host, $auth = '', $jmxproxy = 'localhost:8080', $extra_sta
     }
 
     stream_context_set_option($cntxt, 'http', 'timeout', 10.0);
-    $beans = json_decode(file_get_contents("http://{$jmxproxy}/{$host}?full=true", FILE_USE_INCLUDE_PATH, $cntxt), true);
+    $beans = json_decode(file_get_contents("http://{$jmxproxy}/{$host}", FILE_USE_INCLUDE_PATH, $cntxt), true);
 
     $data = array();
     foreach ($stats as $key => $val) {
         if (is_null($val) || sizeof($val) < 2) {
             continue;
         }
-        foreach (preg_grep("/^{$val[0]}\$/i", array_keys($beans)) as $mbean) {
-            $attribute = $beans[$mbean];
-            foreach (array_slice($val, 1) as $part) {
+        foreach (preg_grep("/^{$val[0]}\$/i", $beans) as $mbean) {
+            $attrs = json_decode(file_get_contents(sprintf("http://{$jmxproxy}/{$host}/%s", rawurlencode($mbean))), true);
+            $attribute = json_decode(file_get_contents(sprintf("http://{$jmxproxy}/{$host}/%s/%s", rawurlencode($mbean), rawurlencode(array_shift(preg_grep("/^{$val[1]}$/i", $attrs))))), true);
+
+
+            foreach (array_slice($val, 2) as $part) {
                 $attribute = $attribute[array_shift(preg_grep("/^{$part}\$/i", array_keys($attribute)))];
             }
             if (array_key_exists($key, $data)) {
