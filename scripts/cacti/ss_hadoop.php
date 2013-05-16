@@ -2,7 +2,7 @@
 
 include_once("ss_jmxproxy.php");
 
-function ss_hadoop($host, $type, $auth = '', $jmxproxy = 'localhost:8080') {
+function ss_hadoop($host, $type, $jmxproxy = 'localhost:8080', $jmxcreds = '') {
     $hadoop_stats = array($type => array());
     $hadoop_stats['namenode'] = array(
         'cluster_capacity'  => array('hadoop:service=NameNode,name=NameNodeInfo', 'Total'),
@@ -75,5 +75,5 @@ function ss_hadoop($host, $type, $auth = '', $jmxproxy = 'localhost:8080') {
         'avg_request_latency'  => array('org.apache.ZooKeeperService:name0=ReplicatedServer_id[0-9]+,name1=replica.[0-9]+,name2=(Leader|Follower)', 'AvgRequestLatency'),
     );
 
-    return ss_jmxproxy($host, $auth, $jmxproxy, $hadoop_stats[$type]);
+    return ss_jmxproxy($host, $jmxproxy, $jmxcreds, $hadoop_stats[$type]);
 }

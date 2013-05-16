@@ -11,7 +11,7 @@ if (!isset($called_by_script_server)) {
     echo call_user_func_array($self, $_SERVER["argv"]), "\n";
 }
 
-function ss_jmxproxy($host, $auth = '', $jmxproxy = 'localhost:8080', $extra_stats = array()) {
+function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $jmxcreds = '', $extra_stats = array()) {
     $jvm_stats = array(
         'thread_count' => array('java.lang:type=Threading', 'ThreadCount'),
         'thread_peak' => array('java.lang:type=Threading', 'PeakThreadCount'),
@@ -24,14 +24,14 @@ function ss_jmxproxy($host, $auth = '', $jmxproxy = 'localhost:8080', $extra_sta
     );
 
     $stats = array_merge($jvm_stats, $extra_stats);
-    if (!empty($auth)) {
+    if (!empty($jmxcreds)) {
         $cntxt = stream_context_create(array(
             'http' => array(
                 'method'  => 'POST',
                 'header'  => 'Content-type: application/x-www-form-urlencoded',
                 'content' => http_build_query(array(
-                    'username' => urldecode(array_shift(explode(':', $auth))),
-                    'password' => urldecode(array_pop(explode(':', $auth))),
+                    'username' => urldecode(array_shift(explode(':', $jmxcreds))),
+                    'password' => urldecode(array_pop(explode(':', $jmxcreds))),
                 )),
             ),
         ));
@@ -41,6 +41,7 @@ function ss_jmxproxy($host, $auth = '', $jmxproxy = 'localhost:8080', $extra_sta
 
     stream_context_set_option($cntxt, 'http', 'timeout', 10.0);
     $beans = json_decode(file_get_contents("http://{$jmxproxy}/{$host}", FILE_USE_INCLUDE_PATH, $cntxt), true);
+    $cache = array();
 
     $data = array();
     foreach ($stats as $key => $val) {
@@ -48,11 +49,12 @@ function ss_jmxproxy($host, $auth = '', $jmxproxy = 'localhost:8080', $extra_sta
             continue;
         }
         foreach (preg_grep("/^{$val[0]}\$/i", $beans) as $mbean) {
-            $attrs = json_decode(file_get_contents(sprintf("http://{$jmxproxy}/{$host}/%s", rawurlencode($mbean))), true);
-            $attribute = json_decode(file_get_contents(sprintf("http://{$jmxproxy}/{$host}/%s/%s", rawurlencode($mbean), rawurlencode(array_shift(preg_grep("/^{$val[1]}$/i", $attrs))))), true);
+            if (!isset($cache[$mbean])) {
+                $cache[$mbean] = json_decode(file_get_contents(sprintf("http://{$jmxproxy}/{$host}/%s?full=true", rawurlencode($mbean))), true);
+            }
+            $attribute = $cache[$mbean];
 
-
-            foreach (array_slice($val, 2) as $part) {
+            foreach (array_slice($val, 1) as $part) {
                 $attribute = $attribute[array_shift(preg_grep("/^{$part}\$/i", array_keys($attribute)))];
             }
             if (array_key_exists($key, $data)) {
