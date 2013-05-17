@@ -18,7 +18,7 @@ public class JMXProxyServiceConfiguration {
 
     @Min(1)
     @JsonProperty
-    private int accessDuration = 5;
+    private int accessDuration = 30;
 
     public int getCleanInterval() {
         return cleanInterval;
