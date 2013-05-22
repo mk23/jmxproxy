@@ -38,13 +38,18 @@ public class ConnectionManager implements Managed {
 
     public Host getHost(String host, ConnectionCredentials auth) throws Exception {
         synchronized (hosts) {
+            if (hosts.containsKey(host) && !hosts.get(host).checkCredentials(auth)) {
+                LOG.info("resetting credentials for " + host);
+                hosts.remove(host).shutdown();
+            }
+
             if (!hosts.containsKey(host)) {
                 LOG.info("creating new worker for " + host);
-                hosts.put(host, new ConnectionWorker(host));
+                hosts.put(host, new ConnectionWorker(host, auth, config.getCacheDuration()));
             }
         }
 
-        return hosts.get(host).getHost(config.getCacheDuration(), auth);
+        return hosts.get(host).getHost();
     }
 
     public boolean isStarted() {
@@ -62,7 +67,7 @@ public class ConnectionManager implements Managed {
                     for (Map.Entry<String, ConnectionWorker>hostEntry : hosts.entrySet()) {
                         if (hostEntry.getValue().isExpired(config.getAccessDuration())) {
                             LOG.debug("purging " + hostEntry.getKey());
-                            hosts.remove(hostEntry.getKey());
+                            hosts.remove(hostEntry.getKey()).shutdown();
                         }
                     }
                 }
@@ -75,6 +80,12 @@ public class ConnectionManager implements Managed {
     public void stop() {
         LOG.info("stopping jmx connection manager");
         purge.shutdown();
+        synchronized (hosts) {
+            for (Map.Entry<String, ConnectionWorker>hostEntry : hosts.entrySet()) {
+                LOG.debug("purging " + hostEntry.getKey());
+                hosts.remove(hostEntry.getKey()).shutdown();
+            }
+        }
         hosts.clear();
         started = false;
     }
