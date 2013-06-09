@@ -40,6 +40,15 @@ jmxproxy:
     # how long to cache JMX attribute values before
     # reconnecting to the agent and pulling new data
     cache_duration: 5
+
+    # white list of allowed endpoints in host:port
+    # format for this agent to connect to, defaulting
+    # to allowing all when empty or missing
+    allowed_endpoints:
+        - localhost:1123
+        - host1:1234
+        - host1:4321
+        - host2:5678
 ```
 
 
