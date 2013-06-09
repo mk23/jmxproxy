@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.yammer.dropwizard.json.JsonSnakeCase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.constraints.Min;
 
 @JsonSnakeCase
@@ -20,6 +23,9 @@ public class JMXProxyServiceConfiguration {
     @JsonProperty
     private int accessDuration = 30;
 
+    @JsonProperty
+    private List<String> allowedEndpoints = new ArrayList<String>();
+
     public int getCleanInterval() {
         return cleanInterval;
     }
@@ -30,5 +36,9 @@ public class JMXProxyServiceConfiguration {
 
     public int getAccessDuration() {
         return accessDuration;
+    }
+
+    public List<String> getAllowedEndpoints() {
+        return allowedEndpoints;
     }
 }
