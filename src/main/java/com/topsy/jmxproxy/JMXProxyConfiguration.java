@@ -3,6 +3,7 @@ package com.topsy.jmxproxy;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.yammer.dropwizard.config.Configuration;
+import com.yammer.dropwizard.config.HttpConfiguration;
 import com.yammer.dropwizard.json.JsonSnakeCase;
 
 import java.util.ArrayList;
@@ -60,10 +61,37 @@ public class JMXProxyConfiguration extends Configuration {
         }
     }
 
+    public static class JMXProxyHttpConfiguration extends HttpConfiguration {
+        @NotNull
+        @JsonProperty
+        private String rootPath = "/jmxproxy/*";
+
+        @Override
+        public String getRootPath() {
+            return rootPath;
+        }
+        @Override
+        public void setRootPath(String path) {
+            this.rootPath = path;
+        }
+    }
+
+    @Valid
+    @NotNull
+    @JsonProperty(value="http")
+    private JMXProxyHttpConfiguration httpConfig = new JMXProxyHttpConfiguration();
+
     @Valid
     @NotNull
     @JsonProperty(value="jmxproxy")
     private JMXProxyServiceConfiguration serviceConfig = new JMXProxyServiceConfiguration();
+
+    public JMXProxyHttpConfiguration getHttpConfiguration() {
+        return httpConfig;
+    }
+    public void setHttpConfiguration(JMXProxyHttpConfiguration httpConfig) {
+        this.httpConfig = httpConfig;
+    }
 
     public JMXProxyServiceConfiguration getServiceConfiguration() {
         return serviceConfig;
