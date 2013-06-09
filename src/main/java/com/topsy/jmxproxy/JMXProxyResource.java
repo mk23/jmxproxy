@@ -7,7 +7,7 @@ import com.topsy.jmxproxy.jmx.ConnectionManager;
 
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 
-import javax.security.auth.login.FailedLoginException;
+import java.lang.SecurityException;
 
 import javax.validation.Valid;
 
@@ -23,7 +23,6 @@ import javax.ws.rs.QueryParam;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.WebApplicationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,57 +111,38 @@ public class JMXProxyResource {
     }
 
     private Response getJMXHost(String hostName, int port, boolean full, ConnectionCredentials auth) {
-        try {
-            Host host = manager.getHost(hostName + ":" + port, auth);
-            if (host == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            return Response.ok(full ? host : host.getMBeans()).build();
-        } catch (java.lang.SecurityException e) {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        } catch (Exception e) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        Host host = manager.getHost(hostName + ":" + port, auth); if (host == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+
+        return Response.ok(full ? host : host.getMBeans()).build();
     }
 
     private Response getJMXHost(String hostName, int port, String mbeanName, boolean full, ConnectionCredentials auth) {
-        try {
-            Host host = manager.getHost(hostName + ":" + port, auth);
-            if (host == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            MBean mbean = host.getMBean(mbeanName);
-            if (mbean == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            return Response.ok(full ? mbean : mbean.getAttributes()).build();
-        } catch (java.lang.SecurityException e) {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        } catch (Exception e) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        Host host = manager.getHost(hostName + ":" + port, auth);
+        if (host == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+
+        MBean mbean = host.getMBean(mbeanName);
+        if (mbean == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(full ? mbean : mbean.getAttributes()).build();
     }
 
     private Response getJMXHost(String hostName, int port, String mbeanName, String attribute, ConnectionCredentials auth) {
-        try {
-            Host host = manager.getHost(hostName + ":" + port, auth);
-            if (host == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            MBean mbean = host.getMBean(mbeanName);
-            if (mbean == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            return Response.ok(mbean.getAttribute(attribute)).build();
-        } catch (java.lang.SecurityException e) {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        } catch (Exception e) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        Host host = manager.getHost(hostName + ":" + port, auth);
+        if (host == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+
+        MBean mbean = host.getMBean(mbeanName);
+        if (mbean == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(mbean.getAttribute(attribute)).build();
     }
 }

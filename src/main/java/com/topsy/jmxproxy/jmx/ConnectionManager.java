@@ -12,6 +12,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.WebApplicationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,24 +35,30 @@ public class ConnectionManager implements Managed {
         purge = Executors.newSingleThreadScheduledExecutor();
     }
 
-    public Host getHost(String host) throws Exception {
+    public Host getHost(String host) throws WebApplicationException {
         return getHost(host, null);
     }
 
-    public Host getHost(String host, ConnectionCredentials auth) throws Exception {
-        synchronized (hosts) {
-            if (hosts.containsKey(host) && !hosts.get(host).checkCredentials(auth)) {
-                LOG.info("resetting credentials for " + host);
-                hosts.remove(host).shutdown();
+    public Host getHost(String host, ConnectionCredentials auth) throws WebApplicationException {
+        try {
+            synchronized (hosts) {
+                if (hosts.containsKey(host) && !hosts.get(host).checkCredentials(auth)) {
+                    LOG.info("resetting credentials for " + host);
+                    hosts.remove(host).shutdown();
+                }
+
+                if (!hosts.containsKey(host)) {
+                    LOG.info("creating new worker for " + host);
+                    hosts.put(host, new ConnectionWorker(host, auth, config.getCacheDuration()));
+                }
             }
 
-            if (!hosts.containsKey(host)) {
-                LOG.info("creating new worker for " + host);
-                hosts.put(host, new ConnectionWorker(host, auth, config.getCacheDuration()));
-            }
+            return hosts.get(host).getHost();
+        } catch (SecurityException e) {
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        } catch (Exception e) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-
-        return hosts.get(host).getHost();
     }
 
     public boolean isStarted() {
