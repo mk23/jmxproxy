@@ -35,6 +35,10 @@ public class ConnectionManager implements Managed {
         purge = Executors.newSingleThreadScheduledExecutor();
     }
 
+    public JMXProxyServiceConfiguration getConfiguration() {
+        return config;
+    }
+
     public Host getHost(String host) throws WebApplicationException {
         return getHost(host, null);
     }

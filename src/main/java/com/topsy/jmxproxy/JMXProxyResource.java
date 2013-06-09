@@ -39,6 +39,12 @@ public class JMXProxyResource {
     }
 
     @GET
+    @Path("config")
+    public Response getConfiguration() {
+        return Response.ok(manager.getConfiguration()).build();
+    }
+
+    @GET
     @Path("{host}:{port:\\d+}/{mbean}/{attribute}")
     public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("mbean") String mbean, @PathParam("attribute") String attribute) {
         LOG.debug("fetching jmx data for " + host + ":" + port + "/" + mbean + "/" + attribute);
