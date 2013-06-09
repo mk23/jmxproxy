@@ -3,6 +3,10 @@ package com.topsy.jmxproxy.jmx.tests;
 import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyServiceConfiguration;
 import com.topsy.jmxproxy.jmx.ConnectionManager;
 
+import java.util.Arrays;
+
+import javax.ws.rs.WebApplicationException;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -32,6 +36,26 @@ public class ConnectionManagerTest {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
         assertNull(manager.getHost(invalidHost, null));
+    }
+
+    @Test
+    public void checkValidHostWhitelist() throws Exception {
+        JMXProxyServiceConfiguration serviceConfig = new JMXProxyServiceConfiguration();
+        serviceConfig.setAllowedEndpoints(Arrays.asList(new String[] { validHost }));
+
+        final ConnectionManager manager = new ConnectionManager(serviceConfig);
+
+        assertNotNull(manager.getHost(validHost, null));
+    }
+
+    @Test(expected=WebApplicationException.class)
+    public void checkInvalidHostWhitelist() throws Exception {
+        JMXProxyServiceConfiguration serviceConfig = new JMXProxyServiceConfiguration();
+        serviceConfig.setAllowedEndpoints(Arrays.asList(new String[] { validHost }));
+
+        final ConnectionManager manager = new ConnectionManager(serviceConfig);
+
+        manager.getHost(invalidHost);
     }
 
     /* MBean tests */
