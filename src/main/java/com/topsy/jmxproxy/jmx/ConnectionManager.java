@@ -40,6 +40,10 @@ public class ConnectionManager implements Managed {
     }
 
     public Host getHost(String host, ConnectionCredentials auth) throws WebApplicationException {
+        if (!config.getAllowedEndpoints().isEmpty() && !config.getAllowedEndpoints().contains(host)) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
         try {
             synchronized (hosts) {
                 if (hosts.containsKey(host) && !hosts.get(host).checkCredentials(auth)) {
@@ -67,6 +71,11 @@ public class ConnectionManager implements Managed {
 
     public void start() {
         LOG.info("starting jmx connection manager");
+
+        LOG.debug("allowedEndpoints: " + config.getAllowedEndpoints().size());
+        for (String ae : config.getAllowedEndpoints()) {
+            LOG.debug("    " + ae);
+        }
 
         purge.scheduleAtFixedRate(new Runnable() {
             @Override

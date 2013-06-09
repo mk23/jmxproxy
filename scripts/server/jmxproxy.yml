@@ -1,3 +1,7 @@
+jmxproxy:
+    allowed_endpoints:
+        - 'localhost:1123'
+
 logging:
     level: INFO
 
