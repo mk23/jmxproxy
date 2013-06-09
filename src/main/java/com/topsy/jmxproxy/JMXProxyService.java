@@ -25,7 +25,7 @@ public class JMXProxyService extends Service<JMXProxyConfiguration> {
 
     @Override
     public void run(JMXProxyConfiguration configuration, Environment environment) {
-        final ConnectionManager manager = new ConnectionManager(configuration.getJMXProxyServiceConfiguration());
+        final ConnectionManager manager = new ConnectionManager(configuration.getServiceConfiguration());
 
         environment.manage(manager);
         environment.addResource(new JMXProxyResource(manager));

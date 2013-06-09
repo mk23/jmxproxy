@@ -1,6 +1,6 @@
 package com.topsy.jmxproxy.jmx;
 
-import com.topsy.jmxproxy.JMXProxyServiceConfiguration;
+import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyServiceConfiguration;
 import com.topsy.jmxproxy.core.Host;
 
 import com.yammer.dropwizard.lifecycle.Managed;

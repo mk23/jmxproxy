@@ -1,6 +1,6 @@
 package com.topsy.jmxproxy.jmx.tests;
 
-import com.topsy.jmxproxy.JMXProxyConfiguration;
+import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyServiceConfiguration;
 import com.topsy.jmxproxy.jmx.ConnectionManager;
 
 import org.junit.Test;
@@ -22,14 +22,14 @@ public class ConnectionManagerTest {
     /* Host tests */
     @Test
     public void checkValidHost() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
         assertNotNull(manager.getHost(validHost, null));
     }
 
     @Test
     public void checkInvalidHost() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
         assertNull(manager.getHost(invalidHost, null));
     }
@@ -37,21 +37,21 @@ public class ConnectionManagerTest {
     /* MBean tests */
     @Test
     public void checkValidHostMBeans() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
         assertTrue(manager.getHost(validHost, null).getMBeans().contains(validMBean));
     }
 
     @Test
     public void checkValidHostValidMBean() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
         assertNotNull(manager.getHost(validHost, null).getMBean(validMBean));
     }
 
     @Test
     public void checkValidHostInvalidMBean() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
         assertNull(manager.getHost(validHost, null).getMBean(invalidMBean));
     }
@@ -59,21 +59,21 @@ public class ConnectionManagerTest {
     /* Attribute tests */
     @Test
     public void checkValidHostValidMBeanAttributes() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
         assertTrue(manager.getHost(validHost, null).getMBean(validMBean).getAttributes().contains(validAttribute));
     }
 
     @Test
     public void checkValidHostValidMBeanValidAttribute() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
         assertNotNull(manager.getHost(validHost, null).getMBean(validMBean).getAttribute(validAttribute));
     }
 
     @Test
     public void checkValidHostValidMBeanInvalidAttribute() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyConfiguration().getJMXProxyServiceConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
         assertNull(manager.getHost(validHost, null).getMBean(validMBean).getAttribute(invalidAttribute));
     }
