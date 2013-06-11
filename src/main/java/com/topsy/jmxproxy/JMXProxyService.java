@@ -4,6 +4,7 @@ import com.topsy.jmxproxy.jmx.ConnectionManager;
 import com.topsy.jmxproxy.JMXProxyResource;
 
 import com.yammer.dropwizard.Service;
+import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 
@@ -21,6 +22,7 @@ public class JMXProxyService extends Service<JMXProxyConfiguration> {
     @Override
     public void initialize(Bootstrap<JMXProxyConfiguration> bootstrap) {
         bootstrap.setName("jmxproxy");
+        bootstrap.addBundle(new AssetsBundle("/assets/", "/", "index.html"));
     }
 
     @Override
