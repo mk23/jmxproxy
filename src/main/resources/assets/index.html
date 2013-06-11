@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JMXProxy</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    </head>
+    <body>
+        <div class="navbar">
+            <div class="navbar-inner">
+                <h5 class="pull-left" id="endpoint-title"></h5>
+                <form class="navbar-form pull-right" id="navbar-form" autocomplete="off">
+                </form>
+            </div>
+        </div>
+        <div class="tabbable hide" id="endpoint-tabs">
+            <div class="nav nav-tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#overview" data-toggle="tab">Overview</a></li>
+                    <li><a href="#memory" data-toggle="tab">Memory</a></li>
+                    <li><a href="#threads" data-toggle="tab">Threads</a></li>
+                    <li><a href="#classes" data-toggle="tab">Classes</a></li>
+                    <li><a href="#summary" data-toggle="tab">Summary</a></li>
+                    <li><a href="#mbeans" data-toggle="tab">MBeans</a></li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane active span5" id="overview">
+                    <p>host overview</p>
+                </div>
+                <div class="tab-pane span5" id="memory">
+                    <p>host memory</p>
+                </div>
+                <div class="tab-pane span5" id="threads">
+                    <p>host threads</p>
+                </div>
+                <div class="tab-pane span5" id="classes">
+                    <p>host classes</p>
+                </div>
+                <div class="tab-pane span5" id="summary">
+                    <p>host summary</p>
+                </div>
+                <div class="tab-pane span5" id="mbeans">
+                    <p>host mbeans</p>
+                </div>
+            </div>
+        </div>
+
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            var config;
+
+            var endpointList = $('<ul/>')
+            .attr('class', 'dropdown-menu');
+
+            var endpointGroup = $('<div/>')
+            .attr('class', 'btn-group')
+            .append(
+                    $('<button/>')
+                    .attr('class', 'btn dropdown-toggle')
+                    .attr('data-toggle', 'dropdown')
+                    .append('select endpoint ')
+                    .append(
+                        $('<span/>')
+                        .attr('class', 'caret')
+                    )
+            )
+            .append(endpointList);
+
+            var endpointInput = $('<input/>').attr('id', 'endpoint-input').attr('type', 'text').attr('placeholder', 'host:port').attr('pattern', '^(?:[a-zA-Z][a-zA-Z0-9\\.\\-]+[a-zA-Z0-9]|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):\\d+$').attr('required', 'true');
+
+/* local dev hack
+            $.ajaxSetup({ mimeType: "text/plain" });
+            $.getJSON( "config", function(data) {
+*/
+            $.getJSON( "/jmxproxy/config", function(data) {
+                config = data;
+                $.each(data.allowed_endpoints, function(key, val) {
+                    endpointList.append($('<li/>').append($('<a/>').attr('href', '#host').append(val)));
+                });
+
+                if (data.allowed_endpoints.length > 0) {
+                    $('#navbar-form').append(endpointGroup);
+
+                    $('a').click(function() {
+                        if (this.hash == "#host") {
+                            loadHost(this.innerHTML);
+                        }
+                    });
+                } else {
+                    $('#navbar-form').append(endpointInput);
+
+                    $('form').submit(function() {
+                        item = this.elements['endpoint-input'];
+                        host = item.value;
+                        item.value = ''
+                        item.blur()
+
+                        loadHost(host);
+                        return false;
+                    });
+                }
+            })
+            .fail(function() {
+                $('body').append(
+                    $('<div/>')
+                    .attr('class', 'alert alert-error')
+                    .append(
+                        $('<button/>')
+                        .attr('class', 'close')
+                        .attr('type', 'button')
+                        .attr('data-dismiss', 'alert')
+                        .append(
+                            '&times;'
+                        )
+                    )
+                    .append(
+                        '<strong>Error!</strong> Malformed configuration data recieved from the server.'
+                    )
+                )
+            });
+
+            function loadHost(host) {
+                $('#endpoint-title').text(host);
+                $('#endpoint-tabs').show();
+            }
+        </script>
+    </body>
+</html>
