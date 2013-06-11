@@ -1,3 +1,31 @@
+jmxproxy (2.2.2) precise; urgency=low
+
+  * Tagging 2.2.2
+  * [bf9496b] Issue #14: Add tests for allowed endpoints configuration.
+  * [e4970db] Issue #16: Merge configuration classes and update tests.
+  * [f186369] Issue #15: Expose configuration to clients via /config
+    resource.
+  * [b336331] Add travis-ci config.
+  * [65a95cd] Fix config syntax in the documentation.
+  * [02796b0] Issue #14: Add documentation for whitelisting feature.
+  * [f8f5fb3] Issue #14: Hook up allowed endpoints config and throw
+    403/Forbidden when triggered.
+  * [973f506] Issue #14: Add config support for allowed endpoints.
+  * [722dce9] Centralize exception handling to the connection manager.
+  * [2f0f601] Issue #12: Convert to background collection per Host
+    object.
+  * [dd9432d] Increase default access duration to 30 minutes.
+  * [40f1435] Fancier json_pretty with more whistles and bells.
+  * [c0af61f] Update maven plugins.
+  * [e15dd74] Issue #11: Cache bean results to avoid refetching the same
+    data.
+  * [780294f] Merge branch 'master' of
+    git+ssh://github.com/mk23/jmxproxy
+  * [8a395c0] Use targetted requests in the cacti poller to avoid
+    downloading potentially huge payloads.
+
+ -- Max Kalika <max@mklinbox>  Tue, 11 Jun 2013 12:39:51 -0700
+
 jmxproxy (2.2.1) precise; urgency=low
 
   * Tagging 2.2.1
