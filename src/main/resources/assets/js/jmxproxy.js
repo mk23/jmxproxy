@@ -1,9 +1,29 @@
+var documentInfo;
 var jmxproxyConf;
 var endpointHost;
 var endpointAuth;
 
 $(document).ready(function() {
+    documentInfo = function() {
+        var defaultTitle = $(document).attr('title');
+        var defaultLabel = $('#endpoint-label').text();
+
+        return {
+            reset: function() {
+                endpointAuth = null;
+
+                $('window').title = defaultTitle;
+                $('#endpoint-title').text(defaultLabel);
+                $('#endpoint-alert').hide();
+                $('#endpoint-tabui').hide();
+            }
+        }
+    }();
+
+
     $('#endpoint-input').keypress(function(e) {
+        documentInfo.reset();
+
         if (e.keyCode == 13 && this.validity.valid) {
             ep = this.value;
             this.value = '';
@@ -13,6 +33,8 @@ $(document).ready(function() {
         }
     });
     $('#endpoint-creds').submit(function(e) {
+        documentInfo.reset();
+
         endpointAuth = {
             "username": $('#endpoint-user').val(),
             "password": $('#endpoint-pass').val()
@@ -28,7 +50,7 @@ $(document).ready(function() {
 
         if (data.allowed_endpoints.length > 0) {
             $.each(data.allowed_endpoints, function(key, val) {
-                endpointList.push('<li><a href="#" onclick="testEndpoint(this.innerHTML)">'+val+'</a></li>');
+                endpointList.push('<li><a href="#" onclick="documentInfo.reset(); testEndpoint(this.innerHTML)">'+val+'</a></li>');
             });
 
             $('#endpoint-list').html(endpointList.join(''))
@@ -71,7 +93,8 @@ function testEndpoint(item) {
 
 function loadEndpoint() {
     head = endpointAuth == null ? endpointHost : endpointAuth.username+'@'+endpointHost;
-    $('#endpoint-title').text(head);
+    $(document).attr('title', 'JMXProxy - ' + head);
+    $('#endpoint-label').text(head);
     $('#endpoint-tabui').show();
 }
 
