@@ -1,4 +1,4 @@
-JMXPROXY
+JMXPROXY [![Build status](https://travis-ci.org/mk23/jmxproxy.png)](https://travis-ci.org/mk23/jmxproxy)
 ========
 
 JMXProxy exposes all available MBean attributes on a given JVM via simple HTTP request.  The results are in easily-parsable JSON format.  The server component is built using [Dropwizard](http://dropwizard.codahale.com/).
