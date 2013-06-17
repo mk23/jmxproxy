@@ -71,16 +71,9 @@ var endpointDataClass = function() {
     };
 
     var redrawGraphs = function(name) {
-        $.plot($('#'+name+'-gr'), items[name], graph);
-        /*
-        if (name != null) {
+        if (items.hasOwnProperty(name)) {
             $.plot($('#'+name+'-gr'), items[name], graph);
-        } else {
-            $.each(items, function(name) {
-                $.plot($('#'+name+'-gr'), items[name], graph);
-            });
         }
-        */
     }
 
     var populateData = function() {
@@ -103,8 +96,6 @@ var endpointDataClass = function() {
 
             items.classes[0].data.push([ts, data.LoadedClassCount]);
             items.classes[1].data.push([ts, data.TotalLoadedClassCount]);
-            redrawGraphs('classes');
-//            $.plot($('#classes-gr'), items.classes, graph);
         });
         endpointHost.fetchData('/java.lang:type=Compilation?full=true', function(data) {
             $('#summary-jc').text(data.Name);
@@ -141,14 +132,16 @@ var endpointDataClass = function() {
 
             items.threads[0].data.push([ts, data.ThreadCount]);
             items.threads[1].data.push([ts, data.PeakThreadCount]);
-            redrawGraphs('threads');
-//            $.plot($('#threads-gr'), items.threads, graph);
         });
 
         setTimeout(populateData, jmxproxyConf.cache_duration * 60 * 1000);
     };
 
     setTimeout(populateData, 0);
+
+    $('a[data-toggle="tab"]').on('shown', function(e) {
+        redrawGraphs(e.target.hash.substring(1));
+    });
 
     return {
         populateData: populateData,
