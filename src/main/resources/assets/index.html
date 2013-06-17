@@ -69,104 +69,110 @@
                     <p>host memory</p>
                 </div>
                 <div class="tab-pane" id="threads">
-                    <p>host threads</p>
+                    <div class="well span10" onmouseout="endpointData.redrawGraphs(this.parentNode.id)">
+                        <h4>Running Threads</h4>
+                        <div id="threads-gr" style="width:100%;height:450px;"></div>
+                    </div>
                 </div>
                 <div class="tab-pane" id="classes">
-                    <p>host classes</p>
+                    <div class="well span10" onmouseout="endpointData.redrawGraphs(this.parentNode.id)">
+                        <h4>Loaded Classes</h4>
+                        <div id="classes-gr" style="width:100%;height:450px;"></div>
+                    </div>
                 </div>
                 <div class="tab-pane" id="summary">
                     <div class="well">
                         <div class="row">
                             <div class="span2" align="right"><strong>Connection Name:</strong></div>
-                            <div class="span4" id="summary_cn"></div>
+                            <div class="span4" id="summary-cn"></div>
                             <div class="span2" align="right"><strong>Uptime:</strong></div>
-                            <div class="span4" id="summary_ut"></div>
+                            <div class="span4" id="summary-ut"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>Virtual Machine:</strong></div>
-                            <div class="span4" id="summary_vm"></div>
+                            <div class="span4" id="summary-vm"></div>
                             <div class="span2" align="right"><strong>Process CPU Time:</strong></div>
-                            <div class="span4" id="summary_pt"></div>
+                            <div class="span4" id="summary-pt"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>VM Vendor:</strong></div>
-                            <div class="span4" id="summary_vv"></div>
+                            <div class="span4" id="summary-vv"></div>
                             <div class="span2" align="right"><strong>JIT Compiler:</strong></div>
-                            <div class="span4" id="summary_jc"></div>
+                            <div class="span4" id="summary-jc"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>VM Name:</strong></div>
-                            <div class="span4" id="summary_vn"></div>
+                            <div class="span4" id="summary-vn"></div>
                             <div class="span2" align="right"><strong>Total Compile Time:</strong></div>
-                            <div class="span4" id="summary_jt"></div>
+                            <div class="span4" id="summary-jt"></div>
                         </div>
                     </div>
                     <div class="well">
                         <div class="row">
                             <div class="span2" align="right"><strong>Live Threads:</strong></div>
-                            <div class="span4" id="summary_tc"></div>
+                            <div class="span4" id="summary-tc"></div>
                             <div class="span2" align="right"><strong>Current Classes:</strong></div>
-                            <div class="span4" id="summary_cc"></div>
+                            <div class="span4" id="summary-cc"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>Peak Threads:</strong></div>
-                            <div class="span4" id="summary_tp"></div>
+                            <div class="span4" id="summary-tp"></div>
                             <div class="span2" align="right"><strong>Classes Loaded:</strong></div>
-                            <div class="span4" id="summary_ct"></div>
+                            <div class="span4" id="summary-ct"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>Daemon Threads:</strong></div>
-                            <div class="span4" id="summary_td"></div>
+                            <div class="span4" id="summary-td"></div>
                             <div class="span2" align="right"><strong>Classes Unloaded:</strong></div>
-                            <div class="span4" id="summary_cu"></div>
+                            <div class="span4" id="summary-cu"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>Total Threads:</strong></div>
-                            <div class="span4" id="summary_tt"></div>
+                            <div class="span4" id="summary-tt"></div>
                         </div>
                     </div>
                     <div class="well">
                         <div class="row">
                             <div class="span2" align="right"><strong>Current Heap:</strong></div>
-                            <div class="span4" id="summary_hh"></div>
+                            <div class="span4" id="summary-hh"></div>
                             <div class="span2" align="right"><strong>Committed Memory:</strong></div>
-                            <div class="span4" id="summary_hc"></div>
+                            <div class="span4" id="summary-hc"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>Maximum Heap:</strong></div>
-                            <div class="span4" id="summary_hm"></div>
+                            <div class="span4" id="summary-hm"></div>
                             <div class="span2" align="right"><strong>Pending Finalization:</strong></div>
-                            <div class="span4" id="summary_hf"></div>
+                            <div class="span4" id="summary-hf"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>Garbage Collectors:</strong></div>
-                            <div class="span8" id="summary_gc"></div>
+                            <div class="span8" id="summary-gc"></div>
                         </div>
                     </div>
                     <div class="well">
                         <div class="row">
                             <div class="span2" align="right"><strong>Operating System:</strong></div>
-                            <div class="span4" id="summary_sn"></div>
+                            <div class="span4" id="summary-sn"></div>
                             <div class="span2" align="right"><strong>Total Real Memory:</strong></div>
-                            <div class="span4" id="summary_mr"></div>
+                            <div class="span4" id="summary-mr"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>System Architecture:</strong></div>
-                            <div class="span4" id="summary_sa"></div>
+                            <div class="span4" id="summary-sa"></div>
                             <div class="span2" align="right"><strong>Free Real Memory:</strong></div>
-                            <div class="span4" id="summary_ml"></div>
+                            <div class="span4" id="summary-ml"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>System Processors:</strong></div>
-                            <div class="span4" id="summary_sp"></div>
+                            <div class="span4" id="summary-sp"></div>
                             <div class="span2" align="right"><strong>Total Swap Space:</strong></div>
-                            <div class="span4" id="summary_ms"></div>
+                            <div class="span4" id="summary-ms"></div>
                         </div>
                         <div class="row">
                             <div class="span2" align="right"><strong>Committed Memory:</strong></div>
-                            <div class="span4" id="summary_sm"></div>
+                            <div class="span4" id="summary-sm"></div>
                             <div class="span2" align="right"><strong>Free Swap Space:</strong></div>
-                            <div class="span4" id="summary_mp"></div>
+                            <div class="span4" id="summary-mp"></div>
                         </div>
                     </div>
                 </div>
@@ -177,6 +183,11 @@
         </div>
 
         <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.flot.min.js"></script>
+        <script src="js/jquery.flot.navigate.min.js"></script>
+        <script src="js/jquery.flot.resize.min.js"></script>
+        <script src="js/jquery.flot.time.min.js"></script>
+        <script src="js/jquery.flot.tooltip.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/jmxproxy.js"></script>
     </body>

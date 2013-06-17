@@ -9,22 +9,170 @@ var documentInfoClass = function(defaultTitle, defaultLabel) {
     }
 };
 
+var endpointDataClass = function() {
+    var items = {
+        threads: [
+            {
+                label: 'Live Running Threads',
+                data: []
+            },
+            {
+                label: 'Peak Running Threads',
+                data: []
+            }
+        ],
+        classes: [
+            {
+                label: 'Current Classes Loaded',
+                data: [],
+            },
+            {
+                label: 'Total Classes Loaded',
+                data: [],
+            }
+        ],
+    };
+
+    var graph = {
+        grid: {
+            hoverable: true,
+            clickable: false,
+        },
+        pan: {
+            interactive: true,
+        },
+        selection: {
+            mode: 'x',
+            shape: 'bevel',
+        },
+        series: {
+            lines: {
+                show: true,
+            },
+            points: {
+                show: true,
+            },
+        },
+        tooltip: true,
+        tooltipOpts: {
+            content: '%s: %y',
+        },
+        zoom: {
+            interactive: true,
+        },
+        xaxis: {
+            mode:       'time',
+            timezone:   'browser',
+            timeformat: '%H:%M:%S',
+        },
+        yaxis: {
+            tickDecimals: 0,
+        },
+    };
+
+    var redrawGraphs = function(name) {
+        $.plot($('#'+name+'-gr'), items[name], graph);
+        /*
+        if (name != null) {
+            $.plot($('#'+name+'-gr'), items[name], graph);
+        } else {
+            $.each(items, function(name) {
+                $.plot($('#'+name+'-gr'), items[name], graph);
+            });
+        }
+        */
+    }
+
+    var populateData = function() {
+        ts = new Date().getTime();
+
+        endpointHost.fetchData('/', function(data) {
+            $('#summary-gc').text('');
+            for (item in data) {
+                if (data[item].lastIndexOf('java.lang:type=GarbageCollector', 0) === 0) {
+                    endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
+                        $('#summary-gc').append('Name = "'+item.Name+'"; Collections = '+item.CollectionCount+'; Time spent = '+prettifyTime(item.CollectionTime)+'<br>');
+                    });
+                }
+            }
+        });
+        endpointHost.fetchData('/java.lang:type=ClassLoading?full=true', function(data) {
+            $('#summary-cc').text(data.LoadedClassCount);
+            $('#summary-ct').text(data.TotalLoadedClassCount);
+            $('#summary-cu').text(data.UnloadedClassCount);
+
+            items.classes[0].data.push([ts, data.LoadedClassCount]);
+            items.classes[1].data.push([ts, data.TotalLoadedClassCount]);
+            redrawGraphs('classes');
+//            $.plot($('#classes-gr'), items.classes, graph);
+        });
+        endpointHost.fetchData('/java.lang:type=Compilation?full=true', function(data) {
+            $('#summary-jc').text(data.Name);
+            $('#summary-jt').text(prettifyTime(data.TotalCompilationTime));
+        });
+        endpointHost.fetchData('/java.lang:type=Memory?full=true', function(data) {
+            $('#summary-hh').text(prettifySize(data.HeapMemoryUsage.used));
+            $('#summary-hc').text(prettifySize(data.HeapMemoryUsage.committed));
+            $('#summary-hm').text(prettifySize(data.HeapMemoryUsage.max));
+            $('#summary-hf').text(prettifySize(data.ObjectPendingFinalizationCount));
+        });
+        endpointHost.fetchData('/java.lang:type=OperatingSystem?full=true', function(data) {
+            $('#summary-pt').text(prettifyTime(Math.floor(data.ProcessCpuTime / 1000000)));
+            $('#summary-mr').text(prettifySize(data.TotalPhysicalMemorySize));
+            $('#summary-ml').text(prettifySize(data.FreePhysicalMemorySize));
+            $('#summary-ms').text(prettifySize(data.TotalSwapSpaceSize));
+            $('#summary-mp').text(prettifySize(data.FreeSwapSpaceSize));
+            $('#summary-sn').text(data.Name+'/'+data.Version);
+            $('#summary-sa').text(data.Arch);
+            $('#summary-sp').text(data.AvailableProcessors);
+            $('#summary-sm').text(prettifySize(data.CommittedVirtualMemorySize));
+        });
+        endpointHost.fetchData('/java.lang:type=Runtime?full=true', function(data) {
+            $('#summary-ut').text(prettifyTime(data.Uptime));
+            $('#summary-vm').text(data.VmName);
+            $('#summary-vv').text(data.VmVendor);
+            $('#summary-vn').text(data.Name);
+        });
+        endpointHost.fetchData('/java.lang:type=Threading?full=true', function(data) {
+            $('#summary-tc').text(data.ThreadCount);
+            $('#summary-tp').text(data.PeakThreadCount);
+            $('#summary-td').text(data.DaemonThreadCount);
+            $('#summary-tt').text(data.TotalStartedThreadCount);
+
+            items.threads[0].data.push([ts, data.ThreadCount]);
+            items.threads[1].data.push([ts, data.PeakThreadCount]);
+            redrawGraphs('threads');
+//            $.plot($('#threads-gr'), items.threads, graph);
+        });
+
+        setTimeout(populateData, jmxproxyConf.cache_duration * 60 * 1000);
+    };
+
+    setTimeout(populateData, 0);
+
+    return {
+        populateData: populateData,
+        redrawGraphs: redrawGraphs,
+    };
+};
+
 var endpointHostClass = function(host) {
-    var creds = null;
+    var auth = null;
+    var data = null;
 
     var fetchName = function() {
-        return creds == null ? host : creds.username+'@'+host;
+        return auth == null ? host : auth.username+'@'+host;
     };
     var resetAuth = function(username, password) {
-        creds = {
+        auth = {
             "username": username,
             "password": password
         }
         checkHost();
     };
     var fetchData = function(item, callback) {
-        if (creds != null) {
-            $.post("/jmxproxy/"+host+item, creds, callback, "json")
+        if (auth != null) {
+            $.post("/jmxproxy/"+host+item, auth, callback, "json")
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
                     $('#endpoint-auth').modal('show');
@@ -44,77 +192,21 @@ var endpointHostClass = function(host) {
         }
     };
     var checkHost = function() {
-        fetchData('/java.lang:type=Runtime/Uptime', function(data) {
-            $(document).attr('title', 'JMXProxy - ' + endpointHost.fetchName());
-            $('#endpoint-label').text(endpointHost.fetchName());
+        fetchData('/java.lang:type=Runtime/Uptime', function(test) {
+            $(document).attr('title', 'JMXProxy - ' + fetchName());
+            $('#summary-cn').text(fetchName());
+            $('#endpoint-label').text(fetchName());
             $('#endpoint-tabui').show();
 
-            $('a[data-toggle="tab"]').on('show', function (e) {
-                endpointHost['view'+e.target.text]();
-            });
-        });
-    };
-    var viewSummary = function() {
-        $('#summary_cn').text(fetchName());
-
-        fetchData('/', function(data) {
-            $('#summary_gc').text('');
-            for (item in data) {
-                if (data[item].lastIndexOf('java.lang:type=GarbageCollector', 0) === 0) {
-                    fetchData('/'+data[item]+'?full=true', function(item) {
-                        $('#summary_gc').append('Name = "'+item.Name+'"; Collections = '+item.CollectionCount+'; Time spent = '+prettifyTime(item.CollectionTime)+'<br>');
-                    });
-                }
-            }
-        });
-        fetchData('/java.lang:type=ClassLoading?full=true', function(data) {
-            $('#summary_cc').text(data.LoadedClassCount);
-            $('#summary_ct').text(data.TotalLoadedClassCount);
-            $('#summary_cu').text(data.UnloadedClassCount);
-        });
-        fetchData('/java.lang:type=Compilation?full=true', function(data) {
-            $('#summary_jc').text(data.Name);
-            $('#summary_jt').text(prettifyTime(data.TotalCompilationTime));
-        });
-        fetchData('/java.lang:type=Memory?full=true', function(data) {
-            $('#summary_hh').text(prettifySize(data.HeapMemoryUsage.used));
-            $('#summary_hc').text(prettifySize(data.HeapMemoryUsage.committed));
-            $('#summary_hm').text(prettifySize(data.HeapMemoryUsage.max));
-            $('#summary_hf').text(prettifySize(data.ObjectPendingFinalizationCount));
-        });
-        fetchData('/java.lang:type=OperatingSystem?full=true', function(data) {
-            $('#summary_pt').text(prettifyTime(Math.floor(data.ProcessCpuTime / 1000000)));
-            $('#summary_mr').text(prettifySize(data.TotalPhysicalMemorySize));
-            $('#summary_ml').text(prettifySize(data.FreePhysicalMemorySize));
-            $('#summary_ms').text(prettifySize(data.TotalSwapSpaceSize));
-            $('#summary_mp').text(prettifySize(data.FreeSwapSpaceSize));
-            $('#summary_sn').text(data.Name+'/'+data.Version);
-            $('#summary_sa').text(data.Arch);
-            $('#summary_sp').text(data.AvailableProcessors);
-            $('#summary_sm').text(prettifySize(data.CommittedVirtualMemorySize));
-        });
-        fetchData('/java.lang:type=Runtime?full=true', function(data) {
-            $('#summary_ut').text(prettifyTime(data.Uptime));
-            $('#summary_vm').text(data.VmName);
-            $('#summary_vv').text(data.VmVendor);
-            $('#summary_vn').text(data.Name);
-        });
-        fetchData('/java.lang:type=Threading?full=true', function(data) {
-            $('#summary_tc').text(data.ThreadCount);
-            $('#summary_tp').text(data.PeakThreadCount);
-            $('#summary_td').text(data.DaemonThreadCount);
-            $('#summary_tt').text(data.TotalStartedThreadCount);
+            endpointData = endpointDataClass();
         });
     };
 
     checkHost();
 
     return {
-        fetchName: fetchName,
         resetAuth: resetAuth,
         fetchData: fetchData,
-        checkHost: checkHost,
-        viewSummary: viewSummary
     };
 };
 
