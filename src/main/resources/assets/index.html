@@ -69,110 +69,150 @@
                     <p>host memory</p>
                 </div>
                 <div class="tab-pane" id="threads">
-                    <div class="well span10" onmouseout="endpointData.redrawGraphs(this.parentNode.id)">
-                        <h4>Running Threads</h4>
-                        <div id="threads-gr" style="width:100%;height:450px;"></div>
+                    <div class="row" onmouseout="endpointData.redrawGraphs(this.parentNode.id)">
+                        <div class="span12">
+                            <div class="well">
+                                <h4>Running Threads</h4>
+                                <div id="threads-gr" style="width:100%;height:450px;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-pane" id="classes">
-                    <div class="well span10" onmouseout="endpointData.redrawGraphs(this.parentNode.id)">
-                        <h4>Loaded Classes</h4>
-                        <div id="classes-gr" style="width:100%;height:450px;"></div>
+                    <div class="row" onmouseout="endpointData.redrawGraphs(this.parentNode.id)">
+                        <div class="span12">
+                            <div class="well">
+                                <h4>Loaded Classes</h4>
+                                <div id="classes-gr" style="width:100%;height:450px;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-pane" id="summary">
-                    <div class="well">
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Connection Name:</strong></div>
-                            <div class="span4" id="summary-cn"></div>
-                            <div class="span2" align="right"><strong>Uptime:</strong></div>
-                            <div class="span4" id="summary-ut"></div>
-                        </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Virtual Machine:</strong></div>
-                            <div class="span4" id="summary-vm"></div>
-                            <div class="span2" align="right"><strong>Process CPU Time:</strong></div>
-                            <div class="span4" id="summary-pt"></div>
-                        </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>VM Vendor:</strong></div>
-                            <div class="span4" id="summary-vv"></div>
-                            <div class="span2" align="right"><strong>JIT Compiler:</strong></div>
-                            <div class="span4" id="summary-jc"></div>
-                        </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>VM Name:</strong></div>
-                            <div class="span4" id="summary-vn"></div>
-                            <div class="span2" align="right"><strong>Total Compile Time:</strong></div>
-                            <div class="span4" id="summary-jt"></div>
-                        </div>
-                    </div>
-                    <div class="well">
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Live Threads:</strong></div>
-                            <div class="span4" id="summary-tc"></div>
-                            <div class="span2" align="right"><strong>Current Classes:</strong></div>
-                            <div class="span4" id="summary-cc"></div>
-                        </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Peak Threads:</strong></div>
-                            <div class="span4" id="summary-tp"></div>
-                            <div class="span2" align="right"><strong>Classes Loaded:</strong></div>
-                            <div class="span4" id="summary-ct"></div>
-                        </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Daemon Threads:</strong></div>
-                            <div class="span4" id="summary-td"></div>
-                            <div class="span2" align="right"><strong>Classes Unloaded:</strong></div>
-                            <div class="span4" id="summary-cu"></div>
-                        </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Total Threads:</strong></div>
-                            <div class="span4" id="summary-tt"></div>
+                    <div class="row">
+                        <div class="span12">
+                            <div class="well">
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <dl class="dl-horizontal">
+                                            <dt>Connection Name</dt>
+                                            <dd id="summary-cn"></dd>
+                                            <dt>Virtual Machine</dt>
+                                            <dd id="summary-vm"></dd>
+                                            <dt>VM Vendor</dt>
+                                            <dd id="summary-vv"></dd>
+                                            <dt>VM Name</dt>
+                                            <dd id="summary-vn"></dd>
+                                        </dl>
+                                    </div>
+                                    <div class="span6">
+                                        <dl class="dl-horizontal">
+                                            <dt>Uptime</dt>
+                                            <dd id="summary-ut"></dd>
+                                            <dt>Process CPU Time</dt>
+                                            <dd id="summary-pt"></dd>
+                                            <dt>JIT Compiler</dt>
+                                            <dd id="summary-jc"></dd>
+                                            <dt>Total Compile Time</dt>
+                                            <dd id="summary-jt"></dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="well">
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Current Heap:</strong></div>
-                            <div class="span4" id="summary-hh"></div>
-                            <div class="span2" align="right"><strong>Committed Memory:</strong></div>
-                            <div class="span4" id="summary-hc"></div>
-                        </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Maximum Heap:</strong></div>
-                            <div class="span4" id="summary-hm"></div>
-                            <div class="span2" align="right"><strong>Pending Finalization:</strong></div>
-                            <div class="span4" id="summary-hf"></div>
-                        </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Garbage Collectors:</strong></div>
-                            <div class="span8" id="summary-gc"></div>
+                    <div class="row">
+                        <div class="span12">
+                            <div class="well">
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <dl class="dl-horizontal">
+                                            <dt>Live Threads</dt>
+                                            <dd id="summary-tc"></dd>
+                                            <dt>Peak Threads</dt>
+                                            <dd id="summary-tp"></dd>
+                                            <dt>Daemon Threads</dt>
+                                            <dd id="summary-td"></dd>
+                                            <dt>Total Threads</dt>
+                                            <dd id="summary-tt"></dd>
+                                        </dl>
+                                    </div>
+                                    <div class="span6">
+                                        <dl class="dl-horizontal">
+                                            <dt>Current Classes</dt>
+                                            <dd id="summary-cc"></dd>
+                                            <dt>Classes Loaded</dt>
+                                            <dd id="summary-ct"></dd>
+                                            <dt>Classes Unloaded</dt>
+                                            <dd id="summary-cu"></dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="well">
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Operating System:</strong></div>
-                            <div class="span4" id="summary-sn"></div>
-                            <div class="span2" align="right"><strong>Total Real Memory:</strong></div>
-                            <div class="span4" id="summary-mr"></div>
+                    <div class="row">
+                        <div class="span12">
+                            <div class="well">
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <dl class="dl-horizontal">
+                                            <dt>Current Heap</dt>
+                                            <dd id="summary-hh"></dd>
+                                            <dt>Maximum Heap</dt>
+                                            <dd id="summary-hm"></dd>
+                                        </dl>
+                                    </div>
+                                    <div class="span6">
+                                        <dl class="dl-horizontal">
+                                            <dt>Committed Memory</dt>
+                                            <dd id="summary-hc"></dd>
+                                            <dt>Pending Finalization</dt>
+                                            <dd id="summary-hf"></dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span12">
+                                        <dl class="dl-horizontal">
+                                            <dt>Garbage Collectors</dt>
+                                            <dd id="summary-gc"></dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>System Architecture:</strong></div>
-                            <div class="span4" id="summary-sa"></div>
-                            <div class="span2" align="right"><strong>Free Real Memory:</strong></div>
-                            <div class="span4" id="summary-ml"></div>
-                        </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>System Processors:</strong></div>
-                            <div class="span4" id="summary-sp"></div>
-                            <div class="span2" align="right"><strong>Total Swap Space:</strong></div>
-                            <div class="span4" id="summary-ms"></div>
-                        </div>
-                        <div class="row">
-                            <div class="span2" align="right"><strong>Committed Memory:</strong></div>
-                            <div class="span4" id="summary-sm"></div>
-                            <div class="span2" align="right"><strong>Free Swap Space:</strong></div>
-                            <div class="span4" id="summary-mp"></div>
+                    </div>
+                    <div class="row">
+                        <div class="span12">
+                            <div class="well">
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <dl class="dl-horizontal">
+                                            <dt>Operating System</dt>
+                                            <dd id="summary-sn"></dd>
+                                            <dt>System Architecture</dt>
+                                            <dd id="summary-sa"></dd>
+                                            <dt>System Processors</dt>
+                                            <dd id="summary-sp"></dd>
+                                            <dt>Committed Memory</dt>
+                                            <dd id="summary-sm"></dd>
+                                        </dl>
+                                    </div>
+                                    <div class="span6">
+                                        <dl class="dl-horizontal">
+                                            <dt>Total Real Memory</dt>
+                                            <dd id="summary-mr"></dd>
+                                            <dt>Free Real Memory</dt>
+                                            <dd id="summary-ml"></dd>
+                                            <dt>Total Swap Space</dt>
+                                            <dd id="summary-ms"></dd>
+                                            <dt>Free Swap Space</dt>
+                                            <dd id="summary-mp"></dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
