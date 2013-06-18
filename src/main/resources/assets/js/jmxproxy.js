@@ -11,17 +11,41 @@ var documentInfoClass = function(defaultTitle, defaultLabel) {
 
 var endpointDataClass = function() {
     var items = {
-        threads: [
+        'overview-mem-gr': [
+            {
+                label: 'Heap Used',
+                data: [],
+            },
+        ],
+        'overview-thr-gr': [
+            {
+                label: 'Live Threads',
+                data: [],
+            },
+        ],
+        'overview-cls-gr': [
+            {
+                label: 'Loaded Classes',
+                data: [],
+            },
+        ],
+        'overview-cpu-gr': [
+            {
+                label: 'Process CPU',
+                data: [],
+            },
+        ],
+        'threads-gr': [
             {
                 label: 'Live Running Threads',
-                data: []
+                data: [],
             },
             {
                 label: 'Peak Running Threads',
-                data: []
-            }
+                data: [],
+            },
         ],
-        classes: [
+        'classes-gr': [
             {
                 label: 'Current Classes Loaded',
                 data: [],
@@ -29,52 +53,63 @@ var endpointDataClass = function() {
             {
                 label: 'Total Classes Loaded',
                 data: [],
-            }
+            },
         ],
     };
 
     var graph = {
-        grid: {
-            hoverable: true,
-            clickable: false,
-        },
-        pan: {
-            interactive: true,
-        },
-        selection: {
-            mode: 'x',
-            shape: 'bevel',
-        },
-        series: {
-            lines: {
+        full: {
+            legend: {
                 show: true,
+                backgroundOpacity: 0.1,
             },
-            points: {
-                show: true,
+            pan: {
+                interactive: true,
+            },
+            zoom: {
+                interactive: true,
             },
         },
-        tooltip: true,
-        tooltipOpts: {
-            content: '%s: %y',
-        },
-        zoom: {
-            interactive: true,
-        },
-        xaxis: {
-            mode:       'time',
-            timezone:   'browser',
-            timeformat: '%H:%M:%S',
-        },
-        yaxis: {
-            tickDecimals: 0,
+        bare: {
+            legend: {
+                show: false,
+            },
         },
     };
 
-    var redrawGraphs = function(name) {
-        if (items.hasOwnProperty(name)) {
-            $.plot($('#'+name+'-gr'), items[name], graph);
+    var redrawGraphs = function(name, bare, type) {
+        if (items.hasOwnProperty(name) && $('#'+name).is(':visible')) {
+            opts = {
+                grid: {
+                    hoverable: true,
+                    clickable: false,
+                },
+                series: {
+                    lines: {
+                        show: true,
+                    },
+                    points: {
+                        show: true,
+                    },
+                },
+                tooltip: true,
+                tooltipOpts: {
+                    content: '%s: %y',
+                },
+                xaxis: {
+                    mode: 'time',
+                    timezone: 'browser',
+                    timeformat: '%H:%M',
+                },
+                yaxis: {
+                    labelWidth: 28,
+                    tickFormatter: typeof type !== 'undefined' ? type : Math.floor,
+                },
+            };
+
+            $.plot($('#'+name), items[name], $.extend(opts, graph[bare ? 'bare' : 'full']));
         }
-    }
+    };
 
     var populateData = function() {
         ts = new Date().getTime();
@@ -97,8 +132,12 @@ var endpointDataClass = function() {
             $('#overview-cls-cu').text(data.UnloadedClassCount);
             $('#overview-cls-ct').text(data.TotalLoadedClassCount);
 
-            items.classes[0].data.push([ts, data.LoadedClassCount]);
-            items.classes[1].data.push([ts, data.TotalLoadedClassCount]);
+            items['classes-gr'][0].data.push([ts, data.LoadedClassCount]);
+            items['classes-gr'][1].data.push([ts, data.TotalLoadedClassCount]);
+            redrawGraphs('classes-gr');
+
+            items['overview-cls-gr'][0].data.push([ts, data.LoadedClassCount]);
+            redrawGraphs('overview-cls-gr', true);
         });
         endpointHost.fetchData('/java.lang:type=Compilation?full=true', function(data) {
             $('#summary-jc').text(data.Name);
@@ -109,9 +148,13 @@ var endpointDataClass = function() {
             $('#summary-hc').text(prettifySize(data.HeapMemoryUsage.committed));
             $('#summary-hm').text(prettifySize(data.HeapMemoryUsage.max));
             $('#summary-hf').text(data.ObjectPendingFinalizationCount+' object(s)');
+
             $('#overview-mem-hh').text(prettifySize(data.HeapMemoryUsage.used));
             $('#overview-mem-hc').text(prettifySize(data.HeapMemoryUsage.committed));
             $('#overview-mem-hm').text(prettifySize(data.HeapMemoryUsage.max));
+
+            items['overview-mem-gr'][0].data.push([ts, data.HeapMemoryUsage.used]);
+            redrawGraphs('overview-mem-gr', true, prettifySize);
         });
         endpointHost.fetchData('/java.lang:type=OperatingSystem?full=true', function(data) {
             $('#summary-pt').text(prettifyTime(Math.floor(data.ProcessCpuTime / 1000000)));
@@ -123,8 +166,12 @@ var endpointDataClass = function() {
             $('#summary-sa').text(data.Arch);
             $('#summary-sp').text(data.AvailableProcessors);
             $('#summary-sm').text(prettifySize(data.CommittedVirtualMemorySize));
+
             $('#overview-cpu-up').text(prettifyPercent(data.ProcessCpuLoad));
             $('#overview-cpu-us').text(prettifyPercent(data.SystemCpuLoad));
+
+            items['overview-cpu-gr'][0].data.push([ts, data.ProcessCpuLoad]);
+            redrawGraphs('overview-cpu-gr', true, prettifyPercent);
         });
         endpointHost.fetchData('/java.lang:type=Runtime?full=true', function(data) {
             $('#summary-ut').text(prettifyTime(data.Uptime));
@@ -141,8 +188,12 @@ var endpointDataClass = function() {
             $('#overview-thr-tp').text(data.PeakThreadCount);
             $('#overview-thr-tt').text(data.TotalStartedThreadCount);
 
-            items.threads[0].data.push([ts, data.ThreadCount]);
-            items.threads[1].data.push([ts, data.PeakThreadCount]);
+            items['threads-gr'][0].data.push([ts, data.ThreadCount]);
+            items['threads-gr'][1].data.push([ts, data.PeakThreadCount]);
+            redrawGraphs('threads-gr');
+
+            items['overview-thr-gr'][0].data.push([ts, data.ThreadCount]);
+            redrawGraphs('overview-thr-gr', true);
         });
 
         setTimeout(populateData, jmxproxyConf.cache_duration * 60 * 1000);
@@ -151,7 +202,11 @@ var endpointDataClass = function() {
     setTimeout(populateData, 0);
 
     $('a[data-toggle="tab"]').on('shown', function(e) {
-        redrawGraphs(e.target.hash.substring(1));
+        if (e.target.text == 'Overview') {
+            redrawGraphs('overview-mem-gr', true, prettifySize);
+        } else if ($.inArray(e.target.text, ['Classes', 'Threads']) !== -1) {
+            redrawGraphs(e.target.text.toLowerCase()+'-gr');
+        }
     });
 
     return {
