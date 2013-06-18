@@ -63,7 +63,70 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="overview">
-                    <p>host overview</p>
+                    <div class="row">
+                        <div class="span12">
+                            <div class="row-fluid">
+                                <div class="span6">
+                                    <div class="well">
+                                        <h5>Heap Usage</h5>
+                                        <div id="overview-mem-gr" style="width:100%;height:225px;"></div>
+                                        <ul class="inline">
+                                            <li><small>Used:</small></li>
+                                            <li><small id="overview-mem-hh"></small></li>
+                                            <li><small>Committed:</small></li>
+                                            <li><small id="overview-mem-hc"></small></li>
+                                            <li><small>Max:</small></li>
+                                            <li><small id="overview-mem-hm"></small></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="span6">
+                                    <div class="well">
+                                        <h5>Running Threads</h5>
+                                        <div id="overview-thr-gr" style="width:100%;height:225px;"></div>
+                                        <ul class="inline">
+                                            <li><small>Live:</small></li>
+                                            <li><small id="overview-thr-tc"></small></li>
+                                            <li><small>Peak:</small></li>
+                                            <li><small id="overview-thr-tp"></small></li>
+                                            <li><small>Total:</small></li>
+                                            <li><small id="overview-thr-tt"></small></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span12">
+                            <div class="row-fluid">
+                                <div class="span6">
+                                    <div class="well">
+                                        <h5>Loaded Classes</h5>
+                                        <div id="overview-cls-gr" style="width:100%;height:225px;"></div>
+                                        <ul class="inline">
+                                            <li><small>Loaded:</small></li>
+                                            <li><small id="overview-cls-cl"></small></li>
+                                            <li><small>Unloaded:</small></li>
+                                            <li><small id="overview-cls-cu"></small></li>
+                                            <li><small>Total:</small></li>
+                                            <li><small id="overview-cls-ct"></small></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="span6">
+                                    <div class="well">
+                                        <h5>CPU Usage</h5>
+                                        <div id="overview-cpu-gr" style="width:100%;height:225px;"></div>
+                                        <ul class="inline">
+                                            <li><small>Process CPU Usage:</small></li>
+                                            <li><small id="overview-cpu-up"></small></li>
+                                            <li><small>System CPU Usage:</small></li>
+                                            <li><small id="overview-cpu-us"></small></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-pane" id="memory">
                     <p>host memory</p>
@@ -139,12 +202,12 @@
                                     </div>
                                     <div class="span6">
                                         <dl class="dl-horizontal">
-                                            <dt>Current Classes</dt>
-                                            <dd id="summary-cc"></dd>
-                                            <dt>Classes Loaded</dt>
-                                            <dd id="summary-ct"></dd>
-                                            <dt>Classes Unloaded</dt>
+                                            <dt>Loaded Classes</dt>
+                                            <dd id="summary-cl"></dd>
+                                            <dt>Unloaded Classes</dt>
                                             <dd id="summary-cu"></dd>
+                                            <dt>Total Classes</dt>
+                                            <dd id="summary-ct"></dd>
                                         </dl>
                                     </div>
                                 </div>

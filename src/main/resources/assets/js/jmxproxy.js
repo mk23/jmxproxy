@@ -90,9 +90,12 @@ var endpointDataClass = function() {
             }
         });
         endpointHost.fetchData('/java.lang:type=ClassLoading?full=true', function(data) {
-            $('#summary-cc').text(data.LoadedClassCount);
-            $('#summary-ct').text(data.TotalLoadedClassCount);
+            $('#summary-cl').text(data.LoadedClassCount);
             $('#summary-cu').text(data.UnloadedClassCount);
+            $('#summary-ct').text(data.TotalLoadedClassCount);
+            $('#overview-cls-cl').text(data.LoadedClassCount);
+            $('#overview-cls-cu').text(data.UnloadedClassCount);
+            $('#overview-cls-ct').text(data.TotalLoadedClassCount);
 
             items.classes[0].data.push([ts, data.LoadedClassCount]);
             items.classes[1].data.push([ts, data.TotalLoadedClassCount]);
@@ -105,7 +108,10 @@ var endpointDataClass = function() {
             $('#summary-hh').text(prettifySize(data.HeapMemoryUsage.used));
             $('#summary-hc').text(prettifySize(data.HeapMemoryUsage.committed));
             $('#summary-hm').text(prettifySize(data.HeapMemoryUsage.max));
-            $('#summary-hf').text(prettifySize(data.ObjectPendingFinalizationCount));
+            $('#summary-hf').text(data.ObjectPendingFinalizationCount+' object(s)');
+            $('#overview-mem-hh').text(prettifySize(data.HeapMemoryUsage.used));
+            $('#overview-mem-hc').text(prettifySize(data.HeapMemoryUsage.committed));
+            $('#overview-mem-hm').text(prettifySize(data.HeapMemoryUsage.max));
         });
         endpointHost.fetchData('/java.lang:type=OperatingSystem?full=true', function(data) {
             $('#summary-pt').text(prettifyTime(Math.floor(data.ProcessCpuTime / 1000000)));
@@ -117,6 +123,8 @@ var endpointDataClass = function() {
             $('#summary-sa').text(data.Arch);
             $('#summary-sp').text(data.AvailableProcessors);
             $('#summary-sm').text(prettifySize(data.CommittedVirtualMemorySize));
+            $('#overview-cpu-up').text(prettifyPercent(data.ProcessCpuLoad));
+            $('#overview-cpu-us').text(prettifyPercent(data.SystemCpuLoad));
         });
         endpointHost.fetchData('/java.lang:type=Runtime?full=true', function(data) {
             $('#summary-ut').text(prettifyTime(data.Uptime));
@@ -129,6 +137,9 @@ var endpointDataClass = function() {
             $('#summary-tp').text(data.PeakThreadCount);
             $('#summary-td').text(data.DaemonThreadCount);
             $('#summary-tt').text(data.TotalStartedThreadCount);
+            $('#overview-thr-tc').text(data.ThreadCount);
+            $('#overview-thr-tp').text(data.PeakThreadCount);
+            $('#overview-thr-tt').text(data.TotalStartedThreadCount);
 
             items.threads[0].data.push([ts, data.ThreadCount]);
             items.threads[1].data.push([ts, data.PeakThreadCount]);
@@ -294,6 +305,10 @@ function prettifySize(s) {
     }
 
     return s + ' bytes';
+}
+
+function prettifyPercent(s) {
+    return s.toFixed(2) + '%';
 }
 
 function displayError(text) {
