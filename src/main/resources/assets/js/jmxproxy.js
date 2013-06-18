@@ -204,6 +204,9 @@ var endpointDataClass = function() {
     $('a[data-toggle="tab"]').on('shown', function(e) {
         if (e.target.text == 'Overview') {
             redrawGraphs('overview-mem-gr', true, prettifySize);
+            redrawGraphs('overview-thr-gr', true);
+            redrawGraphs('overview-cls-gr', true);
+            redrawGraphs('overview-cpu-gr', true, prettifyPercent);
         } else if ($.inArray(e.target.text, ['Classes', 'Threads']) !== -1) {
             redrawGraphs(e.target.text.toLowerCase()+'-gr');
         }
