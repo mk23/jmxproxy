@@ -55,6 +55,23 @@ var endpointDataClass = function() {
                 data: [],
             },
         ],
+        'memory-gr': {
+            selected: 'hm',
+            hm: [
+                {
+                    label: 'Heap Memory Usage',
+                    data: [],
+                    info: {},
+                },
+            ],
+            nm: [
+                {
+                    label: 'Non Heap Memory Usage',
+                    data: [],
+                    info: {},
+                },
+            ],
+        },
     };
 
     var graph = {
@@ -76,6 +93,16 @@ var endpointDataClass = function() {
             },
         },
     };
+
+    var redrawMemory = function(item) {
+        items['memory-gr'].selected = item;
+        $('#memory-text').text(items['memory-gr'][item][0].label);
+        $('#memory-hh').text(prettifySize(items['memory-gr'][item][0].info.used));
+        $('#memory-hc').text(prettifySize(items['memory-gr'][item][0].info.committed));
+        $('#memory-hm').text(prettifySize(items['memory-gr'][item][0].info.max));
+
+        redrawGraphs('memory-gr', true, prettifySize);
+    }
 
     var redrawGraphs = function(name, bare, type) {
         if (items.hasOwnProperty(name) && $('#'+name).is(':visible')) {
@@ -107,7 +134,11 @@ var endpointDataClass = function() {
                 },
             };
 
-            $.plot($('#'+name), items[name], $.extend(opts, graph[bare ? 'bare' : 'full']));
+            if (name != 'memory-gr') {
+                $.plot($('#'+name), items[name], $.extend(opts, graph[bare ? 'bare' : 'full']));
+            } else {
+                $.plot($('#'+name), items[name][items[name].selected], $.extend(opts, graph.full));
+            }
         }
     };
 
@@ -116,10 +147,73 @@ var endpointDataClass = function() {
 
         endpointHost.fetchData('/', function(data) {
             $('#summary-gc').text('');
+            $('#memory-gc').text('');
+            $('#memory-bar-hm').html('');
+            $('#memory-bar-nm').html('');
             for (item in data) {
                 if (data[item].lastIndexOf('java.lang:type=GarbageCollector', 0) === 0) {
                     endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
-                        $('#summary-gc').append('Name = "'+item.Name+'"; Collections = '+item.CollectionCount+'; Time spent = '+prettifyTime(item.CollectionTime)+'<br>');
+                        $('#summary-gc').append('Name = "'+item.Name+'"; Collections = '+item.CollectionCount+'; Time spent = '+prettifyTime(item.CollectionTime, 2)+'<br>');
+                        $('#memory-gc').append(prettifyTime(item.CollectionTime, 2)+' on '+item.Name+' ('+item.CollectionCount+' collections)<br>');
+                    });
+                } else if (data[item].lastIndexOf('java.lang:type=MemoryPool') === 0) {
+                    endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
+                        if (typeof items['memory-gr'][item.Name] === 'undefined') {
+                            items['memory-gr'][item.Name] = [
+                                {
+                                    label: item.Name+' Memory Usage',
+                                    data: [ [ts, item.Usage.used] ],
+                                    info: {
+                                        used: item.Usage.used,
+                                        committed: item.Usage.committed,
+                                        max: item.Usage.max,
+                                    },
+                                },
+                            ];
+                        } else {
+                            items['memory-gr'][item.Name][0].data.push([ts, item.Usage.used]);
+                            items['memory-gr'][item.Name][0].info = {
+                                used: item.Usage.used,
+                                committed: item.Usage.committed,
+                                max: item.Usage.max,
+                            };
+                        }
+                        if (item.Type == 'HEAP') {
+                            $('#memory-bar-hm').append(
+                                $('<div/>')
+                                .on('click', function() {
+                                    redrawMemory(item.Name);
+                                })
+                                .attr('class', 'progress progress-success')
+                                .attr('title', 'Memory Pool "'+item.Name+'"')
+                                .attr('data-toggle', 'tooltip')
+                                .attr('style', 'width:100%')
+                                .append(
+                                    $('<div/>')
+                                    .attr('class', 'bar')
+                                    .attr('style', 'width:'+prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                    .text(prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                )
+                            );
+                        } else if (item.Type == 'NON_HEAP') {
+                            $('#memory-bar-nm').append(
+                                $('<div/>')
+                                .on('click', function() {
+                                    redrawMemory(item.Name);
+                                })
+                                .attr('class', 'progress progress-info')
+                                .attr('title', 'Memory Pool "'+item.Name+'"')
+                                .attr('data-toggle', 'tooltip')
+                                .attr('style', 'width:100%')
+                                .append(
+                                    $('<div/>')
+                                    .attr('class', 'bar')
+                                    .attr('style', 'width:'+prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                    .text(prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                )
+                            );
+                        }
+                        redrawGraphs('memory-gr', true, prettifySize);
                     });
                 }
             }
@@ -141,23 +235,41 @@ var endpointDataClass = function() {
         });
         endpointHost.fetchData('/java.lang:type=Compilation?full=true', function(data) {
             $('#summary-jc').text(data.Name);
-            $('#summary-jt').text(prettifyTime(data.TotalCompilationTime));
+            $('#summary-jt').text(prettifyTime(data.TotalCompilationTime, 2));
         });
         endpointHost.fetchData('/java.lang:type=Memory?full=true', function(data) {
+            $('#overview-mem-hh').text(prettifySize(data.HeapMemoryUsage.used));
+            $('#overview-mem-hc').text(prettifySize(data.HeapMemoryUsage.committed));
+            $('#overview-mem-hm').text(prettifySize(data.HeapMemoryUsage.max));
+
+            $('#memory-hh').text(prettifySize(data.HeapMemoryUsage.used));
+            $('#memory-hc').text(prettifySize(data.HeapMemoryUsage.committed));
+            $('#memory-hm').text(prettifySize(data.HeapMemoryUsage.max));
+
             $('#summary-hh').text(prettifySize(data.HeapMemoryUsage.used));
             $('#summary-hc').text(prettifySize(data.HeapMemoryUsage.committed));
             $('#summary-hm').text(prettifySize(data.HeapMemoryUsage.max));
             $('#summary-hf').text(data.ObjectPendingFinalizationCount+' object(s)');
 
-            $('#overview-mem-hh').text(prettifySize(data.HeapMemoryUsage.used));
-            $('#overview-mem-hc').text(prettifySize(data.HeapMemoryUsage.committed));
-            $('#overview-mem-hm').text(prettifySize(data.HeapMemoryUsage.max));
-
             items['overview-mem-gr'][0].data.push([ts, data.HeapMemoryUsage.used]);
             redrawGraphs('overview-mem-gr', true, prettifySize);
+
+            items['memory-gr']['hm'][0].data.push([ts, data.HeapMemoryUsage.used]);
+            items['memory-gr']['nm'][0].data.push([ts, data.NonHeapMemoryUsage.used]);
+            items['memory-gr']['hm'][0].info = {
+                used: data.HeapMemoryUsage.used,
+                committed: data.HeapMemoryUsage.committed,
+                max: data.HeapMemoryUsage.max,
+            };
+            items['memory-gr']['nm'][0].info = {
+                used: data.NonHeapMemoryUsage.used,
+                committed: data.NonHeapMemoryUsage.committed,
+                max: data.NonHeapMemoryUsage.max,
+            };
+            redrawGraphs('memory-gr', true, prettifySize);
         });
         endpointHost.fetchData('/java.lang:type=OperatingSystem?full=true', function(data) {
-            $('#summary-pt').text(prettifyTime(Math.floor(data.ProcessCpuTime / 1000000)));
+            $('#summary-pt').text(prettifyTime(data.ProcessCpuTime / 1000000, 3));
             $('#summary-mr').text(prettifySize(data.TotalPhysicalMemorySize));
             $('#summary-ml').text(prettifySize(data.FreePhysicalMemorySize));
             $('#summary-ms').text(prettifySize(data.TotalSwapSpaceSize));
@@ -207,6 +319,8 @@ var endpointDataClass = function() {
             redrawGraphs('overview-thr-gr', true);
             redrawGraphs('overview-cls-gr', true);
             redrawGraphs('overview-cpu-gr', true, prettifyPercent);
+        } else if (e.target.text == 'Memory') {
+            redrawGraphs('memory-gr', true, prettifySize);
         } else if ($.inArray(e.target.text, ['Classes', 'Threads']) !== -1) {
             redrawGraphs(e.target.text.toLowerCase()+'-gr');
         }
@@ -214,6 +328,7 @@ var endpointDataClass = function() {
 
     return {
         populateData: populateData,
+        redrawMemory: redrawMemory,
         redrawGraphs: redrawGraphs,
     };
 };
@@ -298,7 +413,14 @@ $(document).ready(function() {
         $('#endpoint-auth').modal('hide')
     });
 
-    $.getJSON( "/jmxproxy/config", function(data) {
+    $('#memory-btn-hm').on('click', function() {
+        endpointData.redrawMemory('hm');
+    });
+    $('#memory-btn-nm').on('click', function() {
+        endpointData.redrawMemory('nm');
+    });
+
+    $.getJSON('/jmxproxy/config', function(data) {
         jmxproxyConf = data;
         endpointList = [];
 
@@ -318,7 +440,7 @@ $(document).ready(function() {
     });
 });
 
-function prettifyTime(s) {
+function prettifyTime(s, n) {
     v = s % 86400000;
     d = (s - v) / 86400000;
     s = v;
@@ -329,7 +451,7 @@ function prettifyTime(s) {
 
     v = s % 60000;
     m = (s - v) / 60000;
-    s = v / 1000;
+    s = (v / 1000).toFixed(typeof n !== 'undefined' ? n : 0);
 
     parts = [];
     if (d) {
@@ -362,7 +484,7 @@ function prettifySize(s) {
         return (s / Math.pow(1024, 1)).toFixed(2) + ' KB';
     }
 
-    return s + ' bytes';
+    return s + ' B';
 }
 
 function prettifyPercent(s) {
