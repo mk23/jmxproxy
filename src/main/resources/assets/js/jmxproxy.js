@@ -191,7 +191,7 @@ var endpointDataClass = function() {
                                 .append(
                                     $('<div/>')
                                     .attr('class', 'bar')
-                                    .attr('style', 'width:'+prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                    .attr('style', 'color:black;text-align:left;width:'+prettifyPercent(100 * item.Usage.used / item.Usage.max))
                                     .text(prettifyPercent(100 * item.Usage.used / item.Usage.max))
                                 )
                             );
@@ -208,7 +208,7 @@ var endpointDataClass = function() {
                                 .append(
                                     $('<div/>')
                                     .attr('class', 'bar')
-                                    .attr('style', 'width:'+prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                    .attr('style', 'color:black;text-align:left;width:'+prettifyPercent(100 * item.Usage.used / item.Usage.max))
                                     .text(prettifyPercent(100 * item.Usage.used / item.Usage.max))
                                 )
                             );
