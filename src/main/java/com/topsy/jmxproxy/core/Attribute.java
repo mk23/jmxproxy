@@ -43,6 +43,13 @@ public class Attribute implements JsonSerializable {
                 buildJson(jgen, Array.get(objectValue, i));
             }
             jgen.writeEndArray();
+        } else if (objectValue instanceof Iterable) {
+            Iterable data = (Iterable) objectValue;
+            jgen.writeStartArray();
+            for (Object objectEntry : data) {
+                buildJson(jgen, objectEntry);
+            }
+            jgen.writeEndArray();
         } else if (objectValue instanceof TabularData) {
             TabularData data = (TabularData) objectValue;
             jgen.writeStartArray();
