@@ -28,14 +28,14 @@ public class ConnectionManagerTest {
     public void checkValidHost() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
-        assertNotNull(manager.getHost(validHost, null));
+        assertNotNull(manager.getHost(validHost));
     }
 
     @Test
     public void checkInvalidHost() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
-        assertNull(manager.getHost(invalidHost, null));
+        assertNull(manager.getHost(invalidHost));
     }
 
     @Test
@@ -45,7 +45,7 @@ public class ConnectionManagerTest {
 
         final ConnectionManager manager = new ConnectionManager(serviceConfig);
 
-        assertNotNull(manager.getHost(validHost, null));
+        assertNotNull(manager.getHost(validHost));
     }
 
     @Test(expected=WebApplicationException.class)
@@ -63,21 +63,21 @@ public class ConnectionManagerTest {
     public void checkValidHostMBeans() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
-        assertTrue(manager.getHost(validHost, null).getMBeans().contains(validMBean));
+        assertTrue(manager.getHost(validHost).getMBeans().contains(validMBean));
     }
 
     @Test
     public void checkValidHostValidMBean() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
-        assertNotNull(manager.getHost(validHost, null).getMBean(validMBean));
+        assertNotNull(manager.getHost(validHost).getMBean(validMBean));
     }
 
     @Test
     public void checkValidHostInvalidMBean() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
-        assertNull(manager.getHost(validHost, null).getMBean(invalidMBean));
+        assertNull(manager.getHost(validHost).getMBean(invalidMBean));
     }
 
     /* Attribute tests */
@@ -85,20 +85,20 @@ public class ConnectionManagerTest {
     public void checkValidHostValidMBeanAttributes() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
-        assertTrue(manager.getHost(validHost, null).getMBean(validMBean).getAttributes().contains(validAttribute));
+        assertTrue(manager.getHost(validHost).getMBean(validMBean).getAttributes().contains(validAttribute));
     }
 
     @Test
     public void checkValidHostValidMBeanValidAttribute() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
-        assertNotNull(manager.getHost(validHost, null).getMBean(validMBean).getAttribute(validAttribute));
+        assertNotNull(manager.getHost(validHost).getMBean(validMBean).getAttribute(validAttribute));
     }
 
     @Test
     public void checkValidHostValidMBeanInvalidAttribute() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
 
-        assertNull(manager.getHost(validHost, null).getMBean(validMBean).getAttribute(invalidAttribute));
+        assertNull(manager.getHost(validHost).getMBean(validMBean).getAttribute(invalidAttribute));
     }
 }
