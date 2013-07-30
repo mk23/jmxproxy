@@ -130,7 +130,7 @@ var endpointDataClass = function() {
                 },
                 yaxis: {
                     labelWidth: 28,
-                    tickFormatter: typeof type !== 'undefined' ? type : Math.floor,
+                    tickFormatter: $.type(type) !== 'undefined' ? type : Math.floor,
                 },
             };
 
@@ -158,7 +158,7 @@ var endpointDataClass = function() {
                     });
                 } else if (data[item].lastIndexOf('java.lang:type=MemoryPool') === 0) {
                     endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
-                        if (typeof items['memory-gr'][item.Name] === 'undefined') {
+                        if ($.type(items['memory-gr'][item.Name]) === 'undefined') {
                             items['memory-gr'][item.Name] = [
                                 {
                                     label: item.Name+' Memory Usage',
@@ -451,7 +451,7 @@ function prettifyTime(s, n) {
 
     v = s % 60000;
     m = (s - v) / 60000;
-    s = (v / 1000).toFixed(typeof n !== 'undefined' ? n : 0);
+    s = (v / 1000).toFixed($.type(n) !== 'undefined' ? n : 0);
 
     parts = [];
     if (d) {
