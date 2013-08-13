@@ -142,6 +142,183 @@ var endpointDataClass = function() {
         }
     };
 
+    var makeBeanTree = function() {
+        function listHeader (name) {
+            html = $('<li/>').append(
+                $('<span/>').addClass('menu-toggle label label-info')
+                .mouseover(function() {
+                    $(this).removeClass('label-info').addClass('label-warning');
+                })
+                .mouseout(function() {
+                    $(this).removeClass('label-warning').addClass('label-info');
+                })
+                .click(function() {
+                    $(this).parent().children('ul.menu').toggle('fast', function() {
+                        if ($(this).is(':visible')) {
+                            $(this).next('i.icon-folder-close:first')
+                                .removeClass('icon-folder-close')
+                                .addClass('icon-folder-open');
+                            $(this).next('i.icon-chevron-right:first')
+                                .removeClass('icon-chevron-right')
+                                .addClass('icon-chevron-down');
+                        } else {
+                            $(this).next('i.icon-folder-open:first')
+                                .removeClass('icon-folder-open')
+                                .addClass('icon-folder-close');
+                            $(this).next('i.icon-chevron-down:first')
+                                .removeClass('icon-chevron-down')
+                                .addClass('icon-chevron-right');
+                        }
+                    });
+                })
+                .append($('<i/>').addClass('icon-folder-close pull-left'))
+                .append($('<i/>').addClass('icon-chevron-right pull-right'))
+                .append(name)
+            );
+            return html;
+        }
+
+        endpointHost.fetchData('/', function(data) {
+            data.sort();
+            for (bean in data) {
+                head = data[bean].split(':')[0].replace(/"/g, '');
+                html = $('#mbeans-menu').find('span:contains('+head+'):first').parent();
+                if (html.length == 0) {
+                    html = listHeader(head);
+                    $('#mbeans-menu').append(html);
+                }
+
+                body = data[bean].split(':').pop().split(',');
+                for (part in body) {
+                    name = body[part].split('=').pop().replace(/"/g, '');
+                    list = html.find('ul:first');
+                    if (list.length == 0) {
+                        list = $('<ul/>').addClass('nav nav-list menu');
+                        html.append(list);
+                    }
+
+                    if (part == body.length - 1) {
+                        item = $('<li/>').append(
+                            $('<a/>').attr('href', '#'+data[bean])
+                            .click(function() {
+                                $('#mbeans-refresh').attr('href', this.hash).click(function() {
+                                    populateAttr(this.hash.substring(1));
+                                });
+                                populateAttr(this.hash.substring(1));
+                            })
+                            .append($('<i/>').addClass('icon-file'))
+                            .append(name)
+                        );
+                        list.append(item);
+                    } else {
+                        item = list.find('span:contains('+name+'):first').parent();
+                        if (item.length == 0) {
+                            item = listHeader(name);
+                            list.append(item);
+                        }
+                        html = item;
+                    }
+                }
+            }
+        });
+    };
+
+    var populateAttr = function(bean) {
+        endpointHost.fetchData('/'+bean+'?full=true', function(data) {
+            $('#mbeans-table').show().dataTable({
+                'bDestroy': true,
+                'bSort': false,
+                'bAutoWidth': true,
+                'bLengthChange': false,
+                'sScrollX': '100%',
+                'sPaginationType': 'bootstrap',
+                'fnRowCallback': function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    dat = {
+                        'bDestroy': true,
+                        'bFilter': false,
+                        'bInfo': false,
+                        'bSort': false,
+                        'bLengthChange': false,
+                        'sPaginationType': 'bootstrap',
+                    };
+
+                    if ($.type(aData.val) === 'array' && aData.val.length > 0) {
+                        if ($.type(aData.val[0]) === 'object') {
+                            dat['aaData'] = aData.val;
+                            dat['aoColumns'] = $.map(aData.val[0], function(v, k) {
+                                return {'mData': k};
+                            });
+                        } else {
+                            dat['aaData'] = $.map(aData.val, function(v, k) {
+                                return {'val': v};
+                            });
+                            dat['aoColumns'] = [
+                                {'mData': 'val'},
+                            ];
+                        }
+                    } else if ($.type(aData.val) === 'object') {
+                        dat['aaData'] = $.map(aData.val, function(v, k) {
+                            return {'key': k, 'val': v};
+                        });
+                        dat['aoColumns'] = [
+                            {'mData': 'key'},
+                            {'mData': 'val'},
+                        ];
+                    }
+
+                    if ($.type(dat['aaData']) !== 'undefined') {
+                        $('td:eq(0)', nRow)
+                            .empty()
+                            .css('cursor', 'pointer')
+                            .click(function () {
+                                $('td:eq(1) > :eq(0)', $(this).parent()).toggle();
+                                $('td:eq(1) > :eq(1)', $(this).parent()).toggle();
+                            })
+                            .text(aData.key)
+                            .append(
+                                $('<span/>')
+                                .addClass('badge badge-important pull-right')
+                                .text(dat['aaData'].length)
+                            );
+
+                        $('td:eq(1)', nRow)
+                            .empty()
+                            .append(
+                                $('<table/>')
+                                .addClass('table table-condensed table-striped table-bordered')
+                                .append($('<thead/>')
+//                                    .append($('<th/>').text('Name'))
+//                                    .append($('<th/>').attr('width', '100%').text('Value'))
+                                    )
+                                .append($('<tbody/>'))
+                            )
+                            .append(
+                                $('<span/>')
+                                .addClass('label label-info')
+                                .html($.type(aData.val))
+                            );
+
+                        $('td:eq(1) > table', nRow).dataTable(dat);
+                        $('td:eq(1) > :first-child', nRow).hide();
+                        if ($('div.dataTables_paginate > ul > li', nRow).length == 3) {
+                            $('div.dataTables_paginate', nRow).hide();
+                        }
+                    } else {
+                        $('td:eq(1)', nRow)
+                            .html($('<span/>').css('white-space', 'nowrap').text(aData.val))
+                    }
+                },
+                'aaData': $.map(data, function(v, k) {
+                    return {'key': k, 'val': v};
+                }),
+                'aoColumns': [
+                    {'mData': 'key'},
+                    {'mData': 'val'},
+                ],
+            });
+        });
+    }
+
     var populateData = function() {
         ts = new Date().getTime();
 
@@ -319,6 +496,8 @@ var endpointDataClass = function() {
             redrawGraphs('overview-thr-gr', true);
             redrawGraphs('overview-cls-gr', true);
             redrawGraphs('overview-cpu-gr', true, prettifyPercent);
+        } else if (e.target.text == 'MBeans') {
+            makeBeanTree();
         } else if (e.target.text == 'Memory') {
             redrawGraphs('memory-gr', true, prettifySize);
         } else if ($.inArray(e.target.text, ['Classes', 'Threads']) !== -1) {
@@ -418,6 +597,13 @@ $(document).ready(function() {
     });
     $('#memory-btn-nm').on('click', function() {
         endpointData.redrawMemory('nm');
+    });
+
+    $.extend($.fn.dataTableExt.oStdClasses, {
+        'sWrapper': 'dataTables_wrapper form-inline',
+        'sSortAsc': 'header headerSortDown',
+        'sSortDesc': 'header headerSortUp',
+        'sSortable': 'header',
     });
 
     $.getJSON('/jmxproxy/config', function(data) {

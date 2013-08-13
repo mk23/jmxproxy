@@ -5,6 +5,61 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="css/jquery.dataTables.min.css" rel="stylesheet" media="screen">
+        <style>
+            ul.menu {
+                display: none;
+                padding-right: 0px;
+            }
+            span.menu-toggle {
+                width: 100%;
+                cursor: pointer;
+            }
+            table.table thead .sorting,
+            table.table thead .sorting_asc,
+            table.table thead .sorting_desc,
+            table.table thead .sorting_asc_disabled,
+            table.table thead .sorting_desc_disabled {
+                cursor: pointer;
+                *cursor: hand;
+            }
+
+            table.table thead .sorting {
+                background: url('img/sort_both.png') no-repeat center right;
+            }
+            table.table thead .sorting_asc {
+                background: url('img/sort_asc.png') no-repeat center right;
+            }
+            table.table thead .sorting_desc {
+                background: url('img/sort_desc.png') no-repeat center right;
+            }
+
+            table.table thead .sorting_asc_disabled {
+                background: url('img/sort_asc_disabled.png') no-repeat center right;
+            }
+            table.table thead .sorting_desc_disabled {
+                background: url('img/sort_desc_disabled.png') no-repeat center right;
+            }
+
+            div.dataTables_length label {
+                float: left;
+                text-align: left;
+            }
+
+            div.dataTables_info {
+                padding-top: 8px;
+            }
+
+            div.dataTables_paginate {
+                float: right;
+                margin: 0;
+            }
+
+            table {
+                margin: 1em 0;
+                clear: both;
+            }
+        </style>
     </head>
     <body>
         <div class="navbar">
@@ -315,7 +370,23 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="mbeans">
-                    <p>host mbeans</p>
+                    <div class="span4">
+                        <ul class="nav nav-list" id="mbeans-menu">
+                        </ul>
+                    </div>
+                    <div class="span8">
+                        <table class="table table-condensed table-striped table-bordered hide" id="mbeans-table">
+                            <thead>
+                                <th>Name</th>
+                                <th width="100%">
+                                    <a href="#" id="mbeans-refresh"><i class="icon-refresh"></i></a>
+                                    Value
+                                </th>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -326,6 +397,8 @@
         <script src="js/jquery.flot.resize.min.js"></script>
         <script src="js/jquery.flot.time.min.js"></script>
         <script src="js/jquery.flot.tooltip.min.js"></script>
+        <script src="js/jquery.dataTables.min.js"></script>
+        <script src="js/jquery.dataTables.paging.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/jmxproxy.js"></script>
     </body>
