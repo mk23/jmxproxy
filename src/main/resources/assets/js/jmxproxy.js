@@ -132,25 +132,24 @@ var endpointDataClass = function() {
 
     var makeBeanTree = function() {
         function listHeader (name) {
-            html = $('<li/>')
-                .append(
-                    $('<span/>')
-                        .addClass('menu-toggle label label-info')
-                        .mouseover(function() {
-                            $(this).toggleClass('label-info label-warning');
-                        })
-                        .mouseout(function() {
-                            $(this).toggleClass('label-info label-warning');
-                        })
-                        .click(function() {
-                            $(this).next('ul.menu:first').toggle('fast');
-                            $('i:eq(0)', this).toggleClass('icon-folder-close icon-folder-open');
-                            $('i:eq(1)', this).toggleClass('icon-chevron-right icon-chevron-down');
-                        })
-                        .append($('<i/>').addClass('icon-folder-close pull-left'))
-                        .append($('<i/>').addClass('icon-chevron-right pull-right'))
-                        .append(name)
-                );
+            html = $('<li/>').append(
+                $('<span/>')
+                    .addClass('menu-toggle label label-info')
+                    .mouseover(function() {
+                        $(this).toggleClass('label-info label-warning');
+                    })
+                    .mouseout(function() {
+                        $(this).toggleClass('label-info label-warning');
+                    })
+                    .click(function() {
+                        $(this).next('ul.menu:first').toggle('fast');
+                        $('i:eq(0)', this).toggleClass('icon-folder-close icon-folder-open');
+                        $('i:eq(1)', this).toggleClass('icon-chevron-right icon-chevron-down');
+                    })
+                    .append($('<i/>').addClass('icon-folder-close pull-left'))
+                    .append($('<i/>').addClass('icon-chevron-right pull-right'))
+                    .append(name)
+            );
             return html;
         }
 
@@ -174,8 +173,8 @@ var endpointDataClass = function() {
                     }
 
                     if (part == body.length - 1) {
-                        item = $('<li/>').append(
-                            $('<a/>').attr('href', '#'+data[bean])
+                        item = $('<li/>').append($('<a/>')
+                            .attr('href', '#'+data[bean])
                             .click(function() {
                                 $('#mbeans-refresh').attr('href', this.hash).click(function() {
                                     populateAttr(this.hash.substring(1));
@@ -251,16 +250,14 @@ var endpointDataClass = function() {
                                 $('td:eq(1) > :eq(1)', $(this).parent()).toggle();
                             })
                             .text(aData.key)
-                            .append(
-                                $('<span/>')
+                            .append($('<span/>')
                                 .addClass('badge badge-important pull-right')
                                 .text(dat['aaData'].length)
                             );
 
                         $('td:eq(1)', nRow)
                             .empty()
-                            .append(
-                                $('<table/>')
+                            .append($('<table/>')
                                 .addClass('table table-condensed table-striped table-bordered')
                                 .append($('<thead/>')
 //                                    .append($('<th/>').text('Name'))
@@ -330,36 +327,46 @@ var endpointDataClass = function() {
                             };
                         }
                         if (item.Type == 'HEAP') {
-                            $('#memory-bar-hm').append(
-                                $('<div/>')
-                                .on('click', function() {
+                            $('#memory-bar-hm').append($('<div/>')
+                                .addClass('progress progress-success')
+                                .attr('title', 'Memory Pool "'+item.Name+'"')
+                                .data('toggle', 'tooltip')
+                                .css({
+                                    'width':  '100%',
+                                    'cursor': 'pointer',
+                                })
+                                .click(function() {
                                     redrawMemory(item.Name);
                                 })
-                                .attr('class', 'progress progress-success')
-                                .attr('title', 'Memory Pool "'+item.Name+'"')
-                                .attr('data-toggle', 'tooltip')
-                                .attr('style', 'width:100%')
-                                .append(
-                                    $('<div/>')
-                                    .attr('class', 'bar')
-                                    .attr('style', 'color:black;text-align:left;width:'+prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                .append($('<div/>')
+                                    .addClass('bar')
+                                    .css({
+                                        'text-align': 'left',
+                                        'color':      'black',
+                                        'width':      prettifyPercent(100 * item.Usage.used / item.Usage.max),
+                                    })
                                     .text(prettifyPercent(100 * item.Usage.used / item.Usage.max))
                                 )
                             );
                         } else if (item.Type == 'NON_HEAP') {
-                            $('#memory-bar-nm').append(
-                                $('<div/>')
-                                .on('click', function() {
+                            $('#memory-bar-nm').append($('<div/>')
+                                .addClass('progress progress-info')
+                                .attr('title', 'Memory Pool "'+item.Name+'"')
+                                .data('toggle', 'tooltip')
+                                .css({
+                                    'width':  '100%',
+                                    'cursor': 'pointer',
+                                })
+                                .click(function() {
                                     redrawMemory(item.Name);
                                 })
-                                .attr('class', 'progress progress-info')
-                                .attr('title', 'Memory Pool "'+item.Name+'"')
-                                .attr('data-toggle', 'tooltip')
-                                .attr('style', 'width:100%')
-                                .append(
-                                    $('<div/>')
-                                    .attr('class', 'bar')
-                                    .attr('style', 'color:black;text-align:left;width:'+prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                .append($('<div/>')
+                                    .addClass('bar')
+                                    .css({
+                                        'text-align': 'left',
+                                        'color':      'black',
+                                        'width':       prettifyPercent(100 * item.Usage.used / item.Usage.max),
+                                    })
                                     .text(prettifyPercent(100 * item.Usage.used / item.Usage.max))
                                 )
                             );
@@ -567,10 +574,10 @@ $(document).ready(function() {
         $('#endpoint-auth').modal('hide')
     });
 
-    $('#memory-btn-hm').on('click', function() {
+    $('#memory-btn-hm').click(function() {
         endpointData.redrawMemory('hm');
     });
-    $('#memory-btn-nm').on('click', function() {
+    $('#memory-btn-nm').click(function() {
         endpointData.redrawMemory('nm');
     });
 
