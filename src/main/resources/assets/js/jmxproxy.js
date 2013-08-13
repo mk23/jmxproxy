@@ -144,37 +144,25 @@ var endpointDataClass = function() {
 
     var makeBeanTree = function() {
         function listHeader (name) {
-            html = $('<li/>').append(
-                $('<span/>').addClass('menu-toggle label label-info')
-                .mouseover(function() {
-                    $(this).removeClass('label-info').addClass('label-warning');
-                })
-                .mouseout(function() {
-                    $(this).removeClass('label-warning').addClass('label-info');
-                })
-                .click(function() {
-                    $(this).parent().children('ul.menu').toggle('fast', function() {
-                        if ($(this).is(':visible')) {
-                            $(this).next('i.icon-folder-close:first')
-                                .removeClass('icon-folder-close')
-                                .addClass('icon-folder-open');
-                            $(this).next('i.icon-chevron-right:first')
-                                .removeClass('icon-chevron-right')
-                                .addClass('icon-chevron-down');
-                        } else {
-                            $(this).next('i.icon-folder-open:first')
-                                .removeClass('icon-folder-open')
-                                .addClass('icon-folder-close');
-                            $(this).next('i.icon-chevron-down:first')
-                                .removeClass('icon-chevron-down')
-                                .addClass('icon-chevron-right');
-                        }
-                    });
-                })
-                .append($('<i/>').addClass('icon-folder-close pull-left'))
-                .append($('<i/>').addClass('icon-chevron-right pull-right'))
-                .append(name)
-            );
+            html = $('<li/>')
+                .append(
+                    $('<span/>')
+                        .addClass('menu-toggle label label-info')
+                        .mouseover(function() {
+                            $(this).toggleClass('label-info label-warning');
+                        })
+                        .mouseout(function() {
+                            $(this).toggleClass('label-info label-warning');
+                        })
+                        .click(function() {
+                            $(this).next('ul.menu:first').toggle('fast');
+                            $('i:eq(0)', this).toggleClass('icon-folder-close icon-folder-open');
+                            $('i:eq(1)', this).toggleClass('icon-chevron-right icon-chevron-down');
+                        })
+                        .append($('<i/>').addClass('icon-folder-close pull-left'))
+                        .append($('<i/>').addClass('icon-chevron-right pull-right'))
+                        .append(name)
+                );
             return html;
         }
 
@@ -323,10 +311,10 @@ var endpointDataClass = function() {
         ts = new Date().getTime();
 
         endpointHost.fetchData('/', function(data) {
-            $('#summary-gc').text('');
-            $('#memory-gc').text('');
-            $('#memory-bar-hm').html('');
-            $('#memory-bar-nm').html('');
+            $('#summary-gc').empty();
+            $('#memory-gc').empty();
+            $('#memory-bar-hm').empty();
+            $('#memory-bar-nm').empty();
             for (item in data) {
                 if (data[item].lastIndexOf('java.lang:type=GarbageCollector', 0) === 0) {
                     endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
