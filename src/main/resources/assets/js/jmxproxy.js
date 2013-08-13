@@ -11,85 +11,73 @@ var documentInfoClass = function(defaultTitle, defaultLabel) {
 
 var endpointDataClass = function() {
     var items = {
-        'overview-mem-gr': [
-            {
-                label: 'Heap Used',
-                data: [],
-            },
-        ],
-        'overview-thr-gr': [
-            {
-                label: 'Live Threads',
-                data: [],
-            },
-        ],
-        'overview-cls-gr': [
-            {
-                label: 'Loaded Classes',
-                data: [],
-            },
-        ],
-        'overview-cpu-gr': [
-            {
-                label: 'Process CPU',
-                data: [],
-            },
-        ],
+        'overview-mem-gr': [{
+            'label': 'Heap Used',
+            'data':  [],
+        }],
+        'overview-thr-gr': [{
+            'label': 'Live Threads',
+            'data':  [],
+        }],
+        'overview-cls-gr': [{
+            'label': 'Loaded Classes',
+            'data':  [],
+        }],
+        'overview-cpu-gr': [{
+            'label': 'Process CPU',
+            'data':  [],
+        }],
         'threads-gr': [
             {
-                label: 'Live Running Threads',
-                data: [],
+                'label': 'Live Running Threads',
+                'data':  [],
             },
             {
-                label: 'Peak Running Threads',
-                data: [],
+                'label': 'Peak Running Threads',
+                'data':  [],
             },
         ],
         'classes-gr': [
             {
-                label: 'Current Classes Loaded',
-                data: [],
+                'label': 'Current Classes Loaded',
+                'data':  [],
             },
             {
-                label: 'Total Classes Loaded',
-                data: [],
+                'label': 'Total Classes Loaded',
+                'data':  [],
             },
         ],
         'memory-gr': {
-            selected: 'hm',
-            hm: [
-                {
-                    label: 'Heap Memory Usage',
-                    data: [],
-                    info: {},
-                },
-            ],
-            nm: [
-                {
-                    label: 'Non Heap Memory Usage',
-                    data: [],
-                    info: {},
-                },
-            ],
+            'selected': 'hm',
+            'hm': [{
+                'label': 'Heap Memory Usage',
+                'data':  [],
+                'info':  {},
+            }],
+            'nm': [{
+                'label': 'Non Heap Memory Usage',
+                'data':  [],
+                'info':  {},
+            }],
         },
     };
 
     var graph = {
-        full: {
-            legend: {
-                show: true,
-                backgroundOpacity: 0.1,
+        'full': {
+            'legend': {
+                'show': true,
+                'backgroundOpacity': 0.1,
             },
-            pan: {
-                interactive: true,
+            'pan': {
+                'interactive': true,
             },
-            zoom: {
-                interactive: true,
+            'zoom': {
+                'interactive': true,
             },
         },
-        bare: {
-            legend: {
-                show: false,
+        'bare': {
+            'legend': {
+                'show': false,
             },
         },
     };
@@ -324,23 +312,21 @@ var endpointDataClass = function() {
                 } else if (data[item].lastIndexOf('java.lang:type=MemoryPool') === 0) {
                     endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
                         if ($.type(items['memory-gr'][item.Name]) === 'undefined') {
-                            items['memory-gr'][item.Name] = [
-                                {
-                                    label: item.Name+' Memory Usage',
-                                    data: [ [ts, item.Usage.used] ],
-                                    info: {
-                                        used: item.Usage.used,
-                                        committed: item.Usage.committed,
-                                        max: item.Usage.max,
-                                    },
+                            items['memory-gr'][item.Name] = [{
+                                'label': item.Name+' Memory Usage',
+                                'data': [ [ts, item.Usage.used] ],
+                                'info': {
+                                    'used':      item.Usage.used,
+                                    'committed': item.Usage.committed,
+                                    'max':       item.Usage.max,
                                 },
-                            ];
+                            }];
                         } else {
                             items['memory-gr'][item.Name][0].data.push([ts, item.Usage.used]);
                             items['memory-gr'][item.Name][0].info = {
-                                used: item.Usage.used,
-                                committed: item.Usage.committed,
-                                max: item.Usage.max,
+                                'used':      item.Usage.used,
+                                'committed': item.Usage.committed,
+                                'max':       item.Usage.max,
                             };
                         }
                         if (item.Type == 'HEAP') {
@@ -383,6 +369,7 @@ var endpointDataClass = function() {
                 }
             }
         });
+
         endpointHost.fetchData('/java.lang:type=ClassLoading?full=true', function(data) {
             $('#summary-cl').text(data.LoadedClassCount);
             $('#summary-cu').text(data.UnloadedClassCount);
@@ -422,14 +409,14 @@ var endpointDataClass = function() {
             items['memory-gr']['hm'][0].data.push([ts, data.HeapMemoryUsage.used]);
             items['memory-gr']['nm'][0].data.push([ts, data.NonHeapMemoryUsage.used]);
             items['memory-gr']['hm'][0].info = {
-                used: data.HeapMemoryUsage.used,
-                committed: data.HeapMemoryUsage.committed,
-                max: data.HeapMemoryUsage.max,
+                'used':      data.HeapMemoryUsage.used,
+                'committed': data.HeapMemoryUsage.committed,
+                'max':       data.HeapMemoryUsage.max,
             };
             items['memory-gr']['nm'][0].info = {
-                used: data.NonHeapMemoryUsage.used,
-                committed: data.NonHeapMemoryUsage.committed,
-                max: data.NonHeapMemoryUsage.max,
+                'used':      data.NonHeapMemoryUsage.used,
+                'committed': data.NonHeapMemoryUsage.committed,
+                'max':       data.NonHeapMemoryUsage.max,
             };
             redrawGraphs('memory-gr', true, prettifySize);
         });
@@ -494,9 +481,9 @@ var endpointDataClass = function() {
     });
 
     return {
-        populateData: populateData,
-        redrawMemory: redrawMemory,
-        redrawGraphs: redrawGraphs,
+        'populateData': populateData,
+        'redrawMemory': redrawMemory,
+        'redrawGraphs': redrawGraphs,
     };
 };
 
@@ -509,8 +496,8 @@ var endpointHostClass = function(host) {
     };
     var resetAuth = function(username, password) {
         auth = {
-            "username": username,
-            "password": password
+            'username': username,
+            'password': password,
         }
         checkHost();
     };
@@ -549,8 +536,8 @@ var endpointHostClass = function(host) {
     checkHost();
 
     return {
-        resetAuth: resetAuth,
-        fetchData: fetchData,
+        'resetAuth': resetAuth,
+        'fetchData': fetchData,
     };
 };
 
