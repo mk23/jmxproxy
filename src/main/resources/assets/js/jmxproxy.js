@@ -289,6 +289,10 @@ var endpointDataClass = function() {
                     {'mData': 'val'},
                 ],
             });
+
+            if ($('#mbeans-table_wrapper > div.dataTables_paginate > ul > li').length == 3) {
+                $('#mbeans-table_wrapper > div.dataTables_paginate').hide();
+            }
         });
     }
 
