@@ -203,11 +203,11 @@ var endpointDataClass = function() {
             $('#mbeans-table').show().dataTable({
                 'bDestroy': true,
                 'bSort': false,
-                'bAutoWidth': true,
                 'bLengthChange': false,
                 'sScrollX': '100%',
                 'sPaginationType': 'bootstrap',
                 'fnRowCallback': function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    len = null;
                     dat = {
                         'bDestroy': true,
                         'bFilter': false,
@@ -231,6 +231,7 @@ var endpointDataClass = function() {
                                 {'mData': 'val'},
                             ];
                         }
+                        len = dat['aaData'].length;
                     } else if ($.type(aData.val) === 'object') {
                         dat['aaData'] = $.map(aData.val, function(v, k) {
                             return {'key': k, 'val': v};
@@ -239,9 +240,12 @@ var endpointDataClass = function() {
                             {'mData': 'key'},
                             {'mData': 'val'},
                         ];
+                        len = dat['aaData'].length;
+                    } else if ($.type(aData.val) === 'string' && aData.val.length > 50) {
+                        len = aData.val.length;
                     }
 
-                    if ($.type(dat['aaData']) !== 'undefined') {
+                    if (len !== null) {
                         $('td:eq(0)', nRow)
                             .empty()
                             .css('cursor', 'pointer')
@@ -252,33 +256,54 @@ var endpointDataClass = function() {
                             .text(aData.key)
                             .append($('<span/>')
                                 .addClass('badge badge-important pull-right')
-                                .text(dat['aaData'].length)
+                                .text(len)
                             );
 
-                        $('td:eq(1)', nRow)
-                            .empty()
-                            .append($('<table/>')
-                                .addClass('table table-condensed table-striped table-bordered')
-                                .append($('<thead/>')
-//                                    .append($('<th/>').text('Name'))
-//                                    .append($('<th/>').attr('width', '100%').text('Value'))
+                        if ($.type(dat['aaData']) !== 'undefined') {
+                            $('td:eq(1)', nRow)
+                                .empty()
+                                .append($('<table/>')
+                                    .addClass('table table-condensed table-striped table-bordered')
+                                    .append($('<thead/>')
+    //                                    .append($('<th/>').text('Name'))
+    //                                    .append($('<th/>').attr('width', '100%').text('Value'))
+                                        )
+                                    .append($('<tbody/>'))
+                                )
+                                .append($('<span/>')
+                                    .addClass('label label-info')
+                                    .text($.type(aData.val))
+                                );
+
+                            $('td:eq(1) > table', nRow).dataTable(dat);
+                            $('td:eq(1) > :first-child', nRow).hide();
+                            if ($('div.dataTables_paginate > ul > li', nRow).length == 3) {
+                                $('div.dataTables_paginate', nRow).hide();
+                            }
+                        } else {
+                            $('td:eq(1)', nRow)
+                                .empty()
+                                .append($('<span/>')
+                                    .css('white-space', 'nowrap')
+                                    .text(aData.val)
+                                )
+                                .append($('<div/>')
+                                    .css('white-space', 'nowrap')
+                                    .append($('<span/>')
+                                        .addClass('label label-info')
+                                        .text($.type(aData.val))
                                     )
-                                .append($('<tbody/>'))
-                            )
-                            .append(
-                                $('<span/>')
-                                .addClass('label label-info')
-                                .html($.type(aData.val))
-                            );
+                                    .append($('<span/>')
+                                        .css('white-space', 'nowrap')
+                                        .text(' '+aData.val.substring(0, 50)+'...')
+                                    )
+                                );
 
-                        $('td:eq(1) > table', nRow).dataTable(dat);
-                        $('td:eq(1) > :first-child', nRow).hide();
-                        if ($('div.dataTables_paginate > ul > li', nRow).length == 3) {
-                            $('div.dataTables_paginate', nRow).hide();
+                            $('td:eq(1) > :first-child', nRow).hide();
                         }
-                    } else {
-                        $('td:eq(1)', nRow)
-                            .html($('<span/>').css('white-space', 'nowrap').text(aData.val))
+//                    } else {
+//                        $('td:eq(1)', nRow)
+//                            .html($('<span/>').css('white-space', 'nowrap').text(aData.val))
                     }
                 },
                 'aaData': $.map(data, function(v, k) {
