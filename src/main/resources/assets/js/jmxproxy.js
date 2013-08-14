@@ -253,7 +253,10 @@ var endpointDataClass = function() {
                                 $('td:eq(1) > :eq(0)', $(this).parent()).toggle();
                                 $('td:eq(1) > :eq(1)', $(this).parent()).toggle();
                             })
-                            .text(aData.key)
+                            .append($('<a/>')
+                                .attr('href', '#')
+                                .text(aData.key)
+                            )
                             .append($('<span/>')
                                 .addClass('badge badge-important pull-right')
                                 .text(len)
