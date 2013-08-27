@@ -83,39 +83,39 @@ JMXProxy provides fine-grained access to MBeans exposed by a target JVM.  Client
 
 1. Get the list of mbeans available on a target JVM
 
-        $ curl -s http://localhost:8080/localhost:1123
+        $ curl -s http://localhost:8080/jmxproxy/localhost:1123
         [ "java.lang:type=OperatingSystem", ...
 
 2. Get the dictionary of all mbeans, attributes, and values available on a target JVM
 
-        $ curl -s http://localhost:8080/localhost:1123?full=true
+        $ curl -s http://localhost:8080/jmxproxy/localhost:1123?full=true
         {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
 
 3. Get the list of attributes available for a specific mbean on a target JVM
 
-        $ curl -s http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem
+        $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem
         [ "Name", "Arch", ...
 
 4. Get the dictionary of all attributes and values available for a specific mbean on a target JVM
 
-        $ curl -s http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem?full=true
+        $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem?full=true
         {"name": "Mac OS X", "arch": "x86_64" ...
 
 5. Get the attribute value available for a specific mbean on a target JVM
 
-        $ curl -s http://localhost:8080/localhost:1123/java.lang:type=OperatingSystem/Name
+        $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem/Name
         "Mac OS X"
 
 For JMX agents that require authentication, JMXProxy allows clients to submit credentials via HTTP POST as either `application/json` or `application/x-www-form-urlencoded` content-type:
 
 1. Get the list of mbeans available on a target JVM with form-urlencoded credentials
 
-        $ curl -s -d'username=ro&password=public' 'http://localhost:8080/localhost:1123?full=true'
+        $ curl -s -d'username=ro&password=public' 'http://localhost:8080/jmxproxy/localhost:1123?full=true'
         ["java.lang:type=OperatingSystem", ...
 
 2. Get the list of mbeans available on a target JVM with JSON credentials
 
-        $ curl -s -d'{"username":"ro","password":"public"}' -H'Content-Type: application/json' 'http://localhost:8080/localhost:1123?full=true'
+        $ curl -s -d'{"username":"ro","password":"public"}' -H'Content-Type: application/json' 'http://localhost:8080/jmxproxy/localhost:1123?full=true'
         ["java.lang:type=OperatingSystem", ...
 
 
@@ -155,7 +155,7 @@ Example Clients
     scripts/nagios/check_jmxproxy.py [-h] -a HOST -p PORT [-c AUTH] -e EXPR [-j PROXY]
                                      [-i] [-f FORMAT] {textual,metrics} ...
 
-The script supports two modes of operation: textual string match of an attribute value and metrics calculation based on a RPN expression.  In metrics mode, if any specified expression component yields an attribute that has a list value, the result will be the count of items in the list for that position.  The script defaults to using `localhost:8080` as the JMXProxy address.  Some practical usage examples are provided below.
+The script supports two modes of operation: textual string match of an attribute value and metrics calculation based on a RPN expression.  In metrics mode, if any specified expression component yields an attribute that has a list value, the result will be the count of items in the list for that position.  The script defaults to using `http://localhost:8080/jmxproxy` as the JMXProxy address.  Some practical usage examples are provided below.
 
 Check JVM memory thresholds:
 
@@ -177,14 +177,14 @@ Check a Hadoop datanode failed volume count:
 
     scripts/cacti/ss_jmxproxy.php <host:port> [username:password] [jmxproxy-host:port]
 
-The script defaults to using `localhost:8080` as the JMXProxy address.  For example, to request basic stats from the JVM running JMXProxy itself:
+The script defaults to using `http://localhost:8080/jmxproxy` as the JMXProxy address.  For example, to request basic stats from the JVM running JMXProxy itself:
 
     $ php -q scripts/cacti/ss_jmxproxy.php localhost:1123
     thread_count:35 thread_peak:35 memory_heap_used:6763352 memory_heap_max:101384192 gc_count:19 classes_loaded:3679 classes_total:3679 classes_unloaded:0
 
 It is also possible to supply JMX credentials and a remote JMXProxy to use:
 
-    $ php -q scripts/cacti/ss_jmxproxy.php localhost:1123 ro:public localhost:8080
+    $ php -q scripts/cacti/ss_jmxproxy.php localhost:1123 ro:public http://localhost:8080/jmxproxy
     thread_count:35 thread_peak:35 memory_heap_used:6763352 memory_heap_max:101384192 gc_count:19 classes_loaded:3679 classes_total:3679 classes_unloaded:0
 
 
@@ -195,7 +195,7 @@ This plugin allows easy extensions by creating another PHP file that includes `s
 
 Likewise, JMX credentials and remote JMXProxy address are also supported:
 
-    $ php -q scripts/cacti/ss_hadoop.php datanode001:8003 datanode ro:public localhost:8080
+    $ php -q scripts/cacti/ss_hadoop.php datanode001:8003 datanode ro:public http://localhost:8080/jmxproxy
     thread_count:165 thread_peak:593 memory_heap_used:158213848 memory_heap_max:1908932608 gc_count:27465 classes_loaded:2717 classes_total:2775 classes_unloaded:58 ds_capacity:2869079572480 ds_remaining:1665482752 ds_used:2750974428881 ds_failed:0 blocks_read:1230 blocks_removed:167 blocks_replicated:0 blocks_verified:28 blocks_written:133 bytes_read:222298772 bytes_written:8175757632 reads_from_local_client:1165 writes_from_local_client:36 reads_from_remote_client:65 writes_from_remote_client:97 ops_block_copy:0 ops_block_read:1230 ops_block_write:133 ops_block_replace:0 ops_block_checksum:0 ops_block_reports:0 ops_heartbeat:100
 
 
@@ -211,7 +211,7 @@ Likewise, JMX credentials and remote JMXProxy address are also supported:
 
 For example, to request basic stats from the JVM running `jmxproxy` itself:
 
-    $ scripts/graphite/jmxproxy.py --service-port 1123 --service-host localhost --jmxproxy-host localhost --jmxproxy-port 8080 -n # dry-run output
+    $ scripts/graphite/jmxproxy.py --service-port 1123 --service-host localhost --jmxproxy-host localhost --jmxproxy-port 8080 --jmxproxy-path /jmxproxy -n # dry-run output
     localhost.jvm.classes_loaded 3804 1363021890
     localhost.jvm.classes_total 3917 1363021890
     localhost.jvm.classes_unloaded 113 1363021890
@@ -223,7 +223,7 @@ For example, to request basic stats from the JVM running `jmxproxy` itself:
 
 This script allows easy extensions by creating another script that imports `jmxproxy`, sets up a dictionary of desired beans, and passes it to the `jmxproxy.main()` function.  One such extension, `hadoopy.py`, exists to demonstrate this behavior and usage:
 
-    $ scripts/graphite/hadoop.py --service-port 8003 --service-host datanode001 --jmxproxy-host localhost --jmxproxy-port 8080 --service-name datanode -n # dry-run output
+    $ scripts/graphite/hadoop.py --service-port 8003 --service-host datanode001 --jmxproxy-host localhost --jmxproxy-port 8080 --jmxproxy-path /jmxproxy --service-name datanode -n # dry-run output
     datanode001.datanode.blocks_read 1839 1363022233
     datanode001.datanode.blocks_removed 1584 1363022233
     datanode001.datanode.blocks_replicated 0 1363022233
