@@ -176,9 +176,6 @@ var endpointDataClass = function() {
                         item = $('<li/>').append($('<a/>')
                             .attr('href', '#'+data[bean])
                             .click(function() {
-                                $('#mbeans-refresh').attr('href', this.hash).click(function() {
-                                    populateAttr(this.hash.substring(1));
-                                });
                                 populateAttr(this.hash.substring(1));
                             })
                             .append($('<i/>').addClass('icon-file'))
@@ -200,20 +197,27 @@ var endpointDataClass = function() {
 
     var populateAttr = function(bean) {
         endpointHost.fetchData('/'+bean+'?full=true', function(data) {
-            $('#mbeans-table').show().dataTable({
-                'bDestroy': true,
-                'bSort': false,
-                'bLengthChange': false,
-                'sScrollX': '100%',
+            $('#mbeans-data').html($('<table/>')
+                .addClass('table table-condensed table-striped table-bordered')
+                .append($('<thead/>'))
+                .append($('<tbody/>'))
+            );
+            $('#mbeans-data > table').dataTable({
+                'bDestroy':        true,
+                'bFilter':         false,
+                'bInfo':           false,
+                'bLengthChange':   false,
+                'bPaginate':       false,
+                'sScrollX':        '100%',
                 'sPaginationType': 'bootstrap',
-                'fnRowCallback': function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                'fnRowCallback':   function(nRow, aData) {
                     len = null;
                     dat = {
-                        'bDestroy': true,
-                        'bFilter': false,
-                        'bInfo': false,
-                        'bSort': false,
-                        'bLengthChange': false,
+                        'bDestroy':        true,
+                        'bFilter':         false,
+                        'bInfo':           false,
+                        'bLengthChange':   false,
+                        'sScrollX':        '100%',
                         'sPaginationType': 'bootstrap',
                     };
 
@@ -221,14 +225,14 @@ var endpointDataClass = function() {
                         if ($.type(aData.val[0]) === 'object') {
                             dat['aaData'] = aData.val;
                             dat['aoColumns'] = $.map(aData.val[0], function(v, k) {
-                                return {'mData': k};
+                                return {'mData': k, 'sTitle': k};
                             });
                         } else {
                             dat['aaData'] = $.map(aData.val, function(v, k) {
                                 return {'val': v};
                             });
                             dat['aoColumns'] = [
-                                {'mData': 'val'},
+                                {'mData': 'val', 'sTitle': aData.key}
                             ];
                         }
                         len = dat['aaData'].length;
@@ -237,8 +241,8 @@ var endpointDataClass = function() {
                             return {'key': k, 'val': v};
                         });
                         dat['aoColumns'] = [
-                            {'mData': 'key'},
-                            {'mData': 'val'},
+                            {'mData': 'key', 'sTitle': 'Name'},
+                            {'mData': 'val', 'sTitle': 'Value'},
                         ];
                         len = dat['aaData'].length;
                     } else if ($.type(aData.val) === 'string' && aData.val.length > 50) {
@@ -267,15 +271,14 @@ var endpointDataClass = function() {
                                 .empty()
                                 .append($('<table/>')
                                     .addClass('table table-condensed table-striped table-bordered')
-                                    .append($('<thead/>')
-    //                                    .append($('<th/>').text('Name'))
-    //                                    .append($('<th/>').attr('width', '100%').text('Value'))
-                                        )
+                                    .append($('<thead/>'))
                                     .append($('<tbody/>'))
                                 )
-                                .append($('<span/>')
-                                    .addClass('label label-info')
-                                    .text($.type(aData.val))
+                                .append($('<div/>')
+                                    .append($('<span/>')
+                                        .addClass('label label-info')
+                                        .text($.type(aData.val))
+                                    )
                                 );
 
                             $('td:eq(1) > table', nRow).dataTable(dat);
@@ -291,35 +294,45 @@ var endpointDataClass = function() {
                                     .text(aData.val)
                                 )
                                 .append($('<div/>')
-                                    .css('white-space', 'nowrap')
                                     .append($('<span/>')
                                         .addClass('label label-info')
                                         .text($.type(aData.val))
                                     )
                                     .append($('<span/>')
-                                        .css('white-space', 'nowrap')
                                         .text(' '+aData.val.substring(0, 50)+'...')
                                     )
                                 );
 
                             $('td:eq(1) > :first-child', nRow).hide();
                         }
-//                    } else {
-//                        $('td:eq(1)', nRow)
-//                            .html($('<span/>').css('white-space', 'nowrap').text(aData.val))
+                    } else {
+                        $('td:eq(1)', nRow)
+                            .html($('<span/>').css('white-space', 'nowrap').text(aData.val))
                     }
+                },
+                'fnHeaderCallback': function(nHead) {
+                    $('th:eq(0):first', nHead).text('Name')
+                    $('th:eq(1):first', nHead)
+                        .empty()
+                        .append($('<i/>')
+                            .addClass('icon-refresh')
+                            .click(function() {
+                                populateAttr(bean);
+                            })
+                        )
+                        .append(' Value');
                 },
                 'aaData': $.map(data, function(v, k) {
                     return {'key': k, 'val': v};
                 }),
                 'aoColumns': [
                     {'mData': 'key'},
-                    {'mData': 'val'},
+                    {'mData': 'val', 'sWidth': '100%'},
                 ],
             });
 
-            if ($('#mbeans-table_wrapper > div.dataTables_paginate > ul > li').length == 3) {
-                $('#mbeans-table_wrapper > div.dataTables_paginate').hide();
+            if ($('#mbeans-data > div.dataTables_wrapper > div.dataTables_paginate > ul > li').length == 3) {
+                $('#mbeans-data > div.dataTables_wrapper > div.dataTables_paginate').hide();
             }
         });
     }
