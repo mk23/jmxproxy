@@ -11,7 +11,7 @@ import urllib2
 SUCCESS, WARNING, CRITICAL, UNKNOWN = range(4)
 ERRORS = dict((v, k) for k, v in vars(sys.modules[__name__]).items() if type(v) == int)
 
-def lookup_val(host, port, expr, auth=None, proxy='localhost:8080', cache={}):
+def lookup_val(host, port, expr, auth=None, proxy='http://localhost:8080/jmxproxy', cache={}):
     item = expr.split('//')
     name = item.pop(0)
     attr = item.pop(0)
@@ -20,15 +20,15 @@ def lookup_val(host, port, expr, auth=None, proxy='localhost:8080', cache={}):
         auth = urllib.urlencode(zip(('username', 'password'), auth.split(':')))
 
     if not cache:
-        cache.update(dict((i, {}) for i in json.loads(urllib2.urlopen('http://%s/%s:%d' % (proxy, host, port), auth).read())))
+        cache.update(dict((i, {}) for i in json.loads(urllib2.urlopen('%s/%s:%d' % (proxy, host, port), auth).read())))
 
     for bean in cache:
         if re.match(name + '$', bean, re.I):
             if not cache[bean]:
-                cache[bean].update(dict((i, None) for i in json.loads(urllib2.urlopen('http://%s/%s:%d/%s' % (proxy, host, port, urllib.quote_plus(bean)), auth).read())))
+                cache[bean].update(dict((i, None) for i in json.loads(urllib2.urlopen('%s/%s:%d/%s' % (proxy, host, port, urllib.quote(bean)), auth).read())))
 
             if cache[bean][attr] is None:
-                cache[bean][attr] = json.loads(urllib2.urlopen('http://%s/%s:%d/%s/%s' % (proxy, host, port, urllib.quote_plus(bean), urllib.quote_plus(attr)), auth).read())
+                cache[bean][attr] = json.loads(urllib2.urlopen('%s/%s:%d/%s/%s' % (proxy, host, port, urllib.quote(bean), urllib.quote_plus(attr)), auth).read())
 
             val = cache[bean][attr]
             for key in item:
@@ -53,7 +53,7 @@ if __name__ == '__main__':
                         help='jmx agent credentials as username:password')
     master_parser.add_argument('-e', '--expr', type=unicode, required=True,
                         help='text attribute or rpn expression to calculate')
-    master_parser.add_argument('-j', '--proxy', default='localhost:8080',
+    master_parser.add_argument('-j', '--proxy', default='http://localhost:8080/jmxproxy',
                         help='jmxproxy host:port')
     master_parser.add_argument('-i', '--invert', action='store_true',
                         help='negates text match or forces negative crit/warn thresholds')
@@ -136,4 +136,3 @@ if __name__ == '__main__':
 
     print 'no results found'
     sys.exit(UNKNOWN)
-
