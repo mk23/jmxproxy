@@ -270,6 +270,7 @@ var endpointDataClass = function() {
                             })
                             .append($('<a/>')
                                 .attr('href', '#')
+                                .attr('title', 'Expand')
                                 .text(aData.key)
                             )
                             .append($('<span/>')
@@ -333,6 +334,7 @@ var endpointDataClass = function() {
                         .empty()
                         .append($('<i/>')
                             .addClass('icon-refresh')
+                            .attr('title', 'Refresh')
                             .click(function() {
                                 populateAttr(bean);
                             })
