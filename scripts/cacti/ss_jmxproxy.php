@@ -11,7 +11,7 @@ if (!isset($called_by_script_server)) {
     echo call_user_func_array($self, $_SERVER["argv"]), "\n";
 }
 
-function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $jmxcreds = '', $extra_stats = array()) {
+function ss_jmxproxy($host, $jmxproxy = 'http://localhost:8080/jmxproxy', $jmxcreds = '', $extra_stats = array()) {
     $jvm_stats = array(
         'thread_count' => array('java.lang:type=Threading', 'ThreadCount'),
         'thread_peak' => array('java.lang:type=Threading', 'PeakThreadCount'),
@@ -40,7 +40,7 @@ function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $jmxcreds = '', $extra
     }
 
     stream_context_set_option($cntxt, 'http', 'timeout', 10.0);
-    $beans = json_decode(file_get_contents("http://{$jmxproxy}/{$host}", FILE_USE_INCLUDE_PATH, $cntxt), true);
+    $beans = json_decode(file_get_contents("{$jmxproxy}/{$host}", FILE_USE_INCLUDE_PATH, $cntxt), true);
     $cache = array();
 
     $data = array();
@@ -50,7 +50,7 @@ function ss_jmxproxy($host, $jmxproxy = 'localhost:8080', $jmxcreds = '', $extra
         }
         foreach (preg_grep("/^{$val[0]}\$/i", $beans) as $mbean) {
             if (!isset($cache[$mbean])) {
-                $cache[$mbean] = json_decode(file_get_contents(sprintf("http://{$jmxproxy}/{$host}/%s?full=true", rawurlencode($mbean))), true);
+                $cache[$mbean] = json_decode(file_get_contents(sprintf("{$jmxproxy}/{$host}/%s?full=true", rawurlencode($mbean))), true);
             }
             $attribute = $cache[$mbean];
 

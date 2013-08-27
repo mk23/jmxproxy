@@ -2,7 +2,7 @@
 
 include_once("ss_jmxproxy.php");
 
-function ss_hadoop($host, $type, $jmxproxy = 'localhost:8080', $jmxcreds = '') {
+function ss_hadoop($host, $type, $jmxproxy = 'http://localhost:8080/jmxproxy', $jmxcreds = '') {
     $hadoop_stats = array($type => array());
     $hadoop_stats['namenode'] = array(
         'cluster_capacity'  => array('hadoop:service=NameNode,name=NameNodeInfo', 'Total'),
