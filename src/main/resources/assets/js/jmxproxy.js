@@ -316,9 +316,15 @@ var endpointDataClass = function() {
 
                             $('td:eq(1) > :first-child', nRow).hide();
                         }
-                    } else {
+                    } else if (aData.val === null) {
                         $('td:eq(1)', nRow)
-                            .html($('<span/>').css('white-space', 'nowrap').text(aData.val))
+                            .html($('<span/>').addClass('text-error').html($('<strong/>').text(aData.val)))
+                    } else if ($.type(aData.val) === 'boolean') {
+                        $('td:eq(1)', nRow)
+                            .html($('<span/>').addClass('text-warning').text(aData.val))
+                    } else if ($.type(aData.val) !== 'string') {
+                        $('td:eq(1)', nRow)
+                            .html($('<span/>').addClass('text-success').text(aData.val))
                     }
                 },
                 'fnHeaderCallback': function(nHead) {
