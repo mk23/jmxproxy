@@ -211,6 +211,12 @@ var endpointDataClass = function() {
                 'sScrollX':        '100%',
                 'sPaginationType': 'bootstrap',
                 'fnRowCallback':   function(nRow, aData) {
+                    if ($.type(nRow.jmxProxyConfigured) === 'undefined') {
+                        nRow.jmxProxyConfigured = true;
+                    } else {
+                        return;
+                    }
+
                     len = null;
                     dat = {
                         'bDestroy':        true,
