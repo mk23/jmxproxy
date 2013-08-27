@@ -294,7 +294,7 @@ var endpointDataClass = function() {
 
                             $('td:eq(1) > table', nRow).dataTable(dat);
                             $('td:eq(1) > :first-child', nRow).hide();
-                            if ($('div.dataTables_paginate > ul > li', nRow).length == 3) {
+                            if ($('div.dataTables_paginate > ul > li', nRow).length <= 3) {
                                 $('div.dataTables_paginate', nRow).hide();
                             }
                         } else {
@@ -343,7 +343,7 @@ var endpointDataClass = function() {
             });
 
             $('div.dataTables_scrollBody > table', $('#mbeans-data')).dataTable().fnAdjustColumnSizing();
-            if ($('#mbeans-data > div.dataTables_wrapper > div.dataTables_paginate > ul > li').length == 3) {
+            if ($('#mbeans-data > div.dataTables_wrapper > div.dataTables_paginate > ul > li').length <= 3) {
                 $('#mbeans-data > div.dataTables_wrapper > div.dataTables_paginate').hide();
             }
         });
