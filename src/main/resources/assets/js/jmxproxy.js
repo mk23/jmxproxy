@@ -258,7 +258,6 @@ var endpointDataClass = function() {
                     if (len !== null) {
                         $('td:eq(0)', nRow)
                             .empty()
-                            .css('cursor', 'pointer')
                             .click(function () {
                                 $('td:eq(1) > :eq(0)', $(this).parent()).toggle();
                                 $('td:eq(1) > :eq(1)', $(this).parent()).toggle();
@@ -396,44 +395,28 @@ var endpointDataClass = function() {
                                 .addClass('progress progress-success')
                                 .attr('title', 'Memory Pool "'+item.Name+'"')
                                 .data('toggle', 'tooltip')
-                                .css({
-                                    'width':  '100%',
-                                    'cursor': 'pointer',
-                                })
                                 .click(function() {
                                     redrawMemory(item.Name);
                                 })
                                 .append($('<div/>')
                                     .addClass('bar')
-                                    .css({
-                                        'text-align': 'left',
-                                        'color':      'black',
-                                        'width':      prettifyPercent(100 * item.Usage.used / item.Usage.max),
-                                    })
-                                    .text(prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                    .width(prettifyPercent(100 * item.Usage.used / item.Usage.max))
                                 )
+                                .append(prettifyPercent(100 * item.Usage.used / item.Usage.max))
                             );
                         } else if (item.Type == 'NON_HEAP') {
                             $('#memory-bar-nm').append($('<div/>')
                                 .addClass('progress progress-info')
                                 .attr('title', 'Memory Pool "'+item.Name+'"')
                                 .data('toggle', 'tooltip')
-                                .css({
-                                    'width':  '100%',
-                                    'cursor': 'pointer',
-                                })
                                 .click(function() {
                                     redrawMemory(item.Name);
                                 })
                                 .append($('<div/>')
                                     .addClass('bar')
-                                    .css({
-                                        'text-align': 'left',
-                                        'color':      'black',
-                                        'width':       prettifyPercent(100 * item.Usage.used / item.Usage.max),
-                                    })
-                                    .text(prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                    .width(prettifyPercent(100 * item.Usage.used / item.Usage.max))
                                 )
+                                .append(prettifyPercent(100 * item.Usage.used / item.Usage.max))
                             );
                         }
                         redrawGraphs('memory-gr', true, prettifySize);
