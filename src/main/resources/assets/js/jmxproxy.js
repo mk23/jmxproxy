@@ -262,6 +262,11 @@ var endpointDataClass = function() {
                             .click(function () {
                                 $('td:eq(1) > :eq(0)', $(this).parent()).toggle();
                                 $('td:eq(1) > :eq(1)', $(this).parent()).toggle();
+
+                                $('div.dataTables_scrollBody > table', $('#mbeans-data')).dataTable().fnAdjustColumnSizing();
+                                if ($('div.dataTables_scrollBody > table', $(this).parent()).length > 0) {
+                                    $('div.dataTables_scrollBody > table', $(this).parent()).dataTable().fnAdjustColumnSizing();
+                                }
                             })
                             .append($('<a/>')
                                 .attr('href', '#')
@@ -337,6 +342,7 @@ var endpointDataClass = function() {
                 ],
             });
 
+            $('div.dataTables_scrollBody > table', $('#mbeans-data')).dataTable().fnAdjustColumnSizing();
             if ($('#mbeans-data > div.dataTables_wrapper > div.dataTables_paginate > ul > li').length == 3) {
                 $('#mbeans-data > div.dataTables_wrapper > div.dataTables_paginate').hide();
             }
