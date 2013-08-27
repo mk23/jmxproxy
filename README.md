@@ -7,11 +7,11 @@ JMXProxy exposes all available MBean attributes on a given JVM via simple HTTP r
 Compiling
 ---------
 
-The build is simple [maven](http://maven.apache.org) invocation.  To compile, test, and package JMXProxy execute the following.
+The build is a simple [maven](http://maven.apache.org) invocation.  To compile, test, and package JMXProxy execute the following.
 
     $ mvn clean package
 
-The resulting package is a self-executable "fat jar" file located at `target/jmxproxy-2.2.2.jar`
+The resulting package is a self-executable "fat jar" file located at `target/jmxproxy-2.2.2.jar`.
 
 
 Configuration
