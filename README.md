@@ -211,7 +211,7 @@ Likewise, JMX credentials and remote JMXProxy address are also supported:
 
 For example, to request basic stats from the JVM running `jmxproxy` itself:
 
-    $ scripts/graphite/jmxproxy.py --service-port 1123 --service-host localhost --jmxproxy-host localhost --jmxproxy-port 8080 --jmxproxy-path /jmxproxy -n # dry-run output
+    $ scripts/graphite/jmxproxy.py --service-port 1123 --service-host localhost --jmxproxy-host localhost --jmxproxy-port 8080 --jmxproxy-path jmxproxy -n # dry-run output
     localhost.jvm.classes_loaded 3804 1363021890
     localhost.jvm.classes_total 3917 1363021890
     localhost.jvm.classes_unloaded 113 1363021890
@@ -223,7 +223,7 @@ For example, to request basic stats from the JVM running `jmxproxy` itself:
 
 This script allows easy extensions by creating another script that imports `jmxproxy`, sets up a dictionary of desired beans, and passes it to the `jmxproxy.main()` function.  One such extension, `hadoopy.py`, exists to demonstrate this behavior and usage:
 
-    $ scripts/graphite/hadoop.py --service-port 8003 --service-host datanode001 --jmxproxy-host localhost --jmxproxy-port 8080 --jmxproxy-path /jmxproxy --service-name datanode -n # dry-run output
+    $ scripts/graphite/hadoop.py --service-port 8003 --service-host datanode001 --jmxproxy-host localhost --jmxproxy-port 8080 --jmxproxy-path jmxproxy --service-name datanode -n # dry-run output
     datanode001.datanode.blocks_read 1839 1363022233
     datanode001.datanode.blocks_removed 1584 1363022233
     datanode001.datanode.blocks_replicated 0 1363022233
