@@ -605,22 +605,20 @@ $(document).ready(function() {
     documentInfo = documentInfoClass($(document).attr('title'), $('#endpoint-label').text());
 
     $('#endpoint-input').keypress(function(e) {
-        documentInfo.reset();
-
         if (e.keyCode == 13 && this.validity.valid) {
             documentInfo.reset();
-            endpointHost = endpointHostClass(this.value);
+            endpointHost = endpointHostClass($(this).val());
 
-            this.value = '';
-            this.blur();
+            $(this).blur();
         }
     });
 
-    $('#endpoint-creds').submit(function(e) {
+    $('#endpoint-creds').submit(function() {
         documentInfo.reset();
         endpointHost.resetAuth($('#endpoint-user').val(), $('#endpoint-pass').val());
 
         $('#endpoint-auth').modal('hide')
+        return false;
     });
 
     $('#memory-btn-hm').click(function() {
