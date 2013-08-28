@@ -174,9 +174,10 @@ var endpointDataClass = function() {
 
                     if (part == body.length - 1) {
                         item = $('<li/>').append($('<a/>')
-                            .attr('href', '#'+data[bean])
+                            .attr('href', '#')
+                            .data('bean', data[bean])
                             .click(function() {
-                                populateAttr(this.hash.substring(1));
+                                populateAttr($(this).data('bean'));
                             })
                             .append($('<i/>').addClass('icon-file'))
                             .append(name)
