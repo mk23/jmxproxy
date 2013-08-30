@@ -86,7 +86,7 @@
         <configuration>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-	  <argLine>-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=${jmxproxy.test.port}</argLine>
+          <argLine>-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=${jmxproxy.test.port}</argLine>
         </configuration>
       </plugin>
     </plugins>
