@@ -1,12 +1,12 @@
 Source: jmxproxy
 Section: java
 Priority: extra
-Maintainer: Max Kalika <max@topsy.com>
+Maintainer: Max Kalika <max.kalika+projects@gmail.com>
 Build-Depends: debhelper (>= 7), maven2
 Standards-Version: 3.8.3
 
 Package: jmxproxy
-Architecture: any
-Depends: java-runtime
-Description: Topsy jmxproxy
- Topsy jmxproxy
+Architecture: all
+Depends: default-jre
+Description: JMX to HTTP proxy.
+ JMXProxy exposes all available MBean attributes on a given JVM via simple HTTP request.

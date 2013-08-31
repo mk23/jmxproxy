@@ -24,7 +24,7 @@ jmxproxy (2.2.2) precise; urgency=low
   * [8a395c0] Use targetted requests in the cacti poller to avoid
     downloading potentially huge payloads.
 
- -- Max Kalika <max@mklinbox>  Tue, 11 Jun 2013 12:39:51 -0700
+ -- Max Kalika <max.kalika+projects@gmail.com>  Tue, 11 Jun 2013 12:39:51 -0700
 
 jmxproxy (2.2.1) precise; urgency=low
 
@@ -42,7 +42,7 @@ jmxproxy (2.2.1) precise; urgency=low
   * [5a38030] More doc formatting.
   * [17d3341] Fix doc formatting.
 
- -- Max Kalika <max@topsy.com>  Wed, 08 May 2013 19:30:46 -0700
+ -- Max Kalika <max.kalika+projects@gmail.com>  Wed, 08 May 2013 19:30:46 -0700
 
 jmxproxy (2.2.0) precise; urgency=low
 
@@ -78,7 +78,7 @@ jmxproxy (2.2.0) precise; urgency=low
     Useful for creating in-progress/snapshot versions.
   * [417e3fe] Start on 2.1.2.
 
- -- Max Kalika <max@topsy.com>  Tue, 07 May 2013 21:18:40 -0700
+ -- Max Kalika <max.kalika+projects@gmail.com>  Tue, 07 May 2013 21:18:40 -0700
 
 jmxproxy (2.1.1) precise; urgency=low
 
@@ -129,7 +129,7 @@ jmxproxy (2.1.1) precise; urgency=low
     git+ssh://github.com/mk23/jmxproxy
   * [f36d98d] Update docs at release time too.
 
- -- Max Kalika <max@topsy.com>  Fri, 22 Mar 2013 15:34:49 -0700
+ -- Max Kalika <max.kalika+projects@gmail.com>  Fri, 22 Mar 2013 15:34:49 -0700
 
 jmxproxy (2.1.0) precise; urgency=low
 
@@ -166,7 +166,7 @@ jmxproxy (2.1.0) precise; urgency=low
   * [f333109] Start on 2.0.1
   * [c3b964e] Tagging 2.0.0
 
- -- Max Kalika <max@topsy.com>  Tue, 19 Mar 2013 16:28:30 -0700
+ -- Max Kalika <max.kalika+projects@gmail.com>  Tue, 19 Mar 2013 16:28:30 -0700
 
 jmxproxy (2.0.0) precise; urgency=low
 
@@ -222,16 +222,16 @@ jmxproxy (2.0.0) precise; urgency=low
   * [c8094a0] Adding domains and mbeans to the host pojo.
   * [229a792] Checkpoint refactor branch.
 
- -- Max Kalika <max@topsy.com>  Fri, 22 Feb 2013 16:36:49 -0800
+ -- Max Kalika <max.kalika+projects@gmail.com>  Fri, 22 Feb 2013 16:36:49 -0800
 
 jmxproxy (20120524.001) lucid; urgency=low
 
   * Tagging 20120524.001.
 
- -- Max Kalika <max@topsy.com>  Thu, 24 May 2012 20:43:30 -0700
+ -- Max Kalika <max.kalika+projects@gmail.com>  Thu, 24 May 2012 20:43:30 -0700
 
 jmxproxy (20120205.001) lucid; urgency=low
 
   * Initial release.
 
- -- Max Kalika <max@topsy.com>  Thu, 24 May 2012 20:40:35 -0700
+ -- Max Kalika <max.kalika+projects@gmail.com>  Thu, 24 May 2012 20:40:35 -0700
