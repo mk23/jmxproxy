@@ -4,45 +4,9 @@
         <title>JMXProxy</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="css/bootstrap.css" rel="stylesheet" media="screen">
         <link href="css/jquery.dataTables.css" rel="stylesheet" media="screen">
-        <style>
-            div.progress {
-                width: 100%;
-                cursor: pointer;
-                text-align: right;
-                color: black;
-            }
-
-            ul.menu {
-                display: none;
-                padding-right: 0px;
-            }
-
-            span.menu-toggle {
-                width: 100%;
-                cursor: pointer;
-            }
-
-            div.dataTables_length {
-                float: left;
-                text-align: left;
-            }
-            div.dataTables_paginate {
-                float: right;
-                margin: 0;
-            }
-
-            /*
-            div.dataTables_scrollBody table {
-                width: 100%;
-            }
-
-            div.dataTables_scrollHead table {
-                width: 100%;
-            }
-            */
-        </style>
+        <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+        <link href="css/jmxproxy.css" rel="stylesheet" media="screen">
     </head>
     <body>
         <div class="navbar">
@@ -107,7 +71,7 @@
                                 <div class="span6">
                                     <div class="well">
                                         <h5>Heap Usage</h5>
-                                        <div id="overview-mem-gr" style="width:100%;height:225px;"></div>
+                                        <div class="overview-graph" id="overview-mem-gr"></div>
                                         <ul class="inline">
                                             <li><small>Used:</small></li>
                                             <li><small id="overview-mem-hh"></small></li>
@@ -121,7 +85,7 @@
                                 <div class="span6">
                                     <div class="well">
                                         <h5>Running Threads</h5>
-                                        <div id="overview-thr-gr" style="width:100%;height:225px;"></div>
+                                        <div class="overview-graph" id="overview-thr-gr"></div>
                                         <ul class="inline">
                                             <li><small>Live:</small></li>
                                             <li><small id="overview-thr-tc"></small></li>
@@ -139,7 +103,7 @@
                                 <div class="span6">
                                     <div class="well">
                                         <h5>Loaded Classes</h5>
-                                        <div id="overview-cls-gr" style="width:100%;height:225px;"></div>
+                                        <div class="overview-graph" id="overview-cls-gr"></div>
                                         <ul class="inline">
                                             <li><small>Loaded:</small></li>
                                             <li><small id="overview-cls-cl"></small></li>
@@ -153,7 +117,7 @@
                                 <div class="span6">
                                     <div class="well">
                                         <h5>CPU Usage</h5>
-                                        <div id="overview-cpu-gr" style="width:100%;height:225px;"></div>
+                                        <div class="overview-graph" id="overview-cpu-gr"></div>
                                         <ul class="inline">
                                             <li><small>Process CPU Usage:</small></li>
                                             <li><small id="overview-cpu-up"></small></li>
@@ -171,7 +135,7 @@
                         <div class="span12">
                             <div class="well">
                                 <h4 id="memory-text"></h4>
-                                <div id="memory-gr" style="width:100%;height:450px;" onmouseout="endpointData.redrawGraphs(this.id, true, prettifySize)"></div>
+                                <div class="focused-graph" id="memory-gr" onmouseout="endpointData.redrawGraphs(this.id, true, prettifySize)"></div>
                             </div>
                         </div>
                     </div>
@@ -209,7 +173,7 @@
                         <div class="span12">
                             <div class="well">
                                 <h4>Running Threads</h4>
-                                <div id="threads-gr" style="width:100%;height:450px;" onmouseout="endpointData.redrawGraphs(this.id)"></div>
+                                <div class="focused-graph" id="threads-gr" onmouseout="endpointData.redrawGraphs(this.id)"></div>
                             </div>
                         </div>
                     </div>
@@ -219,7 +183,7 @@
                         <div class="span12">
                             <div class="well">
                                 <h4>Loaded Classes</h4>
-                                <div id="classes-gr" style="width:100%;height:450px;" onmouseout="endpointData.redrawGraphs(this.id)"></div>
+                                <div class="focused-graph" id="classes-gr" onmouseout="endpointData.redrawGraphs(this.id)"></div>
                             </div>
                         </div>
                     </div>
