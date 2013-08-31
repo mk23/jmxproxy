@@ -1,3 +1,90 @@
+jmxproxy (3.0.0) precise; urgency=low
+
+  * Tagging 3.0.0
+  * [75ac935] Fix maintainer email and clean up debian control.
+  * [b4a6e1d] Issue #25: Move all css out of index.html into new
+    jmxproxy.css file that will be minified automatically by the build.
+  * [24cdcb2] Issue #24: Minify all css and js replacing originals in
+    the final artifact.
+  * [ff1cf52] Issue #23: Standardize on non-minified versions of
+    external libraries.
+  * [c07fe6e] Whitespace.
+  * [6126704] Issue #13: Make creds submission work on safari and
+    chrome.
+  * [7b89582] Issue #13: Use data attributes to communicate beans
+    instead of browser-visible anchor hash.
+  * [f189206] Issue #21: jmxproxy path shouldn't have a leading slash.
+  * [1c28542] Issue #21: Add --jmxproxy-path parameter to the graphite
+    poller.
+  * [11fa30b] Issue #21: Change jmxproxy parameter for nagios poller to
+    be the full url prefix.
+  * [9742f1a] Issue #21: Change jmxproxy parameter for cacti poller to
+    be the full url prefix.
+  * [f0cc3d2] Issue #21: update documentation for rootPath move.
+  * [d5c8d3d] Doc tweaks.
+  * [b9a4143] Issue #13: Move some css out of javascript.
+  * [6a2debe] Issue #13: Add tooptips for the refresh and expand links.
+  * [ce0ded0] Issue #13: Stylize numerics, booleans, and nulls.
+  * [a60dce9] Issue #13: Hide pagination if there are no items in the
+    table as well as just one page.
+  * [d367525] Issue #13: Adjust column sizes after creating the data
+    table and after nested element clicks.
+  * [24d6ad8] Issue #13: Prevent pagination from re-invoking row
+    callback causing multiple bindings of the click handler.
+  * [1cf472f] Issue #13: Basic working version of datatables and nested
+    objects.
+  * [ff0d192] Issue #13: Clean up datatables css.
+  * [348bc1b] Issue #13: Stylize expandable key cells as hyperlinks.
+  * [a4ce6e2] Issue #13: Abbreviate long strings with the option to
+    expand.
+  * [134e174] Issue #13: Hide pagination on main attribute table, if
+    showing only one page.
+  * [ffb52d7] Issue #13: Be more jQueryfic.
+  * [71db3ab] Issue #13: Quote object keys consistently.
+  * [80d225b] Issue #13: Simplify interactive mbean tree code.
+  * [27223d4] Issue #13: Implement a very rough version of the mbeans
+    tab with a working tree, data table, and nested object expansion.
+  * [dbe97a6] Issue #13: Use jquery's type() function instead.
+  * [c0a1de3] Issue #13: Memory tab should not be marked active.
+  * [3db1170] Issue #13: Put view tabs on the right.
+  * [697f013] Issue #13: Fix erroneous form submission on safari and
+    probably other browsers.
+  * [c05f459] Issue #20: Add tests for simple attribute types.  Still
+    missing CompositeData and TabularData.
+  * [0c2173e] Issue #22: Return json for strings that look like json.
+  * [fcd4aca] Since we're not testing with credentials, don't explicitly
+    set that param.
+  * [fec5c3a] Issue #18: Add support for all iterable attribute types,
+    yielding json arrays.
+  * [606f018] Stylize memory bars.
+  * [f3da02e] Issue #13: Implement Memory view.
+  * [bdec51f] Draw the rest of the overview graphs when activating the
+    tab.
+  * [0f62a1a] Issue #13: Implement Overview tab.
+  * [6d2b133] Issue #13: Stub out overview tab.
+  * [85aadd4] Don't draw plots until the tab is visible to avoid
+    artifacts due to hidden elements.
+  * [c92a74e] Convert summary view to dictionary lists.
+  * [8839c36] Issue #13: Add graphs and centralize data population.
+  * [37fb756] Add travis-ci built status tag to docs.
+  * [1cab11f] Issue #13: Rework server communication and add Summary
+    View tab.
+  * [aa8f187] Issue 13: Reset labels, title, and creds when switching
+    endpoints.
+  * [ccdd760] Issue #13: Basic foundation for selecting or entering an
+    endpoint and optionally authenticating.
+  * [c6ab6e4] Ignore Mac OS X metadata files.
+  * [48267b8] Issue #13: Stub out UI.
+  * [285cf2a] Issue #13: Configure server to serve static assets.
+  * [1cfaedf] Merge branch 'master' of
+    git+ssh://github.com/mk23/jmxproxy
+  * [1970a77] Issue #17: Programmatically set rootPath to allow for
+    assets to be served from root.
+  * [f43cfca] Issue #17: Programmatically set rootPath to allow for
+    assets to be served from root.
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Sat, 31 Aug 2013 08:52:49 -0700
+
 jmxproxy (2.2.2) precise; urgency=low
 
   * Tagging 2.2.2
