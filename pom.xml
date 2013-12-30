@@ -84,7 +84,7 @@
         <artifactId>maven-shade-plugin</artifactId>
         <version>1.7.1</version>
         <configuration>
-          <createDependencyReducedPom>true</createDependencyReducedPom>
+          <createDependencyReducedPom>false</createDependencyReducedPom>
           <filters>
             <filter>
               <artifact>*:*</artifact>
