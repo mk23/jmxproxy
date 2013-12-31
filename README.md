@@ -264,4 +264,4 @@ This script allows easy extensions by creating another script that imports `jmxp
 
 License
 -------
-TBD
+[MIT](http://mk23.mit-license.org/2011-2013/license.html)

@@ -2,18 +2,57 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <prerequisites>
-    <maven>2.2.1</maven>
-  </prerequisites>
-
   <groupId>com.topsy.jmxproxy</groupId>
   <artifactId>jmxproxy</artifactId>
   <version>3.0.0</version>
+
+  <name>JMXProxy</name>
+  <description>JMX to HTTP Proxy</description>
+  <url>https://github.com/mk23/jmxproxy</url>
+  <inceptionYear>2011</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>LICENSE.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>max.kalika</id>
+      <name>Max Kalika</name>
+      <roles>
+        <role>project owner</role>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/mk23/jmxproxy/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Travis CI</system>
+    <url>https://travis-ci.org/mk23/jmxproxy</url>
+  </ciManagement>
+
+  <scm>
+    <connection>scm:git:git://github.com/mk23/jmxproxy.git</connection>
+    <developerConnection>scm:git:git+ssh://git@github.com:mk23/jmxproxy.git</developerConnection>
+    <url>https://github.com/mk23/jmxproxy</url>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jmxproxy.test.port>11123</jmxproxy.test.port>
   </properties>
+
+  <prerequisites>
+    <maven>2.2.1</maven>
+  </prerequisites>
 
   <dependencies>
     <dependency>
@@ -104,6 +143,18 @@
             </goals>
             <configuration>
               <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                  <addHeader>false</addHeader>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                  <resource>META-INF/LICENSE</resource>
+                  <file>LICENSE.txt</file>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                  <resource>META-INF/README</resource>
+                  <file>README.md</file>
+                </transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>com.topsy.jmxproxy.JMXProxyService</mainClass>
