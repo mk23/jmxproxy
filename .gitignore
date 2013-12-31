@@ -3,3 +3,5 @@ target
 *.sw*
 *.pyc
 .m2
+debian/files
+debian/jmxproxy*
