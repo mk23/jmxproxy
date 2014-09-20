@@ -1,7 +1,6 @@
 package com.topsy.jmxproxy;
 
 import com.topsy.jmxproxy.jmx.ConnectionManager;
-import com.topsy.jmxproxy.JMXProxyResource;
 
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
