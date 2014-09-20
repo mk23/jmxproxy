@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 
 public class JMXProxyConfiguration extends Configuration {
     @JsonSnakeCase
-    public static class JMXProxyServiceConfiguration {
+    public static class JMXProxyApplicationConfiguration {
         @Min(1)
         @JsonProperty
         private int cleanInterval = 1;
@@ -84,7 +84,7 @@ public class JMXProxyConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty(value="jmxproxy")
-    private JMXProxyServiceConfiguration serviceConfig = new JMXProxyServiceConfiguration();
+    private JMXProxyApplicationConfiguration applicationConfiguration = new JMXProxyApplicationConfiguration();
 
     public JMXProxyHttpConfiguration getHttpConfiguration() {
         return httpConfig;
@@ -93,10 +93,10 @@ public class JMXProxyConfiguration extends Configuration {
         this.httpConfig = httpConfig;
     }
 
-    public JMXProxyServiceConfiguration getServiceConfiguration() {
-        return serviceConfig;
+    public JMXProxyApplicationConfiguration getApplicationConfiguration() {
+        return applicationConfiguration;
     }
-    public void setServiceConfiguration(JMXProxyServiceConfiguration serviceConfig) {
-        this.serviceConfig = serviceConfig;
+    public void setApplicationConfiguration(JMXProxyApplicationConfiguration applicationConfiguration) {
+        this.applicationConfiguration = applicationConfiguration;
     }
 }

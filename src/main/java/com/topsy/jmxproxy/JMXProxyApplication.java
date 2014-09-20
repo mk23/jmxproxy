@@ -3,7 +3,7 @@ package com.topsy.jmxproxy;
 import com.topsy.jmxproxy.jmx.ConnectionManager;
 import com.topsy.jmxproxy.JMXProxyResource;
 
-import com.yammer.dropwizard.Service;
+import io.dropwizard.Application;
 import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
@@ -11,12 +11,12 @@ import com.yammer.dropwizard.config.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JMXProxyService extends Service<JMXProxyConfiguration> {
-    private static final Logger LOG = LoggerFactory.getLogger(JMXProxyService.class);
+public class JMXProxyApplication extends Application<JMXProxyConfiguration> {
+    private static final Logger LOG = LoggerFactory.getLogger(JMXProxyApplication.class);
 
     public static void main(String[] args) throws Exception {
         LOG.info("starting jmxproxy service");
-        new JMXProxyService().run(args);
+        new JMXProxyApplication().run(args);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class JMXProxyService extends Service<JMXProxyConfiguration> {
 
     @Override
     public void run(JMXProxyConfiguration configuration, Environment environment) {
-        final ConnectionManager manager = new ConnectionManager(configuration.getServiceConfiguration());
+        final ConnectionManager manager = new ConnectionManager(configuration.getApplicationConfiguration());
 
         environment.manage(manager);
         environment.addResource(new JMXProxyResource(manager));

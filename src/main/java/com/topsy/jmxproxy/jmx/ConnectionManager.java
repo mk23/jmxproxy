@@ -1,6 +1,6 @@
 package com.topsy.jmxproxy.jmx;
 
-import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyServiceConfiguration;
+import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
 import com.topsy.jmxproxy.core.Host;
 
 import com.yammer.dropwizard.lifecycle.Managed;
@@ -21,21 +21,21 @@ import org.slf4j.LoggerFactory;
 public class ConnectionManager implements Managed {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManager.class);
 
-    private final JMXProxyServiceConfiguration config;
+    private final JMXProxyApplicationConfiguration config;
 
     private Map<String, ConnectionWorker> hosts;
     private ScheduledExecutorService purge;
 
     private boolean started = false;
 
-    public ConnectionManager(JMXProxyServiceConfiguration config) {
+    public ConnectionManager(JMXProxyApplicationConfiguration config) {
         this.config = config;
 
         hosts = new HashMap<String, ConnectionWorker>();
         purge = Executors.newSingleThreadScheduledExecutor();
     }
 
-    public JMXProxyServiceConfiguration getConfiguration() {
+    public JMXProxyApplicationConfiguration getConfiguration() {
         return config;
     }
 

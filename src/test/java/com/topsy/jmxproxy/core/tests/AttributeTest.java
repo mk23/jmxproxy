@@ -1,6 +1,6 @@
 package com.topsy.jmxproxy.core.tests;
 
-import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyServiceConfiguration;
+import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
 import com.topsy.jmxproxy.jmx.ConnectionManager;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class AttributeTest {
     private final String validHost  = "localhost:" + System.getProperty("com.sun.management.jmxremote.port");
     private final String validMBean = "AttributeTest:type=test";
 
-    private final ConnectionManager manager = new ConnectionManager(new JMXProxyServiceConfiguration());
+    private final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
 
     public interface AttributeTestJMXMBean {
         Object getNullValue();
