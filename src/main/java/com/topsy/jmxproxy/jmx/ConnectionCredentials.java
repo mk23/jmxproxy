@@ -28,8 +28,11 @@ public class ConnectionCredentials {
 
     @Override
     public boolean equals(Object peer) {
-        ConnectionCredentials auth = (ConnectionCredentials) peer;
+        if (peer == null || !(peer instanceof ConnectionCredentials)) {
+            return false;
+        }
 
-        return auth != null && username.equals(auth.getUsername()) && password.equals(auth.getPassword());
+        ConnectionCredentials auth = (ConnectionCredentials) peer;
+        return username.equals(auth.getUsername()) && password.equals(auth.getPassword());
     }
 }
