@@ -51,7 +51,7 @@
   </properties>
 
   <prerequisites>
-    <maven>3.0</maven>
+    <maven>3.0.5</maven>
   </prerequisites>
 
   <dependencies>
@@ -195,6 +195,27 @@
           <reuseForks>false</reuseForks>
           <argLine>-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=${jmxproxy.test.port}</argLine>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <effort>max</effort>
+          <threshold>low</threshold>
+          <xmlOutput>true</xmlOutput>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
       </plugin>
     </plugins>
   </build>
