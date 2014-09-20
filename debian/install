@@ -1,1 +1,2 @@
+debian/jmxproxy.yml.example /etc
 target/jmxproxy-*.jar /usr/lib
