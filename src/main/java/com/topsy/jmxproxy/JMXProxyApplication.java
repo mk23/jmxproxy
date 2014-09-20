@@ -4,9 +4,9 @@ import com.topsy.jmxproxy.jmx.ConnectionManager;
 import com.topsy.jmxproxy.JMXProxyResource;
 
 import io.dropwizard.Application;
-import com.yammer.dropwizard.assets.AssetsBundle;
-import com.yammer.dropwizard.config.Bootstrap;
-import com.yammer.dropwizard.config.Environment;
+import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.setup.Bootstrap;
+import io.dropwizard.setup.Environment;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,17 +20,25 @@ public class JMXProxyApplication extends Application<JMXProxyConfiguration> {
     }
 
     @Override
+    public String getName() {
+        return "jmxproxy";
+    }
+
+    @Override
     public void initialize(Bootstrap<JMXProxyConfiguration> bootstrap) {
-        bootstrap.setName("jmxproxy");
         bootstrap.addBundle(new AssetsBundle("/assets/", "/", "index.html"));
     }
 
     @Override
     public void run(JMXProxyConfiguration configuration, Environment environment) {
         final ConnectionManager manager = new ConnectionManager(configuration.getApplicationConfiguration());
+        final JMXProxyResource resource = new JMXProxyResource(manager);
+        final JMXProxyHealthCheck healthCheck = new JMXProxyHealthCheck(manager);
 
-        environment.manage(manager);
-        environment.addResource(new JMXProxyResource(manager));
-        environment.addHealthCheck(new JMXProxyHealthCheck(manager));
+        environment.jersey().setUrlPattern("/jmxproxy/*");
+
+        environment.lifecycle().manage(manager);
+        environment.jersey().register(resource);
+        environment.healthChecks().register("manager", healthCheck);
     }
 }

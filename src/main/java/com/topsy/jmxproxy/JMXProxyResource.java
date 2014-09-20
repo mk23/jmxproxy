@@ -5,7 +5,7 @@ import com.topsy.jmxproxy.core.MBean;
 import com.topsy.jmxproxy.jmx.ConnectionCredentials;
 import com.topsy.jmxproxy.jmx.ConnectionManager;
 
-import com.yammer.dropwizard.jersey.params.BooleanParam;
+import io.dropwizard.jersey.params.BooleanParam;
 
 import java.lang.SecurityException;
 

@@ -2,13 +2,12 @@ package com.topsy.jmxproxy;
 
 import com.topsy.jmxproxy.jmx.ConnectionManager;
 
-import com.yammer.metrics.core.HealthCheck;
+import com.codahale.metrics.health.HealthCheck;
 
 public class JMXProxyHealthCheck extends HealthCheck {
     private final ConnectionManager manager;
 
     public JMXProxyHealthCheck(ConnectionManager manager) {
-        super("manager");
         this.manager = manager;
     }
 

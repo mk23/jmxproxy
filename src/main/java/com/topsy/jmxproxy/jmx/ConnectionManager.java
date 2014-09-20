@@ -3,7 +3,7 @@ package com.topsy.jmxproxy.jmx;
 import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
 import com.topsy.jmxproxy.core.Host;
 
-import com.yammer.dropwizard.lifecycle.Managed;
+import io.dropwizard.lifecycle.Managed;
 
 import java.util.HashMap;
 import java.util.Map;
