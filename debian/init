@@ -1,0 +1,102 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          jmxproxy
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: JMXProxy service
+# Description:       Starts and stops the JMX to HTTP proxy
+#                    service.
+### END INIT INFO
+
+# Author: Max Kalika <max.kalika+projects@gmail.com>
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="JMXProxy service"
+NAME=jmxproxy
+RUN_AS=nobody
+JAVA_HOME=/usr
+JAVA_OPTS=-Xmx256m
+PIDFILE=/var/run/${NAME}.pid
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+. /lib/lsb/init-functions
+
+# Exit if the package is not installed
+[ -x "${JAVA_HOME}/bin/java" -a -f "/usr/lib/${NAME}.jar" ] || exit 0
+
+# Exit if service is administratively disabled
+[ -n "$ENABLED" -a "$ENABLED" != "0" ] || exit 0
+
+do_start() {
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --test --exec ${JAVA_HOME}/bin/java \
+		|| return 1
+
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --make-pidfile --background \
+		--chuid ${USER:-nobody} --exec ${JAVA_HOME}/bin/java -- \
+			$JAVA_OPTS -jar /usr/lib/${NAME}.jar server $CONF_FILE \
+		|| return 2
+
+	return 0
+}
+
+do_stop() {
+	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE
+	RETVAL="$?"
+
+	rm -f $PIDFILE
+	return "$RETVAL"
+}
+
+case "$1" in
+  start)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC"
+	do_start
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC"
+	do_stop
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  status)
+	status_of_proc -p $PIDFILE ${JAVA_HOME}/bin/java $NAME && exit 0 || exit $?
+	;;
+  restart|force-reload)
+	log_daemon_msg "Restarting $DESC"
+	do_stop
+	sleep 2
+	case "$?" in
+	  0|1)
+		do_start
+		case "$?" in
+			0) log_end_msg 0 ;;
+			*) log_end_msg 1 ;; # Failed to start
+		esac
+		;;
+	  *)
+		# Failed to stop
+		log_end_msg 1
+		;;
+	esac
+	;;
+  *)
+	echo "Usage: $0 {start|stop|status|restart|force-reload}" >&2
+	exit 3
+	;;
+esac
+
+:

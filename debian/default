@@ -1,0 +1,11 @@
+# Set ENABLED to 1 if you want the init script to start jmxproxy.
+ENABLED=0
+
+# Run service as this user.
+#RUN_AS=nobody
+
+# Configuration file path. Must end with ".yml" or ".yaml" to be parsed as yaml otherwise it will be parsed as json.
+#CONF_FILE=/etc/jmxproxy.yml
+
+# Add extra java flags here.
+#JAVA_OPTS="-Xmx100m -Dcom.sun.management.jmxremote.port=1123 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
