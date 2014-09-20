@@ -18,37 +18,37 @@ public class JMXProxyConfiguration extends Configuration {
     public static class JMXProxyApplicationConfiguration {
         @Min(1)
         @JsonProperty
-        private int cleanInterval = 1;
+        private long cleanInterval = 1;
 
         @Min(0)
         @JsonProperty
-        private int cacheDuration = 5;
+        private long cacheDuration = 5;
 
         @Min(1)
         @JsonProperty
-        private int accessDuration = 30;
+        private long accessDuration = 30;
 
         @JsonProperty
         private List<String> allowedEndpoints = new ArrayList<String>();
 
-        public int getCleanInterval() {
+        public long getCleanInterval() {
             return cleanInterval;
         }
-        public void setCleanInterval(int cleanInterval) {
+        public void setCleanInterval(long cleanInterval) {
             this.cleanInterval = cleanInterval;
         }
 
-        public int getCacheDuration() {
+        public long getCacheDuration() {
             return cacheDuration;
         }
-        public void setCacheDuration(int cacheDuration) {
+        public void setCacheDuration(long cacheDuration) {
             this.cacheDuration = cacheDuration;
         }
 
-        public int getAccessDuration() {
+        public long getAccessDuration() {
             return accessDuration;
         }
-        public void setAccessDuration(int accessDuration) {
+        public void setAccessDuration(long accessDuration) {
             this.accessDuration = accessDuration;
         }
 

@@ -37,7 +37,7 @@ public class ConnectionWorker {
 
     private ScheduledExecutorService fetch;
 
-    public ConnectionWorker(String hostName, ConnectionCredentials auth, int cacheDuration) throws Exception {
+    public ConnectionWorker(String hostName, ConnectionCredentials auth, long cacheDuration) throws Exception {
         this.auth = auth;
 
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + "/jmxrmi");
@@ -62,7 +62,7 @@ public class ConnectionWorker {
         return auth == this.auth || auth != null && auth.equals(this.auth) || this.auth != null && this.auth.equals(auth);
     }
 
-    public boolean isExpired(int accessDuration) {
+    public boolean isExpired(long accessDuration) {
         return System.currentTimeMillis() - accessTime > accessDuration * 60 * 1000;
     }
 
