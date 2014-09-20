@@ -1,6 +1,5 @@
 package com.topsy.jmxproxy.core;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -92,7 +91,7 @@ public class Attribute implements JsonSerializable {
                 String input = objectValue.toString();
                 List<JsonNode> parts = new ArrayList<JsonNode>();
                 ObjectMapper mapper = new ObjectMapper();
-                JsonParser parser = new JsonFactory().createJsonParser(input);
+                JsonParser parser = mapper.getFactory().createParser(input);
 
                 for (parser.nextToken(); parser.hasCurrentToken(); parser.nextToken()) {
                     JsonToken tok = parser.getCurrentToken();
