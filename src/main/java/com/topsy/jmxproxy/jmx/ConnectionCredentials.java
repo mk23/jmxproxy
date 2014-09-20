@@ -13,9 +13,12 @@ public class ConnectionCredentials {
     @JsonProperty
     private final String password;
 
+    private final String combined;
+
     public ConnectionCredentials(@JsonProperty("username") String username, @JsonProperty("password") String password) {
         this.username = username;
         this.password = password;
+        this.combined = username + "\0" + password;
     }
 
     public String getUsername() {
@@ -34,5 +37,10 @@ public class ConnectionCredentials {
 
         ConnectionCredentials auth = (ConnectionCredentials) peer;
         return username.equals(auth.getUsername()) && password.equals(auth.getPassword());
+    }
+
+    @Override
+    public int hashCode() {
+        return combined.hashCode();
     }
 }
