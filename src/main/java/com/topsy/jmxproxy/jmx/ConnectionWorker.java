@@ -53,7 +53,7 @@ public class ConnectionWorker {
         fetchJMXValues();
     }
 
-    public Host getHost() throws SecurityException {
+    public synchronized Host getHost() throws SecurityException {
         accessTime = System.currentTimeMillis();
         return host;
     }
