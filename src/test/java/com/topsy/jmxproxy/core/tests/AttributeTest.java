@@ -1,7 +1,13 @@
 package com.topsy.jmxproxy.core.tests;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
 import com.topsy.jmxproxy.jmx.ConnectionManager;
+
+import java.io.IOException;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -13,13 +19,14 @@ import javax.management.ObjectName;
 
 import org.junit.Test;
 
-import static com.yammer.dropwizard.testing.JsonHelpers.asJson;
-import static com.yammer.dropwizard.testing.JsonHelpers.jsonFixture;
+import static io.dropwizard.testing.FixtureHelpers.fixture;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class AttributeTest {
+    private final ObjectMapper om = new ObjectMapper();
+
     private final String validHost  = "localhost:" + System.getProperty("com.sun.management.jmxremote.port");
     private final String validMBean = "AttributeTest:type=test";
 
@@ -115,6 +122,14 @@ public class AttributeTest {
             );
         } catch (javax.management.InstanceAlreadyExistsException e) {
         }
+    }
+
+    private String asJson(Object object) throws JsonProcessingException {
+        return om.writeValueAsString(object);
+    }
+
+    private String jsonFixture(String filename) throws IOException {
+        return om.writeValueAsString(om.readValue(fixture(filename), JsonNode.class));
     }
 
     /* Attribute tests */
