@@ -373,6 +373,9 @@ var endpointDataClass = function() {
                     });
                 } else if (data[item].lastIndexOf('java.lang:type=MemoryPool') === 0) {
                     endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
+                        if (item.Usage.max <= 0) {
+                            return;
+                        }
                         if ($.type(items['memory-gr'][item.Name]) === 'undefined') {
                             items['memory-gr'][item.Name] = [{
                                 'label': item.Name+' Memory Usage',
