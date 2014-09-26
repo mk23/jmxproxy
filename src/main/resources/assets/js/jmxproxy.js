@@ -173,6 +173,13 @@ var endpointDataClass = function() {
                     }
 
                     if (part == body.length - 1) {
+                        size = name.length;
+                        bits = name.split('.');
+                        for (i = 0; i < bits.length - 1 && size > 30; i++) {
+                            size -= (bits[i].length - 1);
+                            bits[i] = bits[i][0];
+                        }
+                        name = bits.join('.');
                         item = $('<li/>').append($('<a/>')
                             .attr('href', '#')
                             .data('bean', data[bean])
