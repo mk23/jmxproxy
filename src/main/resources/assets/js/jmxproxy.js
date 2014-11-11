@@ -1,14 +1,3 @@
-var documentInfoClass = function(defaultTitle, defaultLabel) {
-    return {
-        reset: function() {
-            $('window').title = defaultTitle;
-            $('#endpoint-title').text(defaultLabel);
-            $('#endpoint-alert').hide();
-            $('#endpoint-tabui').hide();
-        },
-    }
-};
-
 var endpointDataClass = function() {
     var items = {
         'overview-mem-gr': [{
@@ -82,17 +71,17 @@ var endpointDataClass = function() {
         },
     };
 
-    var redrawMemory = function(item) {
+    var refreshMemory = function(item) {
         items['memory-gr'].selected = item;
         $('#memory-text').text(items['memory-gr'][item][0].label);
-        $('#memory-hh').text(prettifySize(items['memory-gr'][item][0].info.used));
-        $('#memory-hc').text(prettifySize(items['memory-gr'][item][0].info.committed));
-        $('#memory-hm').text(prettifySize(items['memory-gr'][item][0].info.max));
+        $('#memory-hh').text(formatSize(items['memory-gr'][item][0].info.used));
+        $('#memory-hc').text(formatSize(items['memory-gr'][item][0].info.committed));
+        $('#memory-hm').text(formatSize(items['memory-gr'][item][0].info.max));
 
-        redrawGraphs('memory-gr', true, prettifySize);
+        refreshGraphs('memory-gr', true, formatSize);
     }
 
-    var redrawGraphs = function(name, bare, type) {
+    var refreshGraphs = function(name, bare, type) {
         if (items.hasOwnProperty(name) && $('#'+name).is(':visible')) {
             opts = {
                 grid: {
@@ -117,7 +106,7 @@ var endpointDataClass = function() {
                     timeformat: '%H:%M',
                 },
                 yaxis: {
-                    labelWidth: 28,
+                    labelWidth: 64,
                     tickFormatter: $.type(type) !== 'undefined' ? type : Math.floor,
                 },
             };
@@ -130,68 +119,107 @@ var endpointDataClass = function() {
         }
     };
 
-    var makeBeanTree = function() {
-        function listHeader (name) {
-            html = $('<li/>').append(
-                $('<span/>')
-                    .addClass('menu-toggle label label-info')
-                    .mouseover(function() {
-                        $(this).toggleClass('label-info label-warning');
-                    })
-                    .mouseout(function() {
-                        $(this).toggleClass('label-info label-warning');
-                    })
-                    .click(function() {
-                        $(this).next('ul.menu:first').toggle('fast');
-                        $('i:eq(0)', this).toggleClass('icon-folder-close icon-folder-open');
-                        $('i:eq(1)', this).toggleClass('icon-chevron-right icon-chevron-down');
-                    })
-                    .append($('<i/>').addClass('icon-folder-close pull-left'))
-                    .append($('<i/>').addClass('icon-chevron-right pull-right'))
-                    .append(name)
-            );
-            return html;
+    var buildBeanTree = function() {
+    }
+    /*
+    var buildBeanTree = function() {
+        var addHeader = function(tree, list, name) {
+            find = $.grep(tree, function(o, i) {
+                return o.text == name;
+            });
+
+            if (find.length > 0) {
+                return find[0];
+            } else {
+                item = {
+                    text: name,
+                    icon: 'glyphicon glyphicon-folder-close',
+                    nodes: [],
+                };
+                tree.push(item);
+                list.push(item);
+                return item;
+            }
         }
 
         endpointHost.fetchData('/', function(data) {
             data.sort();
+
+            tree = [];
+            list = [];
             for (bean in data) {
                 head = data[bean].split(':')[0].replace(/"/g, '');
-                html = $('#mbeans-menu').find('span:contains('+head+'):first').parent();
-                if (html.length == 0) {
-                    html = listHeader(head);
-                    $('#mbeans-menu').append(html);
-                }
 
+                node = addHeader(tree, list, head);
+
+                body = data[bean].split(':').pop().split(',');
+                for (part in body) {
+                    name = body[part].split('=').pop().replace(/"/g, '');
+                    if (part == body.length - 1) {
+                        size = name.length;
+                        bits = name.split('.');
+                        for (i = 0; i < bits.length - 1 && size > 25; i++) {
+                            size -= (bits[i].length - 1);
+                            bits[i] = bits[i][0];
+                        }
+                        name = bits.join('.');
+
+                        item = {
+                            text: name,
+                            icon: 'glyphicon glyphicon-file',
+                            href: data[bean],
+                        };
+
+                        node.nodes.push(item);
+                        list.push(item);
+                    } else {
+                        node = addHeader(node.nodes, list, name);
+                    }
+                }
+            }
+
+            $('#mbeans-tree').on('nodeSelected', function(e, item) {
+                console.log(item);
+            });
+            $('#mbeans-tree').treeview({
+                data: tree,
+                levels: 1,
+                nodeIcon: 'glyphicon',
+                expandIcon: 'glyphicon glyphicon-chevron-right pull-right',
+                collapseIcon: 'glyphicon glyphicon-chevron-down pull-right',
+            });
+            $.each($('#mbeans-tree li.list-group-item'), function(key, val) {
+                console.log(key, val, list[key]);
+            });
+        });
+    }
+    var buildBeanTree = function() {
+        endpointHost.fetchData('/', function(data) {
+            data.sort();
+            for (bean in data) {
                 body = data[bean].split(':').pop().split(',');
                 for (part in body) {
                     name = body[part].split('=').pop().replace(/"/g, '');
                     list = html.find('ul:first');
                     if (list.length == 0) {
-                        list = $('<ul/>').addClass('nav nav-list menu');
+                        list = $('<ul/>').addClass('nav nav-pills nav-stacked');
                         html.append(list);
                     }
 
                     if (part == body.length - 1) {
-                        size = name.length;
-                        bits = name.split('.');
-                        for (i = 0; i < bits.length - 1 && size > 30; i++) {
-                            size -= (bits[i].length - 1);
-                            bits[i] = bits[i][0];
-                        }
-                        name = bits.join('.');
-                        item = $('<li/>').append($('<a/>')
-                            .attr('href', '#')
-                            .data('bean', data[bean])
-                            .click(function() {
-                                populateAttr($(this).data('bean'));
-                            })
-                            .append($('<i/>').addClass('icon-file'))
-                            .append(name)
-                        );
+                        item = $('<li/>')
+                            .append($('<a/>')
+                                .attr('href', '#')
+                                .data('bean', data[bean])
+                                .click(function() {
+                                    populateAttr($(this).data('bean'));
+                                })
+                                .append($('<i/>').addClass('glyphicon glyphicon-file'))
+                                .append(name)
+                            );
                         list.append(item);
                     } else {
-                        item = list.find('span:contains('+name+'):first').parent();
+                        item = list.find('li:contains('+name+'):first').parent();
                         if (item.length == 0) {
                             item = listHeader(name);
                             list.append(item);
@@ -202,6 +230,7 @@ var endpointDataClass = function() {
             }
         });
     };
+    */
 
     var populateAttr = function(bean) {
         endpointHost.fetchData('/'+bean+'?full=true', function(data) {
@@ -339,14 +368,21 @@ var endpointDataClass = function() {
                     $('th:eq(0):first', nHead).text('Name')
                     $('th:eq(1):first', nHead)
                         .empty()
-                        .append($('<i/>')
-                            .addClass('icon-refresh')
+                        .append(
+                            $('<i/>')
                             .attr('title', 'Refresh')
+                            .data('toggle', 'tooltip')
+                            .data('placement', 'right')
+                            .tooltip()
                             .click(function() {
                                 populateAttr(bean);
                             })
+                            .append(
+                                $('<span/>')
+                                .addClass('glyphicon glyphicon-refresh')
+                            )
                         )
-                        .append(' Value');
+                        .text(' Value');
                 },
                 'aaData': $.map(data, function(v, k) {
                     return {'key': k, 'val': v};
@@ -364,7 +400,7 @@ var endpointDataClass = function() {
         });
     }
 
-    var populateData = function() {
+    var gatherObjects = function() {
         ts = new Date().getTime();
 
         endpointHost.fetchData('/', function(data) {
@@ -375,8 +411,8 @@ var endpointDataClass = function() {
             for (item in data) {
                 if (data[item].lastIndexOf('java.lang:type=GarbageCollector', 0) === 0) {
                     endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
-                        $('#summary-gc').append('Name = "'+item.Name+'"; Collections = '+item.CollectionCount+'; Time spent = '+prettifyTime(item.CollectionTime, 2)+'<br>');
-                        $('#memory-gc').append(prettifyTime(item.CollectionTime, 2)+' on '+item.Name+' ('+item.CollectionCount+' collections)<br>');
+                        $('#summary-gc').append('Name = "'+item.Name+'"; Collections = '+item.CollectionCount+'; Time spent = '+formatTime(item.CollectionTime, 2)+'<br>');
+                        $('#memory-gc').append(formatTime(item.CollectionTime, 2)+' on '+item.Name+' ('+item.CollectionCount+' collections)<br>');
                     });
                 } else if (data[item].lastIndexOf('java.lang:type=MemoryPool') === 0) {
                     endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
@@ -402,35 +438,45 @@ var endpointDataClass = function() {
                             };
                         }
                         if (item.Type == 'HEAP') {
-                            $('#memory-bar-hm').append($('<div/>')
-                                .addClass('progress progress-success')
+                            $('#memory-bar-hm')
+                            .append(
+                                $('<div/>')
+                                .addClass('progress')
                                 .attr('title', 'Memory Pool "'+item.Name+'"')
                                 .data('toggle', 'tooltip')
+                                .data('placement', 'left')
+                                .tooltip()
                                 .click(function() {
-                                    redrawMemory(item.Name);
+                                    refreshMemory(item.Name);
                                 })
-                                .append($('<div/>')
-                                    .addClass('bar')
-                                    .width(prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                .append(
+                                    $('<div/>')
+                                    .addClass('progress-bar progress-bar-success')
+                                    .width(formatPercent(100 * item.Usage.used / item.Usage.max))
+                                    .text(formatPercent(100 * item.Usage.used / item.Usage.max))
                                 )
-                                .append(prettifyPercent(100 * item.Usage.used / item.Usage.max))
                             );
                         } else if (item.Type == 'NON_HEAP') {
-                            $('#memory-bar-nm').append($('<div/>')
-                                .addClass('progress progress-info')
+                            $('#memory-bar-nm')
+                            .append(
+                                $('<div/>')
+                                .addClass('progress')
                                 .attr('title', 'Memory Pool "'+item.Name+'"')
                                 .data('toggle', 'tooltip')
+                                .data('placement', 'left')
+                                .tooltip()
                                 .click(function() {
-                                    redrawMemory(item.Name);
+                                    refreshMemory(item.Name);
                                 })
-                                .append($('<div/>')
-                                    .addClass('bar')
-                                    .width(prettifyPercent(100 * item.Usage.used / item.Usage.max))
+                                .append(
+                                    $('<div/>')
+                                    .addClass('progress-bar progress-bar-info')
+                                    .width(formatPercent(100 * item.Usage.used / item.Usage.max))
+                                    .text(formatPercent(100 * item.Usage.used / item.Usage.max))
                                 )
-                                .append(prettifyPercent(100 * item.Usage.used / item.Usage.max))
                             );
                         }
-                        redrawGraphs('memory-gr', true, prettifySize);
+                        refreshGraphs('memory-gr', true, formatSize);
                     });
                 }
             }
@@ -446,31 +492,31 @@ var endpointDataClass = function() {
 
             items['classes-gr'][0].data.push([ts, data.LoadedClassCount]);
             items['classes-gr'][1].data.push([ts, data.TotalLoadedClassCount]);
-            redrawGraphs('classes-gr');
+            refreshGraphs('classes-gr');
 
             items['overview-cls-gr'][0].data.push([ts, data.LoadedClassCount]);
-            redrawGraphs('overview-cls-gr', true);
+            refreshGraphs('overview-cls-gr', true);
         });
         endpointHost.fetchData('/java.lang:type=Compilation?full=true', function(data) {
             $('#summary-jc').text(data.Name);
-            $('#summary-jt').text(prettifyTime(data.TotalCompilationTime, 2));
+            $('#summary-jt').text(formatTime(data.TotalCompilationTime, 2));
         });
         endpointHost.fetchData('/java.lang:type=Memory?full=true', function(data) {
-            $('#overview-mem-hh').text(prettifySize(data.HeapMemoryUsage.used));
-            $('#overview-mem-hc').text(prettifySize(data.HeapMemoryUsage.committed));
-            $('#overview-mem-hm').text(prettifySize(data.HeapMemoryUsage.max));
+            $('#overview-mem-hh').text(formatSize(data.HeapMemoryUsage.used));
+            $('#overview-mem-hc').text(formatSize(data.HeapMemoryUsage.committed));
+            $('#overview-mem-hm').text(formatSize(data.HeapMemoryUsage.max));
 
-            $('#memory-hh').text(prettifySize(data.HeapMemoryUsage.used));
-            $('#memory-hc').text(prettifySize(data.HeapMemoryUsage.committed));
-            $('#memory-hm').text(prettifySize(data.HeapMemoryUsage.max));
+            $('#memory-hh').text(formatSize(data.HeapMemoryUsage.used));
+            $('#memory-hc').text(formatSize(data.HeapMemoryUsage.committed));
+            $('#memory-hm').text(formatSize(data.HeapMemoryUsage.max));
 
-            $('#summary-hh').text(prettifySize(data.HeapMemoryUsage.used));
-            $('#summary-hc').text(prettifySize(data.HeapMemoryUsage.committed));
-            $('#summary-hm').text(prettifySize(data.HeapMemoryUsage.max));
+            $('#summary-hh').text(formatSize(data.HeapMemoryUsage.used));
+            $('#summary-hc').text(formatSize(data.HeapMemoryUsage.committed));
+            $('#summary-hm').text(formatSize(data.HeapMemoryUsage.max));
             $('#summary-hf').text(data.ObjectPendingFinalizationCount+' object(s)');
 
             items['overview-mem-gr'][0].data.push([ts, data.HeapMemoryUsage.used]);
-            redrawGraphs('overview-mem-gr', true, prettifySize);
+            refreshGraphs('overview-mem-gr', true, formatSize);
 
             items['memory-gr']['hm'][0].data.push([ts, data.HeapMemoryUsage.used]);
             items['memory-gr']['nm'][0].data.push([ts, data.NonHeapMemoryUsage.used]);
@@ -484,27 +530,27 @@ var endpointDataClass = function() {
                 'committed': data.NonHeapMemoryUsage.committed,
                 'max':       data.NonHeapMemoryUsage.max,
             };
-            redrawGraphs('memory-gr', true, prettifySize);
+            refreshGraphs('memory-gr', true, formatSize);
         });
         endpointHost.fetchData('/java.lang:type=OperatingSystem?full=true', function(data) {
-            $('#summary-pt').text(prettifyTime(data.ProcessCpuTime / 1000000, 3));
-            $('#summary-mr').text(prettifySize(data.TotalPhysicalMemorySize));
-            $('#summary-ml').text(prettifySize(data.FreePhysicalMemorySize));
-            $('#summary-ms').text(prettifySize(data.TotalSwapSpaceSize));
-            $('#summary-mp').text(prettifySize(data.FreeSwapSpaceSize));
+            $('#summary-pt').text(formatTime(data.ProcessCpuTime / 1000000, 3));
+            $('#summary-mr').text(formatSize(data.TotalPhysicalMemorySize));
+            $('#summary-ml').text(formatSize(data.FreePhysicalMemorySize));
+            $('#summary-ms').text(formatSize(data.TotalSwapSpaceSize));
+            $('#summary-mp').text(formatSize(data.FreeSwapSpaceSize));
             $('#summary-sn').text(data.Name+'/'+data.Version);
             $('#summary-sa').text(data.Arch);
             $('#summary-sp').text(data.AvailableProcessors);
-            $('#summary-sm').text(prettifySize(data.CommittedVirtualMemorySize));
+            $('#summary-sm').text(formatSize(data.CommittedVirtualMemorySize));
 
-            $('#overview-cpu-up').text(prettifyPercent(data.ProcessCpuLoad));
-            $('#overview-cpu-us').text(prettifyPercent(data.SystemCpuLoad));
+            $('#overview-cpu-up').text(formatPercent(data.ProcessCpuLoad));
+            $('#overview-cpu-us').text(formatPercent(data.SystemCpuLoad));
 
             items['overview-cpu-gr'][0].data.push([ts, data.ProcessCpuLoad]);
-            redrawGraphs('overview-cpu-gr', true, prettifyPercent);
+            refreshGraphs('overview-cpu-gr', true, formatPercent);
         });
         endpointHost.fetchData('/java.lang:type=Runtime?full=true', function(data) {
-            $('#summary-ut').text(prettifyTime(data.Uptime));
+            $('#summary-ut').text(formatTime(data.Uptime));
             $('#summary-vm').text(data.VmName);
             $('#summary-vv').text(data.VmVendor);
             $('#summary-vn').text(data.Name);
@@ -520,36 +566,21 @@ var endpointDataClass = function() {
 
             items['threads-gr'][0].data.push([ts, data.ThreadCount]);
             items['threads-gr'][1].data.push([ts, data.PeakThreadCount]);
-            redrawGraphs('threads-gr');
+            refreshGraphs('threads-gr');
 
             items['overview-thr-gr'][0].data.push([ts, data.ThreadCount]);
-            redrawGraphs('overview-thr-gr', true);
+            refreshGraphs('overview-thr-gr', true);
         });
 
-        setTimeout(populateData, jmxproxyConf.cache_duration * 60 * 1000);
+        setTimeout(gatherObjects, jmxproxyConf.cache_duration * 60 * 1000);
     };
 
-    setTimeout(populateData, 0);
-
-    $('a[data-toggle="tab"]').on('shown', function(e) {
-        if (e.target.text == 'Overview') {
-            redrawGraphs('overview-mem-gr', true, prettifySize);
-            redrawGraphs('overview-thr-gr', true);
-            redrawGraphs('overview-cls-gr', true);
-            redrawGraphs('overview-cpu-gr', true, prettifyPercent);
-        } else if (e.target.text == 'MBeans') {
-            makeBeanTree();
-        } else if (e.target.text == 'Memory') {
-            redrawGraphs('memory-gr', true, prettifySize);
-        } else if ($.inArray(e.target.text, ['Classes', 'Threads']) !== -1) {
-            redrawGraphs(e.target.text.toLowerCase()+'-gr');
-        }
-    });
+    setTimeout(gatherObjects, 0);
 
     return {
-        'populateData': populateData,
-        'redrawMemory': redrawMemory,
-        'redrawGraphs': redrawGraphs,
+        'refreshMemory': refreshMemory,
+        'refreshGraphs': refreshGraphs,
+        'buildBeanTree': buildBeanTree,
     };
 };
 
@@ -572,7 +603,7 @@ var endpointHostClass = function(host) {
             $.post("/jmxproxy/"+host+item, auth, callback, "json")
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
-                    $('#endpoint-auth').modal('show');
+                    $('#endpoint-auth').modal();
                 } else if (jqXHR.status == 404) {
                     displayError('Selected endpoint is unavailable.');
                 }
@@ -581,7 +612,7 @@ var endpointHostClass = function(host) {
             $.getJSON("/jmxproxy/"+host+item, callback)
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
-                    $('#endpoint-auth').modal('show');
+                    $('#endpoint-auth').modal();
                 } else if (jqXHR.status == 404) {
                     displayError('Selected endpoint is unavailable.');
                 }
@@ -592,31 +623,32 @@ var endpointHostClass = function(host) {
         fetchData('/java.lang:type=Runtime/Uptime', function(test) {
             $(document).attr('title', 'JMXProxy - ' + fetchName());
             $('#summary-cn').text(fetchName());
-            $('#endpoint-label').text(fetchName());
-            $('#endpoint-tabui').show();
-
-            endpointData = endpointDataClass();
+            $('#navbar-label').text(fetchName());
+            $('#endpoint-select').toggleClass('hidden');
+            $('#endpoint-navbar').toggleClass('hidden');
+            $('a[data-toggle="tab"]:first').tab('show');
         });
+
+        return endpointDataClass();
     };
 
-    checkHost();
+    data = checkHost();
 
     return {
         'resetAuth': resetAuth,
         'fetchData': fetchData,
+        'refreshGraphs': data.refreshGraphs,
+        'refreshMemory': data.refreshMemory,
+        'buildBeanTree': data.buildBeanTree,
     };
 };
 
 var jmxproxyConf;
-var documentInfo;
 var endpointHost;
 
 $(document).ready(function() {
-    documentInfo = documentInfoClass($(document).attr('title'), $('#endpoint-label').text());
-
     $('#endpoint-input').keypress(function(e) {
         if (e.keyCode == 13 && this.validity.valid) {
-            documentInfo.reset();
             endpointHost = endpointHostClass($(this).val());
 
             $(this).blur();
@@ -624,18 +656,40 @@ $(document).ready(function() {
     });
 
     $('#endpoint-creds').submit(function() {
-        documentInfo.reset();
         endpointHost.resetAuth($('#endpoint-user').val(), $('#endpoint-pass').val());
 
-        $('#endpoint-auth').modal('hide')
+        $('#endpoint-auth').modal({'show': false})
         return false;
     });
 
     $('#memory-btn-hm').click(function() {
-        endpointData.redrawMemory('hm');
+        endpointHost.refreshMemory('hm');
     });
     $('#memory-btn-nm').click(function() {
-        endpointData.redrawMemory('nm');
+        endpointHost.refreshMemory('nm');
+    });
+    $('#memory-gr').mouseout(function() {
+        endpointHost.refreshGraphs($(this).attr('id'), true, formatSize);
+    });
+    $('#threads-gr').mouseout(function() {
+        endpointHost.refreshGraphs($(this).attr('id'));
+    });
+    $('#classes-gr').mouseout(function() {
+        endpointHost.refreshGraphs($(this).attr('id'));
+    });
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        if (e.target.text == 'Overview') {
+            endpointHost.refreshGraphs('overview-mem-gr', true, formatSize);
+            endpointHost.refreshGraphs('overview-thr-gr', true);
+            endpointHost.refreshGraphs('overview-cls-gr', true);
+            endpointHost.refreshGraphs('overview-cpu-gr', true, formatPercent);
+        } else if (e.target.text == 'Memory') {
+            endpointHost.refreshMemory('hm');
+        } else if (e.target.text == 'Classes' || e.target.text == 'Threads') {
+            endpointHost.refreshGraphs(e.target.text.toLowerCase()+'-gr');
+        } else if (e.target.text == 'MBeans') {
+            endpointHost.buildBeanTree();
+        }
     });
 
     $.extend($.fn.dataTableExt.oStdClasses, {
@@ -647,17 +701,28 @@ $(document).ready(function() {
 
     $.getJSON('/jmxproxy/config', function(data) {
         jmxproxyConf = data;
-        endpointList = [];
 
         if (data.allowed_endpoints.length > 0) {
             $.each(data.allowed_endpoints, function(key, val) {
-                endpointList.push('<li><a href="#" onclick="documentInfo.reset(); endpointHost = endpointHostClass(this.innerHTML)">'+val+'</a></li>');
+                $('#endpoint-list')
+                .append(
+                    $('<li/>')
+                    .append(
+                        $('<a/>')
+                        .attr('href', '#')
+                        .click(function() {
+                            documentInfo.reset();
+                            endpointHost = endpointHostClass($(this).text());
+                        })
+                        .text(val)
+                    )
+                );
             });
 
-            $('#endpoint-list').html(endpointList.join(''))
-            $('#endpoint-group').show();
+            $('#endpoint-choice').toggleClass('hidden');
         } else {
-            $('#endpoint-entry').show();
+            $('#endpoint-insert').toggleClass('hidden');
+            $('#endpoint-insert input').focus();
         }
     })
     .fail(function() {
@@ -665,7 +730,7 @@ $(document).ready(function() {
     });
 });
 
-function prettifyTime(s, n) {
+function formatTime(s, n) {
     v = s % 86400000;
     d = (s - v) / 86400000;
     s = v;
@@ -695,30 +760,33 @@ function prettifyTime(s, n) {
     return parts.join(' ');
 }
 
-function prettifySize(s) {
+function formatSize(s) {
+    if (s > (Math.pow(1024, 5))) {
+        return (s / Math.pow(1024, 5)).toFixed(2) + 'PB';
+    }
     if (s > (Math.pow(1024, 4))) {
-        return (s / Math.pow(1024, 4)).toFixed(2) + ' TB';
+        return (s / Math.pow(1024, 4)).toFixed(2) + 'TB';
     }
     if (s > (Math.pow(1024, 3))) {
-        return (s / Math.pow(1024, 3)).toFixed(2) + ' GB';
+        return (s / Math.pow(1024, 3)).toFixed(2) + 'GB';
     }
     if (s > (Math.pow(1024, 2))) {
-        return (s / Math.pow(1024, 2)).toFixed(2) + ' MB';
+        return (s / Math.pow(1024, 2)).toFixed(2) + 'MB';
     }
     if (s > (Math.pow(1024, 1))) {
-        return (s / Math.pow(1024, 1)).toFixed(2) + ' KB';
+        return (s / Math.pow(1024, 1)).toFixed(2) + 'KB';
     }
 
-    return s + ' B';
+    return s + 'B';
 }
 
-function prettifyPercent(s) {
+function formatPercent(s) {
     return s.toFixed(2) + '%';
 }
 
 function displayError(text) {
     if (text != null) {
         $('#endpoint-error').text(text);
-        $('#endpoint-alert').show();
+        $('#endpoint-alert').toggleClass('hidden');
     }
 }
