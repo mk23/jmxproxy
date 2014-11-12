@@ -120,37 +120,38 @@ var endpointDataClass = function() {
     };
 
     var buildBeanTree = function() {
-    }
-    /*
-    var buildBeanTree = function() {
-        var addHeader = function(tree, list, name) {
-            find = $.grep(tree, function(o, i) {
-                return o.text == name;
-            });
-
-            if (find.length > 0) {
-                return find[0];
-            } else {
-                item = {
-                    text: name,
-                    icon: 'glyphicon glyphicon-folder-close',
-                    nodes: [],
-                };
-                tree.push(item);
-                list.push(item);
-                return item;
-            }
-        }
-
         endpointHost.fetchData('/', function(data) {
+            tree = [];
             data.sort();
 
-            tree = [];
-            list = [];
+            var dataSource = function(nodeData, callback) {
+                callback({
+                    data: $.type(nodeData.tree) === 'undefined' ? tree : nodeData.tree,
+                });
+            };
+
+            var addHeader = function(tree, name) {
+                find = $.grep(tree, function(o, i) {
+                    return o.text == name;
+                });
+
+                if (find.length > 0) {
+                    return find[0];
+                } else {
+                    item = {
+                        text: name,
+                        type: 'folder',
+                        tree: [],
+                    };
+                    tree.push(item);
+                    return item;
+                }
+            };
+
             for (bean in data) {
                 head = data[bean].split(':')[0].replace(/"/g, '');
 
-                node = addHeader(tree, list, head);
+                node = addHeader(tree, head);
 
                 body = data[bean].split(':').pop().split(',');
                 for (part in body) {
@@ -166,71 +167,33 @@ var endpointDataClass = function() {
 
                         item = {
                             text: name,
-                            icon: 'glyphicon glyphicon-file',
-                            href: data[bean],
+                            type: 'item',
+                            attr: {
+                                'title': data[bean],
+                                'data-toggle': 'tooltip',
+                                'data-placement': 'right',
+                            },
                         };
 
-                        node.nodes.push(item);
-                        list.push(item);
+                        node.tree.push(item);
                     } else {
-                        node = addHeader(node.nodes, list, name);
+                        node = addHeader(node.tree, name);
                     }
                 }
             }
 
-            $('#mbeans-tree').on('nodeSelected', function(e, item) {
-                console.log(item);
+            $('#mbeans-tree').tree({
+                dataSource: dataSource,
+                folderSelect: false,
             });
-            $('#mbeans-tree').treeview({
-                data: tree,
-                levels: 1,
-                nodeIcon: 'glyphicon',
-                expandIcon: 'glyphicon glyphicon-chevron-right pull-right',
-                collapseIcon: 'glyphicon glyphicon-chevron-down pull-right',
+            $('#mbeans-tree').on('opened.fu.tree', function(e, node) {
+                $('.tree-item').tooltip({container: 'body'});
             });
-            $.each($('#mbeans-tree li.list-group-item'), function(key, val) {
-                console.log(key, val, list[key]);
+            $('#mbeans-tree').on('selected.fu.tree', function(e, node) {
+                console.log(e, node);
             });
         });
     }
-    var buildBeanTree = function() {
-        endpointHost.fetchData('/', function(data) {
-            data.sort();
-            for (bean in data) {
-                body = data[bean].split(':').pop().split(',');
-                for (part in body) {
-                    name = body[part].split('=').pop().replace(/"/g, '');
-                    list = html.find('ul:first');
-                    if (list.length == 0) {
-                        list = $('<ul/>').addClass('nav nav-pills nav-stacked');
-                        html.append(list);
-                    }
-
-                    if (part == body.length - 1) {
-                        item = $('<li/>')
-                            .append($('<a/>')
-                                .attr('href', '#')
-                                .data('bean', data[bean])
-                                .click(function() {
-                                    populateAttr($(this).data('bean'));
-                                })
-                                .append($('<i/>').addClass('glyphicon glyphicon-file'))
-                                .append(name)
-                            );
-                        list.append(item);
-                    } else {
-                        item = list.find('li:contains('+name+'):first').parent();
-                        if (item.length == 0) {
-                            item = listHeader(name);
-                            list.append(item);
-                        }
-                        html = item;
-                    }
-                }
-            }
-        });
-    };
-    */
 
     var populateAttr = function(bean) {
         endpointHost.fetchData('/'+bean+'?full=true', function(data) {
@@ -698,13 +661,6 @@ $(document).ready(function() {
         }
     });
 
-    $.extend($.fn.dataTableExt.oStdClasses, {
-        'sWrapper': 'dataTables_wrapper form-inline',
-        'sSortAsc': 'header headerSortDown',
-        'sSortDesc': 'header headerSortUp',
-        'sSortable': 'header',
-    });
-
     $.getJSON('/jmxproxy/config', function(data) {
         jmxproxyConf = data;
 
@@ -717,7 +673,6 @@ $(document).ready(function() {
                         $('<a/>')
                         .attr('href', '#')
                         .click(function() {
-                            documentInfo.reset();
                             endpointHost = endpointHostClass($(this).text());
                         })
                         .text(val)
