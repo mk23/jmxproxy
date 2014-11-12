@@ -647,11 +647,17 @@ var jmxproxyConf;
 var endpointHost;
 
 $(document).ready(function() {
-    $('#endpoint-input').keypress(function(e) {
+    $('#endpoint-input')
+    .keypress(function(e) {
         if (e.keyCode == 13 && this.validity.valid) {
             endpointHost = endpointHostClass($(this).val());
-
-            $(this).blur();
+        }
+    })
+    .keyup(function(e) {
+        if (this.validity.valid) {
+            $(this).parent().removeClass('has-error').addClass('has-success');
+        } else {
+            $(this).parent().removeClass('has-success').addClass('has-error');
         }
     });
 
