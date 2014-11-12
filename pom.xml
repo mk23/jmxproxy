@@ -105,14 +105,14 @@
             <configuration>
               <cssSourceDir>css</cssSourceDir>
               <cssSourceIncludes>
-                <cssSourceInclude>**</cssSourceInclude>
+                <cssSourceInclude>**/*.css</cssSourceInclude>
               </cssSourceIncludes>
               <cssSourceExcludes>
                 <cssSourceExclude>**/*.min.css</cssSourceExclude>
               </cssSourceExcludes>
               <jsSourceDir>js</jsSourceDir>
               <jsSourceIncludes>
-                <jsSourceInclude>**</jsSourceInclude>
+                <jsSourceInclude>**/*.js</jsSourceInclude>
               </jsSourceIncludes>
               <jsSourceExcludes>
                 <jsSourceExclude>**/*.min.js</jsSourceExclude>
