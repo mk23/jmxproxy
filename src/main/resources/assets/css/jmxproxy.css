@@ -14,22 +14,3 @@ div.progress {
     text-align: right;
     color: black;
 }
-
-ul.menu {
-    display: none;
-    padding-right: 0px;
-}
-
-span.menu-toggle {
-    width: 100%;
-    cursor: pointer;
-}
-
-div.dataTables_length {
-    float: left;
-    text-align: left;
-}
-div.dataTables_paginate {
-    float: right;
-    margin: 0;
-}
