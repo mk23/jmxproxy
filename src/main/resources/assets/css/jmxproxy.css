@@ -18,3 +18,7 @@ div.progress {
 div.tooltip-inner {
     max-width: 600px;
 }
+
+div.popover-content {
+    word-wrap: break-word;
+}

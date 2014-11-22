@@ -182,186 +182,174 @@ var endpointDataClass = function() {
                 }
             }
 
-            $('#mbeans-tree').tree({
+            $('#mbeans-tree')
+            .tree({
                 dataSource: dataSource,
                 folderSelect: false,
-            });
-            $('#mbeans-tree').on('opened.fu.tree', function(e, node) {
+            })
+            .on('opened.fu.tree', function(e, node) {
                 $('.tree-item').tooltip({container: 'body'});
-            });
-            $('#mbeans-tree').on('selected.fu.tree', function(e, node) {
-                console.log(e, node);
+            })
+            .on('selected.fu.tree', function(e, node) {
+                buildBeanData(node.target.attr.title);
             });
         });
-    }
+    };
 
-    var populateAttr = function(bean) {
+    var buildBeanData = function(bean) {
         endpointHost.fetchData('/'+bean+'?full=true', function(data) {
-            $('#mbeans-data').html($('<table/>')
-                .addClass('table table-condensed table-striped table-bordered')
-                .append($('<thead/>'))
-                .append($('<tbody/>'))
-            );
-            $('#mbeans-data > table').dataTable({
-                'bDestroy':        true,
-                'bFilter':         false,
-                'bInfo':           false,
-                'bLengthChange':   false,
-                'bPaginate':       false,
-                'sScrollX':        '100%',
-                'sPaginationType': 'bootstrap',
-                'fnRowCallback':   function(nRow, aData) {
-                    if ($.type(nRow.jmxProxyConfigured) === 'undefined') {
-                        nRow.jmxProxyConfigured = true;
-                    } else {
-                        return;
-                    }
+            var columns = [{
+                label: 'Name',
+                property: 'key',
+                sortable: true,
+            }, {
+                label: 'Value',
+                property: 'val',
+                sortable: true,
 
-                    len = null;
-                    dat = {
-                        'bDestroy':        true,
-                        'bFilter':         false,
-                        'bInfo':           false,
-                        'bLengthChange':   false,
-                        'sScrollX':        '100%',
-                        'sPaginationType': 'bootstrap',
-                    };
-
-                    if ($.type(aData.val) === 'array' && aData.val.length > 0) {
-                        if ($.type(aData.val[0]) === 'object') {
-                            dat['aaData'] = aData.val;
-                            dat['aoColumns'] = $.map(aData.val[0], function(v, k) {
-                                return {'mData': k, 'sTitle': k};
-                            });
-                        } else {
-                            dat['aaData'] = $.map(aData.val, function(v, k) {
-                                return {'val': v};
-                            });
-                            dat['aoColumns'] = [
-                                {'mData': 'val', 'sTitle': aData.key}
-                            ];
-                        }
-                        len = dat['aaData'].length;
-                    } else if ($.type(aData.val) === 'object') {
-                        dat['aaData'] = $.map(aData.val, function(v, k) {
-                            return {'key': k, 'val': v};
-                        });
-                        dat['aoColumns'] = [
-                            {'mData': 'key', 'sTitle': 'Name'},
-                            {'mData': 'val', 'sTitle': 'Value'},
-                        ];
-                        len = dat['aaData'].length;
-                    } else if ($.type(aData.val) === 'string' && aData.val.length > 50) {
-                        len = aData.val.length;
-                    }
-
-                    if (len !== null) {
-                        $('td:eq(0)', nRow)
-                            .empty()
-                            .click(function () {
-                                $('td:eq(1) > :eq(0)', $(this).parent()).toggle();
-                                $('td:eq(1) > :eq(1)', $(this).parent()).toggle();
-
-                                $('div.dataTables_scrollBody > table', $('#mbeans-data')).dataTable().fnAdjustColumnSizing();
-                                if ($('div.dataTables_scrollBody > table', $(this).parent()).length > 0) {
-                                    $('div.dataTables_scrollBody > table', $(this).parent()).dataTable().fnAdjustColumnSizing();
-                                }
-                            })
-                            .append($('<a/>')
-                                .attr('href', '#')
-                                .attr('title', 'Expand')
-                                .text(aData.key)
-                            )
-                            .append($('<span/>')
-                                .addClass('badge badge-important pull-right')
-                                .text(len)
-                            );
-
-                        if ($.type(dat['aaData']) !== 'undefined') {
-                            $('td:eq(1)', nRow)
-                                .empty()
-                                .append($('<table/>')
-                                    .addClass('table table-condensed table-striped table-bordered')
-                                    .append($('<thead/>'))
-                                    .append($('<tbody/>'))
-                                )
-                                .append($('<div/>')
-                                    .append($('<span/>')
-                                        .addClass('label label-info')
-                                        .text($.type(aData.val))
-                                    )
-                                );
-
-                            $('td:eq(1) > table', nRow).dataTable(dat);
-                            $('td:eq(1) > :first-child', nRow).hide();
-                            if ($('div.dataTables_paginate > ul > li', nRow).length <= 3) {
-                                $('div.dataTables_paginate', nRow).hide();
-                            }
-                        } else {
-                            $('td:eq(1)', nRow)
-                                .empty()
-                                .append($('<span/>')
-                                    .css('white-space', 'nowrap')
-                                    .text(aData.val)
-                                )
-                                .append($('<div/>')
-                                    .append($('<span/>')
-                                        .addClass('label label-info')
-                                        .text($.type(aData.val))
-                                    )
-                                    .append($('<span/>')
-                                        .text(' '+aData.val.substring(0, 50)+'...')
-                                    )
-                                );
-
-                            $('td:eq(1) > :first-child', nRow).hide();
-                        }
-                    } else if (aData.val === null) {
-                        $('td:eq(1)', nRow)
-                            .html($('<span/>').addClass('text-error').html($('<strong/>').text(aData.val)))
-                    } else if ($.type(aData.val) === 'boolean') {
-                        $('td:eq(1)', nRow)
-                            .html($('<span/>').addClass('text-warning').text(aData.val))
-                    } else if ($.type(aData.val) !== 'string') {
-                        $('td:eq(1)', nRow)
-                            .html($('<span/>').addClass('text-success').text(aData.val))
-                    }
-                },
-                'fnHeaderCallback': function(nHead) {
-                    $('th:eq(0):first', nHead).text('Name')
-                    $('th:eq(1):first', nHead)
-                        .empty()
+            }];
+            var objects = _.map(data, function(val, key) {
+                if (_.isArray(val)) {
+                    val = $('<div/>')
+                    .data('jmxproxy.sortKey', '_1__'+key)
+                    .append(
+                        $('<a/>')
+                        .attr('href', '#')
+                        .attr('title', 'Expand')
+                        .data('toggle', 'tooltip')
+                        .data('placement', 'bottom')
+                        .tooltip()
+                        .addClass('text-success badge')
+                        .text('Array')
+                    )
+                    .append(
+                        $('<span/>')
+                        .addClass('badge progress-bar-danger pull-right')
+                        .text(val.length)
+                    );
+                } else if (_.isObject(val)) {
+                    val = $('<div/>')
+                    .data('jmxproxy.sortKey', '_2__'+key)
+                    .append(
+                        $('<a/>')
+                        .attr('href', '#')
+                        .attr('title', 'Expand')
+                        .data('toggle', 'tooltip')
+                        .data('placement', 'bottom')
+                        .tooltip()
+                        .addClass('text-success badge')
+                        .text('Object')
+                    )
+                    .append(
+                        $('<span/>')
+                        .addClass('badge progress-bar-danger pull-right')
+                        .text(_.keys(val).length)
+                    );
+                } else if (_.isNull(val)) {
+                    val = $('<div/>')
+                    .data('jmxproxy.sortKey', '_3a__'+key)
+                    .addClass('text-danger')
+                    .text('null');
+                } else if (_.isNaN(val)) {
+                    val = $('<div/>')
+                    .data('jmxproxy.sortKey', '_3b__'+key)
+                    .addClass('text-danger')
+                    .text('NaN');
+                } else if (_.isBoolean(val)) {
+                    val = $('<div/>')
+                    .data('jmxproxy.sortKey', '_3c__'+key)
+                    .addClass('text-warning')
+                    .text(val);
+                } else if (_.isNumber(val)) {
+                    val = $('<div/>')
+                    .data('jmxproxy.sortKey', val)
+                    .addClass('text-success')
+                    .text(val);
+                } else if (_.isString(val) && val.length > 55) {
+                    val = $('<div/>')
+                    .data('jmxproxy.sortKey', val)
+                    .append(
+                        $('<a/>')
+                        .attr('href', '#')
+                        .data('content', val)
+                        .data('toggle', 'popover')
+                        .data('placement', 'bottom')
+                        .data('container', 'body')
+                        .popover()
+                        .addClass('text-primary')
+                        .text(val.substring(0,55))
                         .append(
-                            $('<i/>')
-                            .attr('title', 'Refresh')
-                            .data('toggle', 'tooltip')
-                            .data('placement', 'right')
-                            .tooltip()
-                            .click(function() {
-                                populateAttr(bean);
-                            })
-                            .append(
-                                $('<span/>')
-                                .addClass('glyphicon glyphicon-refresh')
-                            )
+                            $('<span/>')
+                            .addClass('text-primary')
+                            .html('&nbsp;&raquo;&nbsp;')
                         )
-                        .text(' Value');
-                },
-                'aaData': $.map(data, function(v, k) {
-                    return {'key': k, 'val': v};
-                }),
-                'aoColumns': [
-                    {'mData': 'key'},
-                    {'mData': 'val', 'sWidth': '100%'},
-                ],
+                    )
+                    .append(
+                        $('<span/>')
+                        .addClass('badge progress-bar-danger pull-right')
+                        .text(val.length)
+                    );
+                } else {
+                    val = $('<div/>')
+                    .data('jmxproxy.sortKey', val)
+                    .addClass('text-primary')
+                    .text(val);
+                }
+
+                return {
+                    key: key,
+                    val: val,
+                };
             });
 
-            $('div.dataTables_scrollBody > table', $('#mbeans-data')).dataTable().fnAdjustColumnSizing();
-            if ($('#mbeans-data > div.dataTables_wrapper > div.dataTables_paginate > ul > li').length <= 3) {
-                $('#mbeans-data > div.dataTables_wrapper > div.dataTables_paginate').hide();
+            var dataFilter = function(options) {
+                rval = _.extend([], objects);
+                if (options.search) {
+                    rval = _.filter(rval, function(item) {
+                        return (
+                            (item.key.toLowerCase().search(options.search.toLowerCase()) >= 0) ||
+                            (item.val.text().toLowerCase().search(options.search.toLowerCase()) >= 0)
+                        )
+                    });
+                }
+                if (options.sortProperty) {
+                    rval = _.sortBy(rval, function(item) {
+                        return options.sortProperty === 'key' ? item.key : item.val.data('jmxproxy.sortKey');
+                    });
+                    if (options.sortDirection === 'desc') {
+                        rval.reverse();
+                    }
+                }
+
+                return rval;
             }
+
+            var dataSource = function(options, callback) {
+                items = dataFilter(options);
+                rval = {
+                    columns: columns,
+                    count:   items.length,
+                    pages:   Math.ceil(items.length / options.pageSize),
+                    page:    options.pageIndex,
+                };
+
+                rval.start = options.pageIndex * options.pageSize + 1;
+                rval.end   = _.min([rval.start + options.pageSize - 1, rval.count]);
+                rval.items = items.slice(rval.start - 1, rval.end);
+                callback(rval);
+            };
+
+            if ($('#mbeans-data').data('fu.repeater')) {
+                $('#mbeans-data')
+                .repeater('clear')
+                .removeData('fu.repeater');
+            }
+            $('#mbeans-data').repeater({
+                dataSource: dataSource,
+            });
+            $('#mbean-title').text(bean);
         });
-    }
+    };
 
     var gatherObjects = function() {
         ts = new Date().getTime();

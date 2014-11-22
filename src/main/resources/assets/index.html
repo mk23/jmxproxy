@@ -369,7 +369,79 @@
                             </ul>
                         </div>
                         <div class="col-md-9">
-                            <div id="mbeans-data"></div>
+                            <div id="mbeans-data" class="repeater" data-staticheight="400">
+                                <div class="repeater-header">
+                                    <div class="repeater-header-left">
+                                        <div class="repeater-title btn-group">
+                                            <button class="btn btn-default" type="button" title="Refresh" data-toggle="tooltip" data-placement="bottom">
+                                                <span class="glyphicon glyphicon-refresh"></span>
+                                            </button>
+                                            <button id="mbean-title" class="btn btn-primary disabled" type="button">
+                                        </div>
+                                    </div>
+                                    <div class="repeater-header-right">
+                                        <div class="repeater-search">
+                                            <div class="search input-group">
+                                                <input class="form-control" type="search" placeholder="search">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" type="button">
+                                                        <span class="glyphicon glyphicon-search"></span>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="repeater-viewport">
+                                    <div class="repeater-canvas"></div>
+                                    <div class="loader repeater-loader"></div>
+                                </div>
+                                <div class="repeater-footer">
+                                    <div class="repeater-footer-left">
+                                        <div class="repeater-itemization">
+                                            <span class="repeater-start"></span> - <span class="repeater-end"></span> of <span class="repeater-count"></span> Items
+                                            <div class="btn-group selectlist" data-resize="auto">
+                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                    <span class="selected-label">&nbsp;</span>
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    <li data-value="5"><a href="#">5</a></li>
+                                                    <li data-value="10" data-selected="true"><a href="#">10</a></li>
+                                                    <li data-value="20"><a href="#">20</a></li>
+                                                    <li data-value="50" ><a href="#">50</a></li>
+                                                    <li data-value="100"><a href="#">100</a></li>
+                                                </ul>
+                                                <input class="hidden hidden-field" name="itemsPerPage" readonly="readonly" aria-hidden="true" type="text">
+                                            </div>
+                                            <span>Per Page</span>
+                                        </div>
+                                    </div>
+                                    <div class="repeater-footer-right">
+                                        <div class="repeater-pagination">
+                                            <button type="button" class="btn btn-default btn-sm repeater-prev">
+                                                <span class="glyphicon glyphicon-chevron-left"></span>
+                                            </button>
+                                            <label class="page-label">Page</label>
+                                            <div class="repeater-primaryPaging active">
+                                                <div class="input-group input-append dropdown combobox">
+                                                    <input type="text" class="form-control">
+                                                    <div class="input-group-btn">
+                                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-right"></ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <input type="text" class="form-control repeater-secondaryPaging"> of <span class="repeater-pages"></span>
+                                            <button type="button" class="btn btn-default btn-sm repeater-next">
+                                                <span class="glyphicon glyphicon-chevron-right"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
