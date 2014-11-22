@@ -82,7 +82,7 @@ var endpointDataClass = function() {
     }
 
     var refreshGraphs = function(name, bare, type) {
-        if (items.hasOwnProperty(name) && $('#'+name).is(':visible')) {
+        if (_.has(items, name) && $('#'+name).is(':visible')) {
             opts = {
                 grid: {
                     hoverable: true,
@@ -107,7 +107,7 @@ var endpointDataClass = function() {
                 },
                 yaxis: {
                     labelWidth: 64,
-                    tickFormatter: $.type(type) !== 'undefined' ? type : Math.floor,
+                    tickFormatter: _.isUndefined(type) ? Math.floor : type,
                 },
             };
 
@@ -126,17 +126,17 @@ var endpointDataClass = function() {
 
             var dataSource = function(nodeData, callback) {
                 callback({
-                    data: $.type(nodeData.tree) === 'undefined' ? tree : nodeData.tree,
+                    data: _.has(nodeData, 'tree') ? nodeData.tree : tree,
                 });
             };
 
             var addHeader = function(tree, name) {
-                find = $.grep(tree, function(o, i) {
+                find = _.find(tree, function(o, i) {
                     return o.text == name;
                 });
 
-                if (find.length > 0) {
-                    return find[0];
+                if (find) {
+                    return find;
                 } else {
                     item = {
                         text: name,
@@ -382,23 +382,23 @@ var endpointDataClass = function() {
                         if (item.Usage.max <= 0) {
                             return;
                         }
-                        if ($.type(items['memory-gr'][item.Name]) === 'undefined') {
-                            items['memory-gr'][item.Name] = [{
-                                'label': item.Name+' Memory Usage',
-                                'data': [ [ts, item.Usage.used] ],
-                                'info': {
-                                    'used':      item.Usage.used,
-                                    'committed': item.Usage.committed,
-                                    'max':       item.Usage.max,
-                                },
-                            }];
-                        } else {
+                        if (_.has(items['memory-gr'], item.Name)) {
                             items['memory-gr'][item.Name][0].data.push([ts, item.Usage.used]);
                             items['memory-gr'][item.Name][0].info = {
-                                'used':      item.Usage.used,
-                                'committed': item.Usage.committed,
-                                'max':       item.Usage.max,
+                                used:      item.Usage.used,
+                                committed: item.Usage.committed,
+                                max:       item.Usage.max,
                             };
+                        } else {
+                            items['memory-gr'][item.Name] = [{
+                                label: item.Name+' Memory Usage',
+                                data: [ [ts, item.Usage.used] ],
+                                info: {
+                                    used:      item.Usage.used,
+                                    committed: item.Usage.committed,
+                                    max:       item.Usage.max,
+                                },
+                            }];
                         }
                         if (item.Type == 'HEAP') {
                             $('#memory-bar-hm')
@@ -484,14 +484,14 @@ var endpointDataClass = function() {
             items['memory-gr']['hm'][0].data.push([ts, data.HeapMemoryUsage.used]);
             items['memory-gr']['nm'][0].data.push([ts, data.NonHeapMemoryUsage.used]);
             items['memory-gr']['hm'][0].info = {
-                'used':      data.HeapMemoryUsage.used,
-                'committed': data.HeapMemoryUsage.committed,
-                'max':       data.HeapMemoryUsage.max,
+                used:      data.HeapMemoryUsage.used,
+                committed: data.HeapMemoryUsage.committed,
+                max:       data.HeapMemoryUsage.max,
             };
             items['memory-gr']['nm'][0].info = {
-                'used':      data.NonHeapMemoryUsage.used,
-                'committed': data.NonHeapMemoryUsage.committed,
-                'max':       data.NonHeapMemoryUsage.max,
+                used:      data.NonHeapMemoryUsage.used,
+                committed: data.NonHeapMemoryUsage.committed,
+                max:       data.NonHeapMemoryUsage.max,
             };
             refreshGraphs('memory-gr', true, formatSize);
         });
@@ -541,9 +541,9 @@ var endpointDataClass = function() {
     setTimeout(gatherObjects, 0);
 
     return {
-        'refreshMemory': refreshMemory,
-        'refreshGraphs': refreshGraphs,
-        'buildBeanTree': buildBeanTree,
+        refreshMemory: refreshMemory,
+        refreshGraphs: refreshGraphs,
+        buildBeanTree: buildBeanTree,
     };
 };
 
@@ -556,14 +556,14 @@ var endpointHostClass = function(host) {
     };
     var resetAuth = function(username, password) {
         auth = {
-            'username': username,
-            'password': password,
+            username: username,
+            password: password,
         }
         checkHost();
     };
     var fetchData = function(item, callback) {
         if (auth != null) {
-            $.post("/jmxproxy/"+host+item, auth, callback, "json")
+            $.post('/jmxproxy/'+host+item, auth, callback, 'json')
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
                     $('#endpoint-auth').modal();
@@ -572,7 +572,7 @@ var endpointHostClass = function(host) {
                 }
             });
         } else {
-            $.getJSON("/jmxproxy/"+host+item, callback)
+            $.getJSON('/jmxproxy/'+host+item, callback)
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
                     $('#endpoint-auth').modal();
@@ -598,11 +598,11 @@ var endpointHostClass = function(host) {
     data = checkHost();
 
     return {
-        'resetAuth': resetAuth,
-        'fetchData': fetchData,
-        'refreshGraphs': data.refreshGraphs,
-        'refreshMemory': data.refreshMemory,
-        'buildBeanTree': data.buildBeanTree,
+        resetAuth: resetAuth,
+        fetchData: fetchData,
+        refreshGraphs: data.refreshGraphs,
+        refreshMemory: data.refreshMemory,
+        buildBeanTree: data.buildBeanTree,
     };
 };
 
