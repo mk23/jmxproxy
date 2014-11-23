@@ -210,8 +210,8 @@ var endpointDataClass = function() {
             }];
             var objects = _.map(data, function(val, key) {
                 if (_.isArray(val)) {
+                    srt = '!!__sort_key_01__'+key;
                     val = $('<div/>')
-                    .data('jmxproxy.sortKey', '_1__'+key)
                     .append(
                         $('<a/>')
                         .attr('href', '#')
@@ -228,8 +228,8 @@ var endpointDataClass = function() {
                         .text(val.length)
                     );
                 } else if (_.isObject(val)) {
+                    srt = '!!__sort_key_02__'+key;
                     val = $('<div/>')
-                    .data('jmxproxy.sortKey', '_2__'+key)
                     .append(
                         $('<a/>')
                         .attr('href', '#')
@@ -246,28 +246,28 @@ var endpointDataClass = function() {
                         .text(_.keys(val).length)
                     );
                 } else if (_.isNull(val)) {
+                    srt = '!!__sort_key_03__'+key;
                     val = $('<div/>')
-                    .data('jmxproxy.sortKey', '_3a__'+key)
                     .addClass('text-danger')
                     .text('null');
                 } else if (_.isNaN(val)) {
+                    srt = '!!__sort_key_04__'+key;
                     val = $('<div/>')
-                    .data('jmxproxy.sortKey', '_3b__'+key)
                     .addClass('text-danger')
                     .text('NaN');
                 } else if (_.isBoolean(val)) {
+                    srt = '!!__sort_key_05_'+(val ^ 1)+'_'+key;
                     val = $('<div/>')
-                    .data('jmxproxy.sortKey', '_3c__'+key)
                     .addClass('text-warning')
                     .text(val);
                 } else if (_.isNumber(val)) {
+                    srt = val;
                     val = $('<div/>')
-                    .data('jmxproxy.sortKey', val)
                     .addClass('text-success')
                     .text(val);
-                } else if (_.isString(val) && val.length > 55) {
+                } else if (_.isString(val) && val.length > 50) {
+                    srt = val;
                     val = $('<div/>')
-                    .data('jmxproxy.sortKey', val)
                     .append(
                         $('<a/>')
                         .attr('href', '#')
@@ -277,7 +277,7 @@ var endpointDataClass = function() {
                         .data('container', 'body')
                         .popover()
                         .addClass('text-primary')
-                        .text(val.substring(0,55))
+                        .text(val.substring(0,50))
                         .append(
                             $('<span/>')
                             .addClass('text-primary')
@@ -290,8 +290,8 @@ var endpointDataClass = function() {
                         .text(val.length)
                     );
                 } else {
+                    srt = val;
                     val = $('<div/>')
-                    .data('jmxproxy.sortKey', val)
                     .addClass('text-primary')
                     .text(val);
                 }
@@ -299,11 +299,13 @@ var endpointDataClass = function() {
                 return {
                     key: key,
                     val: val,
+                    srt: srt,
                 };
             });
 
             var dataFilter = function(options) {
                 rval = _.extend([], objects);
+
                 if (options.search) {
                     rval = _.filter(rval, function(item) {
                         return (
@@ -312,10 +314,30 @@ var endpointDataClass = function() {
                         )
                     });
                 }
+
                 if (options.sortProperty) {
-                    rval = _.sortBy(rval, function(item) {
-                        return options.sortProperty === 'key' ? item.key : item.val.data('jmxproxy.sortKey');
-                    });
+                    if (options.sortProperty === 'key') {
+                        rval = _.sortBy(rval, 'key');
+                    } else {
+                        rval.sort(function(a, b) {
+                            a = a.srt;
+                            b = b.srt;
+
+                            if (_.isNumber(a) && _.isNumber(b)) {
+                                return a - b;
+                            } else if (_.isString(a) && _.isString(b)) {
+                                return a > b ? 1 : a < b ? -1 : 0;
+                            } else if (_.isNumber(a) && b.lastIndexOf('!!__sort_key_', 0) == 0) {
+                                return 1;
+                            } else if (_.isNumber(b) && a.lastIndexOf('!!__sort_key_', 0) == 0) {
+                                return -1;
+                            } else if (_.isNumber(b) && _.isString(a)) {
+                                return 1;
+                            } else if (_.isNumber(a) && _.isString(b)) {
+                                return -1;
+                            }
+                        });
+                    }
                     if (options.sortDirection === 'desc') {
                         rval.reverse();
                     }
@@ -648,6 +670,8 @@ $(document).ready(function() {
             endpointHost.buildBeanTree();
         }
     });
+
+    $('[data-toggle="tooltip"]').tooltip();
 
     $.getJSON('/jmxproxy/config', function(data) {
         jmxproxyConf = data;
