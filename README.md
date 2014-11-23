@@ -261,6 +261,16 @@ This script allows easy extensions by creating another script that imports `jmxp
     datanode001.datanode.writes_from_local_client 50 1363022233
     datanode001.datanode.writes_from_remote_client 142 1363022233
 
+Libraries
+---------
+| Name                                  | Version | License   |
+|---------------------------------------|---------|-----------|
+| [dropwizard](http://dropwizard.io)    | 0.7.1   | Apache V2 |
+| [jquery](http://jquery.com)           | 1.11.1  | MIT       |
+| [underscore](http://underscorejs.org) | 1.7.0   | MIT       |
+| [flot](http://www.flotcharts.org)     | 0.8.3   | MIT       |
+| [bootstrap](http://getbootstrap.com)  | 3.3.0   | MIT       |
+| [fuelux](http://getfuelux.com)        | 3.2.1   | BSD V3    |
 
 License
 -------
