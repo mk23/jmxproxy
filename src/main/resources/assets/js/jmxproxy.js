@@ -671,6 +671,10 @@ $(document).ready(function() {
         }
     });
 
+    $('form').submit(function(e) {
+        return false;
+    });
+
     $('[data-toggle="tooltip"]').tooltip();
 
     $.getJSON('/jmxproxy/config', function(data) {
