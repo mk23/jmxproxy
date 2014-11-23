@@ -284,17 +284,17 @@ var endpointDataClass = function() {
             };
 
             var dataSource = function(options, callback) {
-                items = dataFilter(options);
+                list = dataFilter(options);
                 rval = {
                     columns: columns,
-                    count:   items.length,
-                    pages:   Math.ceil(items.length / options.pageSize),
+                    count:   list.length,
+                    pages:   Math.ceil(list.length / options.pageSize),
                     page:    options.pageIndex,
                 };
 
                 rval.start = options.pageIndex * options.pageSize + 1;
                 rval.end   = _.min([rval.start + options.pageSize - 1, rval.count]);
-                rval.items = items.slice(rval.start - 1, rval.end);
+                rval.items = list.slice(rval.start - 1, rval.end);
                 callback(rval);
             };
 
