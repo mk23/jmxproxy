@@ -15,7 +15,7 @@
                 <div class="navbar-header">
                     <form id="endpoint-insert" class="navbar-form navbar-default hidden" autocomplete="off">
                         <div class="form-group">
-                            <input id="endpoint-input" class="form-control" type="text" placeholder="hostname:port" pattern="^(?:[a-zA-Z][a-zA-Z0-9\.\-]+[a-zA-Z0-9]|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+$" required="true">
+                            <input id="endpoint-input" class="form-control" type="text" placeholder="hostname:port" pattern="^(?:[a-zA-Z][a-zA-Z0-9\.\-]+[a-zA-Z0-9]|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+$" required>
                         </div>
                     </form>
                     <ul id="endpoint-choice" class="nav navbar-default hidden">
@@ -202,7 +202,7 @@
                     </div>
                 </div>
             </div>
-            <div id="classes" class="tab-pane fade" role=t"tabpanel">
+            <div id="classes" class="tab-pane fade" role="tabpanel">
                 <div class="container">
                     <div class="row">
                         <div class="col-md-12">
@@ -376,7 +376,7 @@
                                             <button class="btn btn-default" type="button" title="Refresh" data-toggle="tooltip" data-placement="bottom">
                                                 <span class="glyphicon glyphicon-refresh"></span>
                                             </button>
-                                            <button id="mbean-title" class="btn btn-primary disabled" type="button">
+                                            <button id="mbean-title" class="btn btn-primary disabled" type="button"></button>
                                         </div>
                                     </div>
                                     <div class="repeater-header-right">
