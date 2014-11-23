@@ -208,143 +208,80 @@ var endpointDataClass = function() {
                 sortable: true,
 
             }];
-            var objects = _.map(data, function(val, key) {
-                if (_.isArray(val)) {
-                    srt = '!!__sort_key_01__'+key;
-                    val = $('<div/>')
-                    .append(
-                        $('<a/>')
-                        .attr('href', '#')
-                        .attr('title', 'Expand')
-                        .data('toggle', 'tooltip')
-                        .data('placement', 'bottom')
-                        .tooltip()
-                        .addClass('text-success badge')
-                        .text('Array')
-                    )
-                    .append(
-                        $('<span/>')
-                        .addClass('badge progress-bar-danger pull-right')
-                        .text(val.length)
-                    );
-                } else if (_.isObject(val)) {
-                    srt = '!!__sort_key_02__'+key;
-                    val = $('<div/>')
-                    .append(
-                        $('<a/>')
-                        .attr('href', '#')
-                        .attr('title', 'Expand')
-                        .data('toggle', 'tooltip')
-                        .data('placement', 'bottom')
-                        .tooltip()
-                        .addClass('text-success badge')
-                        .text('Object')
-                    )
-                    .append(
-                        $('<span/>')
-                        .addClass('badge progress-bar-danger pull-right')
-                        .text(_.keys(val).length)
-                    );
-                } else if (_.isNull(val)) {
-                    srt = '!!__sort_key_03__'+key;
-                    val = $('<div/>')
-                    .addClass('text-danger')
-                    .text('null');
-                } else if (_.isNaN(val)) {
-                    srt = '!!__sort_key_04__'+key;
-                    val = $('<div/>')
-                    .addClass('text-danger')
-                    .text('NaN');
-                } else if (_.isBoolean(val)) {
-                    srt = '!!__sort_key_05_'+(val ^ 1)+'_'+key;
-                    val = $('<div/>')
-                    .addClass('text-warning')
-                    .text(val);
-                } else if (_.isNumber(val)) {
-                    srt = val;
-                    val = $('<div/>')
-                    .addClass('text-success')
-                    .text(val);
-                } else if (_.isString(val) && val.length > 50) {
-                    srt = val;
-                    val = $('<div/>')
-                    .append(
-                        $('<a/>')
-                        .attr('href', '#')
-                        .data('content', val)
-                        .data('toggle', 'popover')
-                        .data('placement', 'bottom')
-                        .data('container', 'body')
-                        .popover()
-                        .addClass('text-primary')
-                        .text(val.substring(0,50))
-                        .append(
-                            $('<span/>')
-                            .addClass('text-primary')
-                            .html('&nbsp;&raquo;&nbsp;')
-                        )
-                    )
-                    .append(
-                        $('<span/>')
-                        .addClass('badge progress-bar-danger pull-right')
-                        .text(val.length)
-                    );
-                } else {
-                    srt = val;
-                    val = $('<div/>')
-                    .addClass('text-primary')
-                    .text(val);
-                }
 
+            var typeMap = {
+                'array': function(k, v) {
+                    return [1, k];
+                },
+                'object': function(k, v) {
+                    return [2, k];
+                },
+                'boolean': function(k, v) {
+                    return [3 + (v ^ 1), k];
+                },
+                'null': function(k, v) {
+                    return [5, k];
+                },
+                'number': function(k, v) {
+                    return [6, v];
+                },
+                'string': function(k, v) {
+                    return [7, v];
+                },
+            };
+
+            var objects = _.map(data, function(val, key) {
                 return {
                     key: key,
                     val: val,
-                    srt: srt,
+                    srt: typeMap[$.type(val)](key, val),
                 };
             });
+
 
             var dataFilter = function(options) {
                 rval = _.extend([], objects);
 
                 if (options.search) {
                     rval = _.filter(rval, function(item) {
+                        s = options.search.toLowerCase();
+
+                        a = item.key.toLowerCase();
+                        b = item.srt.join(',').toLowerCase();
+                        c = (item.val + '').toLowerCase();
+                        d = $.type(item.val).toLowerCase();
+
                         return (
-                            (item.key.toLowerCase().search(options.search.toLowerCase()) >= 0) ||
-                            (item.val.text().toLowerCase().search(options.search.toLowerCase()) >= 0)
-                        )
+                            a.search(s) >= 0 ||
+                            b.search(s) >= 0 ||
+                            c.search(s) >= 0 ||
+                            d.search(s) >= 0
+                        );
                     });
                 }
 
                 if (options.sortProperty) {
-                    if (options.sortProperty === 'key') {
-                        rval = _.sortBy(rval, 'key');
-                    } else {
-                        rval.sort(function(a, b) {
-                            a = a.srt;
-                            b = b.srt;
+                    rval.sort(function(a, b) {
+                        if (options.sortProperty == 'key') {
+                            return a.key.localeCompare(b.key);
+                        } else if (a.srt[0] < b.srt[0]) {
+                            return -1;
+                        } else if (a.srt[0] > b.srt[0]) {
+                            return 1;
+                        } else if (a.srt[0] == typeMap.number()[0]) {
+                            return a.srt[1] - b.srt[1];
+                        } else {
+                            return a.srt[1].localeCompare(b.srt[1]);
+                        }
+                    });
 
-                            if (_.isNumber(a) && _.isNumber(b)) {
-                                return a - b;
-                            } else if (_.isString(a) && _.isString(b)) {
-                                return a > b ? 1 : a < b ? -1 : 0;
-                            } else if (_.isNumber(a) && b.lastIndexOf('!!__sort_key_', 0) == 0) {
-                                return 1;
-                            } else if (_.isNumber(b) && a.lastIndexOf('!!__sort_key_', 0) == 0) {
-                                return -1;
-                            } else if (_.isNumber(b) && _.isString(a)) {
-                                return 1;
-                            } else if (_.isNumber(a) && _.isString(b)) {
-                                return -1;
-                            }
-                        });
-                    }
                     if (options.sortDirection === 'desc') {
                         rval.reverse();
                     }
                 }
 
                 return rval;
-            }
+            };
 
             var dataSource = function(options, callback) {
                 items = dataFilter(options);
@@ -361,6 +298,99 @@ var endpointDataClass = function() {
                 callback(rval);
             };
 
+            var colBuilder = function(helpers, callback) {
+                if (helpers.columnAttr == 'val') {
+                    val = helpers.rowData.val;
+
+                    if (_.isArray(val)) {
+                        val = $('<div/>')
+                        .append(
+                            $('<a/>')
+                            .attr('href', '#')
+                            .attr('title', 'Expand')
+                            .data('toggle', 'tooltip')
+                            .data('placement', 'bottom')
+                            .tooltip({
+                                container: 'body',
+                            })
+                            .addClass('text-success badge')
+                            .text('Array')
+                        )
+                        .append(
+                            $('<span/>')
+                            .addClass('badge progress-bar-danger pull-right')
+                            .text(val.length)
+                        );
+                    } else if (_.isObject(val)) {
+                        val = $('<div/>')
+                        .append(
+                            $('<a/>')
+                            .attr('href', '#')
+                            .attr('title', 'Expand')
+                            .data('toggle', 'tooltip')
+                            .data('placement', 'bottom')
+                            .tooltip({
+                                container: 'body',
+                            })
+                            .addClass('text-success badge')
+                            .text('Object')
+                        )
+                        .append(
+                            $('<span/>')
+                            .addClass('badge progress-bar-danger pull-right')
+                            .text(_.size(val))
+                        );
+                    } else if (_.isNull(val)) {
+                        val = $('<div/>')
+                        .addClass('text-danger')
+                        .text('null');
+                    } else if (_.isNaN(val)) {
+                        val = $('<div/>')
+                        .addClass('text-danger')
+                        .text('NaN');
+                    } else if (_.isBoolean(val)) {
+                        val = $('<div/>')
+                        .addClass('text-warning')
+                        .text(val);
+                    } else if (_.isNumber(val)) {
+                        val = $('<div/>')
+                        .addClass('text-success')
+                        .text(val);
+                    } else if (_.isString(val) && val.length > 50) {
+                        val = $('<div/>')
+                        .append(
+                            $('<a/>')
+                            .attr('href', '#')
+                            .data('content', val)
+                            .data('toggle', 'popover')
+                            .data('placement', 'bottom')
+                            .data('container', 'body')
+                            .popover()
+                            .addClass('text-primary')
+                            .text(val.substring(0,50))
+                            .append(
+                                $('<span/>')
+                                .addClass('text-primary')
+                                .html('&nbsp;&raquo;&nbsp;')
+                            )
+                        )
+                        .append(
+                            $('<span/>')
+                            .addClass('badge progress-bar-danger pull-right')
+                            .text(val.length)
+                        );
+                    } else {
+                        val = $('<div/>')
+                        .addClass('text-primary')
+                        .text(val);
+                    }
+
+                    helpers.item.html(val);
+                }
+
+                callback();
+            };
+
             if ($('#mbeans-data').data('fu.repeater')) {
                 $('#mbeans-data')
                 .repeater('clear')
@@ -368,6 +398,7 @@ var endpointDataClass = function() {
             }
             $('#mbeans-data').repeater({
                 dataSource: dataSource,
+                list_columnRendered: colBuilder,
             });
             $('#mbean-title').text(bean);
         });
