@@ -401,6 +401,9 @@ var endpointDataClass = function() {
                 list_columnRendered: colBuilder,
             });
             $('#mbean-title').text(bean);
+            $('#mbean-reset').click(function() {
+                buildBeanData(bean);
+            });
         });
     };
 
