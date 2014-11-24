@@ -353,10 +353,6 @@ var endpointDataClass = function() {
                             $('<a/>')
                             .attr('href', '#')
                             .data('content', val)
-                            .data('toggle', 'popover')
-                            .data('placement', 'bottom')
-                            .data('container', 'body')
-                            .popover()
                             .addClass('text-primary')
                             .text(val.substring(0,50))
                             .append(
@@ -364,6 +360,14 @@ var endpointDataClass = function() {
                                 .addClass('text-primary')
                                 .html('&nbsp;&raquo;&nbsp;')
                             )
+                            .click(function() {
+                                tmp = $(this).html();
+                                $(this)
+                                    .html($(this).data('content'))
+                                    .data('content', tmp)
+                                    .next()
+                                        .toggleClass('hidden');
+                            })
                         )
                         .append(
                             $('<span/>')
@@ -791,17 +795,17 @@ $(document).ready(function() {
         }
     })
     .keyup(function(e) {
-        if (this.validity.valid) {
-            $(this).parent().removeClass('has-error').addClass('has-success');
-        } else {
-            $(this).parent().removeClass('has-success').addClass('has-error');
-        }
+        $(this).parent()
+        .toggleClass('has-error', !this.validity.valid)
+        .toggleClass('has-success', this.validity.valid);
     });
 
     $('#endpoint-creds').submit(function() {
         endpointHost.resetAuth($('#endpoint-user').val(), $('#endpoint-pass').val());
 
-        $('#endpoint-auth').modal({'show': false})
+        $('#endpoint-auth').modal({
+            show: false
+        });
         return false;
     });
 
