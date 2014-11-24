@@ -238,12 +238,11 @@ var endpointDataClass = function() {
                 };
             });
 
-
-            var dataFilter = function(options) {
-                rval = _.extend([], objects);
+            var mainDataSource = function(options, callback) {
+                list = _.extend([], objects);
 
                 if (options.search) {
-                    rval = _.filter(rval, function(item) {
+                    list = _.filter(list, function(item) {
                         s = options.search.toLowerCase();
 
                         a = item.key.toLowerCase();
@@ -261,7 +260,7 @@ var endpointDataClass = function() {
                 }
 
                 if (options.sortProperty) {
-                    rval.sort(function(a, b) {
+                    list.sort(function(a, b) {
                         if (options.sortProperty == 'key') {
                             return a.key.localeCompare(b.key);
                         } else if (a.srt[0] < b.srt[0]) {
@@ -276,15 +275,10 @@ var endpointDataClass = function() {
                     });
 
                     if (options.sortDirection === 'desc') {
-                        rval.reverse();
+                        list.reverse();
                     }
                 }
 
-                return rval;
-            };
-
-            var dataSource = function(options, callback) {
-                list = dataFilter(options);
                 rval = {
                     columns: columns,
                     count:   list.length,
@@ -298,42 +292,39 @@ var endpointDataClass = function() {
                 callback(rval);
             };
 
-            var colBuilder = function(helpers, callback) {
+            var mainColBuilder = function(helpers, callback) {
                 if (helpers.columnAttr == 'val') {
+                    key = helpers.rowData.key;
                     val = helpers.rowData.val;
 
-                    if (_.isArray(val)) {
+                    if (_.isArray(val) || _.isObject(val)) {
                         val = $('<div/>')
                         .append(
-                            $('<a/>')
-                            .attr('href', '#')
+                            $('<button/>')
                             .attr('title', 'Expand')
+                            .data('attrib-name', key)
+                            .data('attrib-data', val)
                             .data('toggle', 'tooltip')
                             .data('placement', 'bottom')
                             .tooltip({
                                 container: 'body',
                             })
-                            .addClass('text-success badge')
-                            .text('Array')
-                        )
-                        .append(
-                            $('<span/>')
-                            .addClass('badge progress-bar-danger pull-right')
-                            .text(val.length)
-                        );
-                    } else if (_.isObject(val)) {
-                        val = $('<div/>')
-                        .append(
-                            $('<a/>')
-                            .attr('href', '#')
-                            .attr('title', 'Expand')
-                            .data('toggle', 'tooltip')
-                            .data('placement', 'bottom')
-                            .tooltip({
-                                container: 'body',
+                            .click(function() {
+                                $('#attrib-name').text($(this).data('attrib-name'));
+                                if ($('#attrib-data').data('fu.repeater')) {
+                                    $('#attrib-data')
+                                    .repeater('clear')
+                                    .removeData('fu.repeater');
+                                }
+                                $('#attrib-data').repeater({
+                                    dataSource: attrDataSource,
+                                    dataTarget: $(this).data('attrib-data'),
+                                    list_columnRendered: attrColBuilder,
+                                });
+                                $('#attrib-modal').modal();
                             })
-                            .addClass('text-success badge')
-                            .text('Object')
+                            .addClass('btn btn-xs btn-info')
+                            .text($.type(val))
                         )
                         .append(
                             $('<span/>')
@@ -391,14 +382,153 @@ var endpointDataClass = function() {
                 callback();
             };
 
+            var attrColBuilder = function(helpers, callback) {
+                val = helpers.rowData[helpers.columnAttr];
+
+                if (_.isNull(val)) {
+                    val = $('<div/>')
+                    .addClass('text-danger')
+                    .text('null');
+                } else if (_.isNaN(val)) {
+                    val = $('<div/>')
+                    .addClass('text-danger')
+                    .text('NaN');
+                } else if (_.isBoolean(val)) {
+                    val = $('<div/>')
+                    .addClass('text-warning')
+                    .text(val);
+                } else if (_.isNumber(val)) {
+                    val = $('<div/>')
+                    .addClass('text-success')
+                    .text(val);
+                } else if (_.isString(val) && val.length > 50) {
+                    val = $('<div/>')
+                    .append(
+                        $('<a/>')
+                        .attr('href', '#')
+                        .data('content', val)
+                        .addClass('text-primary')
+                        .text(val.substring(0,50))
+                        .append(
+                            $('<span/>')
+                            .addClass('text-primary')
+                            .html('&nbsp;&raquo;&nbsp;')
+                        )
+                        .click(function() {
+                            tmp = $(this).html();
+                            $(this)
+                                .html($(this).data('content'))
+                                .data('content', tmp)
+                                .next()
+                                    .toggleClass('hidden');
+                        })
+                    )
+                    .append(
+                        $('<span/>')
+                        .addClass('badge progress-bar-danger pull-right')
+                        .text(val.length)
+                    );
+                } else {
+                    val = $('<div/>')
+                    .addClass('text-primary')
+                    .text(val);
+                }
+
+                helpers.item.html(val);
+
+                callback();
+            };
+
+            var attrDataSource = function(options, callback) {
+                list = [];
+                cols = [];
+
+                data = this.dataTarget;
+                if (_.isArray(data)) {
+                    if (data.length && _.isObject(data[0])) {
+                        cols = _.map(data[0], function(v, k) {
+                            return {
+                                label: k.charAt(0).toUpperCase() + k.slice(1),
+                                property: k,
+                                sortable: true,
+                            };
+                        });
+                        list = _.extend([], data);
+                    } else if (data.length) {
+                        cols = [{
+                            label: 'Value',
+                            property: 'val',
+                            sortable: true,
+                        }];
+                        list = _.map(data, function(v) {
+                            return {
+                                val: v,
+                            };
+                        })
+                    }
+                } else if (_.isObject(data)) {
+                    var cols = [{
+                        label: 'Name',
+                        property: 'key',
+                        sortable: true,
+                    }, {
+                        label: 'Value',
+                        property: 'val',
+                        sortable: true,
+                    }];
+                    list = _.map(data, function(v, k) {
+                        return {
+                            key: k,
+                            val: v,
+                        };
+                    });
+                }
+
+                if (options.search) {
+                    list = _.filter(list, function(item) {
+                        s = options.search.toLowerCase();
+                        for (key in item) {
+                            a = key.toLowerCase();
+                            b = (item[key] + '').toLowerCase();
+                            c = $.type(item[key]).toLowerCase();
+
+                            if (a.search(s) >= 0 || b.search(s) >= 0 || c.search(s) >= 0) {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    });
+                }
+
+                if (options.sortProperty) {
+                    list = _.sortBy(list, options.sortProperty);
+                    if (options.sortDirection === 'desc') {
+                        list.reverse();
+                    }
+                }
+
+                rval = {
+                    columns: cols,
+                    count:   list.length,
+                    pages:   Math.ceil(list.length / options.pageSize),
+                    page:    options.pageIndex,
+                };
+
+                rval.start = options.pageIndex * options.pageSize + 1;
+                rval.end   = _.min([rval.start + options.pageSize - 1, rval.count]);
+                rval.items = list.slice(rval.start - 1, rval.end);
+                callback(rval);
+            };
+
             if ($('#mbeans-data').data('fu.repeater')) {
                 $('#mbeans-data')
                 .repeater('clear')
                 .removeData('fu.repeater');
             }
             $('#mbeans-data').repeater({
-                dataSource: dataSource,
-                list_columnRendered: colBuilder,
+                dataSource: mainDataSource,
+                list_columnRendered: mainColBuilder,
             });
             $('#mbean-title').text(bean);
             $('#mbean-reset').click(function() {
