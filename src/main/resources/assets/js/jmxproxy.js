@@ -246,6 +246,48 @@ var endpointDataClass = function() {
                 };
             });
 
+            var addStringValue = function(elem, text) {
+                elem.html('23');
+
+                h1 = elem.height();
+                elem.text(text)
+                h2 = elem.height();
+
+                if (h1 < h2) {
+                    t = text;
+                    a = $('<a/>')
+                    .attr('href', '#')
+                    .data('content', text)
+                    .addClass('text-primary')
+                    .text(t)
+                    .click(function() {
+                        tmp = $(this).html();
+                        $(this)
+                            .html($(this).data('content'))
+                            .data('content', tmp)
+                            .next()
+                                .toggleClass('hidden');
+                    });
+
+                    elem.html(
+                        $('<div/>')
+                        .append(a)
+                        .append(
+                            $('<span/>')
+                            .addClass('badge progress-bar-danger pull-right')
+                            .text(text.length)
+                        )
+                    );
+
+                    while (h1 < h2) {
+                        t = t.slice(0, -5);
+                        a.html(t + '&nbsp;&raquo;');
+                        h2 = elem.height();
+                    }
+                }
+            };
+
+
             var mainDataSource = function(options, callback) {
                 list = _.extend([], objects);
 
@@ -302,12 +344,13 @@ var endpointDataClass = function() {
 
             var mainColBuilder = function(helpers, callback) {
                 if (helpers.columnAttr == 'val') {
+                    helpers.item.html('');
                     key = helpers.rowData.key;
                     val = helpers.rowData.val;
 
                     if (_.isArray(val) || _.isObject(val)) {
-                        val = $('<div/>')
-                        .append(
+                        helpers.item
+                        .html(
                             $('<button/>')
                             .attr('title', 'Expand')
                             .data('attrib-name', key)
@@ -340,113 +383,61 @@ var endpointDataClass = function() {
                             .text(_.size(val))
                         );
                     } else if (_.isNull(val)) {
-                        val = $('<div/>')
+                        helpers.item
                         .addClass('text-danger')
                         .text('null');
                     } else if (_.isNaN(val)) {
-                        val = $('<div/>')
+                        helpers.item
                         .addClass('text-danger')
                         .text('NaN');
                     } else if (_.isBoolean(val)) {
-                        val = $('<div/>')
+                        helpers.item
                         .addClass('text-warning')
                         .text(val);
                     } else if (_.isNumber(val)) {
-                        val = $('<div/>')
+                        helpers.item
                         .addClass('text-success')
                         .text(val);
-                    } else if (_.isString(val) && val.length > 50) {
-                        val = $('<div/>')
-                        .append(
-                            $('<a/>')
-                            .attr('href', '#')
-                            .data('content', val)
-                            .addClass('text-primary')
-                            .text(val.substring(0,50))
-                            .append(
-                                $('<span/>')
-                                .addClass('text-primary')
-                                .html('&nbsp;&raquo;&nbsp;')
-                            )
-                            .click(function() {
-                                tmp = $(this).html();
-                                $(this)
-                                    .html($(this).data('content'))
-                                    .data('content', tmp)
-                                    .next()
-                                        .toggleClass('hidden');
-                            })
-                        )
-                        .append(
-                            $('<span/>')
-                            .addClass('badge progress-bar-danger pull-right')
-                            .text(val.length)
-                        );
+                    } else if (_.isString(val)) {
+                        addStringValue(helpers.item.addClass('text-primary'), val);
                     } else {
-                        val = $('<div/>')
-                        .addClass('text-primary')
-                        .text(val);
+                        helpers.item
+                        .addClass('text-muted')
+                        .text('unknown type (' + $.type(val) + ')');
                     }
-
-                    helpers.item.html(val);
                 }
 
                 callback();
             };
 
             var attrColBuilder = function(helpers, callback) {
+                helpers.item.html('');
+
                 val = helpers.rowData[helpers.columnAttr];
 
                 if (_.isNull(val)) {
-                    val = $('<div/>')
+                    helpers.item
                     .addClass('text-danger')
                     .text('null');
                 } else if (_.isNaN(val)) {
-                    val = $('<div/>')
+                    helpers.item
                     .addClass('text-danger')
                     .text('NaN');
                 } else if (_.isBoolean(val)) {
-                    val = $('<div/>')
+                    helpers.item
                     .addClass('text-warning')
                     .text(val);
                 } else if (_.isNumber(val)) {
-                    val = $('<div/>')
+                    helpers.item
                     .addClass('text-success')
                     .text(val);
-                } else if (_.isString(val) && val.length > 50) {
-                    val = $('<div/>')
-                    .append(
-                        $('<a/>')
-                        .attr('href', '#')
-                        .data('content', val)
-                        .addClass('text-primary')
-                        .text(val.substring(0,50))
-                        .append(
-                            $('<span/>')
-                            .addClass('text-primary')
-                            .html('&nbsp;&raquo;&nbsp;')
-                        )
-                        .click(function() {
-                            tmp = $(this).html();
-                            $(this)
-                                .html($(this).data('content'))
-                                .data('content', tmp)
-                                .next()
-                                    .toggleClass('hidden');
-                        })
-                    )
-                    .append(
-                        $('<span/>')
-                        .addClass('badge progress-bar-danger pull-right')
-                        .text(val.length)
-                    );
+                } else if (_.isString(val)) {
+                    addStringValue(helpers.item.addClass('text-primary'), val);
                 } else {
-                    val = $('<div/>')
-                    .addClass('text-primary')
-                    .text(val);
+                    helpers.item
+                    .addClass('text-muted')
+                    .text('unknown type (' + $.type(val) + ')');
                 }
-
-                helpers.item.html(val);
 
                 callback();
             };
