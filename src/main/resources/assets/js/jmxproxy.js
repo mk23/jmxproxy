@@ -251,10 +251,10 @@ var endpointDataClass = function() {
                         d = $.type(item.val).toLowerCase();
 
                         return (
-                            a.search(s) >= 0 ||
-                            b.search(s) >= 0 ||
-                            c.search(s) >= 0 ||
-                            d.search(s) >= 0
+                            a.indexOf(s) >= 0 ||
+                            b.indexOf(s) >= 0 ||
+                            c.indexOf(s) >= 0 ||
+                            d.indexOf(s) >= 0
                         );
                     });
                 }
@@ -496,7 +496,7 @@ var endpointDataClass = function() {
                             b = (item[key] + '').toLowerCase();
                             c = $.type(item[key]).toLowerCase();
 
-                            if (a.search(s) >= 0 || b.search(s) >= 0 || c.search(s) >= 0) {
+                            if (a.indexOf(s) >= 0 || b.indexOf(s) >= 0 || c.indexOf(s) >= 0) {
                                 return true;
                             }
                         }
