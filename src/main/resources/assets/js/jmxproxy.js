@@ -193,11 +193,13 @@ var endpointDataClass = function() {
                 });
             })
             .on('selected.fu.tree', function(e, node) {
+                $('#attr-banner').addClass('hidden');
+                $('#mbeans-data').removeClass('hidden');
                 buildBeanData(node.target.attr.title);
-                $('#attr-banner, #mbeans-data').toggleClass('hidden');
             })
             .on('deselected.fu.tree', function(e, node) {
-                $('#attr-banner, #mbeans-data').toggleClass('hidden');
+                $('#attr-banner').removeClass('hidden');
+                $('#mbeans-data').addClass('hidden');
             });
         });
     };
