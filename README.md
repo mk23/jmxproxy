@@ -263,15 +263,16 @@ This script allows easy extensions by creating another script that imports `jmxp
 
 Libraries
 ---------
-| Name                                                   | Version | License   |
-|--------------------------------------------------------|---------|-----------|
-| [dropwizard](http://dropwizard.io)                     | 0.7.1   | Apache V2 |
-| [jquery](http://jquery.com)                            | 1.11.1  | MIT       |
-| [underscore](http://underscorejs.org)                  | 1.7.0   | MIT       |
-| [flot](http://www.flotcharts.org)                      | 0.8.3   | MIT       |
-| [flot.tooltip](https://github.com/krzysu/flot.tooltip) | 0.8.4   | MIT       |
-| [bootstrap](http://getbootstrap.com)                   | 3.3.1   | MIT       |
-| [fuelux](http://getfuelux.com)                         | 3.3.1   | BSD V3    |
+| Name                                                      | Version | License                                                                                           |
+|-----------------------------------------------------------|---------|---------------------------------------------------------------------------------------------------|
+| [dropwizard](http://dropwizard.io)                        | 0.7.1   | [Apache 2.0](https://github.com/dropwizard/dropwizard/blob/master/LICENSE)                        |
+| [jquery](http://jquery.com)                               | 1.11.1  | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt)                                   |
+| [underscore](http://underscorejs.org)                     | 1.7.0   | [MIT](https://github.com/jashkenas/underscore/blob/master/LICENSE)                                |
+| [flot](http://www.flotcharts.org)                         | 0.8.3   | [MIT](https://github.com/flot/flot/blob/master/LICENSE.txt)                                       |
+| [flot.tooltip](https://github.com/krzysu/flot.tooltip)    | 0.8.4   | [MIT](https://github.com/krzysu/flot.tooltip/blob/master/README.md)                               |
+| [bootstrap](http://getbootstrap.com)                      | 3.3.1   | [MIT](https://github.com/twbs/bootstrap/blob/master/LICENSE)                                      |
+| [fuelux](http://getfuelux.com)                            | 3.3.1   | [BSD3](https://github.com/ExactTarget/fuelux/blob/master/LICENSE)                                 |
+| [font-awesome](http://fortawesome.github.io/Font-Awesome) | 4.2.0   | [MIT](http://opensource.org/licenses/mit-license.html), [SIL OFL 1.1](http://scripts.sil.org/OFL) |
 
 License
 -------
