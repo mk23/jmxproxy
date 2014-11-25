@@ -188,7 +188,9 @@ var endpointDataClass = function() {
                 folderSelect: false,
             })
             .on('opened.fu.tree', function(e, node) {
-                $('.tree-item').tooltip({container: 'body'});
+                $('.tree-item').tooltip({
+                    container: 'body'
+                });
             })
             .on('selected.fu.tree', function(e, node) {
                 buildBeanData(node.target.attr.title);
@@ -549,10 +551,7 @@ var endpointDataClass = function() {
         ts = new Date().getTime();
 
         endpointHost.fetchData('/', function(data) {
-            $('#summary-gc').empty();
-            $('#memory-gc').empty();
-            $('#memory-bar-hm').empty();
-            $('#memory-bar-nm').empty();
+            $('#summary-gc, #memory-gc, #memory-bar-hm, #memory-bar-nm').empty();
             for (item in data) {
                 if (data[item].lastIndexOf('java.lang:type=GarbageCollector', 0) === 0) {
                     endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
@@ -767,11 +766,8 @@ var endpointHostClass = function(host) {
     var checkHost = function() {
         fetchData('/java.lang:type=Runtime/Uptime', function(test) {
             $(document).attr('title', 'JMXProxy - ' + fetchName());
-            $('#summary-cn').text(fetchName());
-            $('#navbar-label').text(fetchName());
-            $('#welcome-banner').toggleClass('hidden');
-            $('#endpoint-select').toggleClass('hidden');
-            $('#endpoint-navbar').toggleClass('hidden');
+            $('#summary-cn, #navbar-label').text(fetchName());
+            $('#welcome-banner, #endpoint-select, #endpoint-navbar').toggleClass('hidden');
             $('a[data-toggle="tab"]:first').tab('show');
         });
 
@@ -823,10 +819,7 @@ $(document).ready(function() {
     $('#memory-gr').mouseout(function() {
         endpointHost.refreshGraphs($(this).attr('id'), true, formatSize);
     });
-    $('#threads-gr').mouseout(function() {
-        endpointHost.refreshGraphs($(this).attr('id'));
-    });
-    $('#classes-gr').mouseout(function() {
+    $('#threads-gr, #classes-gr').mouseout(function() {
         endpointHost.refreshGraphs($(this).attr('id'));
     });
     $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
