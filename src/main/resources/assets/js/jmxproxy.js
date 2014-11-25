@@ -780,6 +780,7 @@ var endpointHostClass = function(host) {
 
 var jmxproxyConf;
 var endpointHost;
+var alertTimeout;
 
 $(document).ready(function() {
     $('#endpoint-input')
@@ -801,6 +802,10 @@ $(document).ready(function() {
             show: false
         });
         return false;
+    });
+
+    $('#endpoint-alert > button.close').click(function () {
+        $(this).parent().removeClass('in');
     });
 
     $('#memory-btn-hm').click(function() {
@@ -925,6 +930,11 @@ function formatPercent(s) {
 function displayError(text) {
     if (text != null) {
         $('#endpoint-error').text(text);
-        $('#endpoint-alert').toggleClass('hidden');
+        $('#endpoint-alert').addClass('in');
+
+        clearTimeout(alertTimeout);
+        alertTimeout = setTimeout(function() {
+            $('#endpoint-alert').removeClass('in');
+        }, 5000);
     }
 }
