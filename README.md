@@ -4,6 +4,24 @@ JMXPROXY [![Build status](https://travis-ci.org/mk23/jmxproxy.png)](https://trav
 JMXProxy exposes all available MBean attributes on a given JVM via simple HTTP request.  The results are in easily-parsable JSON format.  The server component is built using [Dropwizard](http://dropwizard.io/).
 
 
+Table of Contents
+-----------------
+* [Downloading](#downloading)
+* [Compiling](#compiling)
+* [Configuration](#configuration)
+* [Execution](#execution)
+* [Usage](#usage)
+* [Limitation](#limitations)
+* [Load Balancing](#load-balancing)
+* [Example Clients](#example-clients)
+  * [Nagios Health Plugin](#nagios-health-plugin)
+  * [Cacti ScriptServer Plugin](#cacti-scriptserver-plugin)
+  * [Graphite Poller Script](#graphite-poller-script)
+* [Web Interface](#web-interface)
+* [Libraries](#libraries)
+* [License](#license)
+
+
 Downloading
 -----------
 
@@ -73,14 +91,14 @@ A more complex example that enables the [JMX](http://docs.oracle.com/javase/7/do
 An example startup script exists that will launch the server listening on port 8080 and enable authenticated JMX agent in the jvm on port 1123:
 
     $ scripts/server/start.sh
-    INFO  [2013-03-24 23:25:01,705] com.yammer.dropwizard.cli.ServerCommand: Starting jmxproxy
+    INFO  [2014-11-25 17:41:41,312] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /*
+    INFO  [2014-11-25 17:41:41,544] io.dropwizard.server.ServerFactory: Starting jmxproxy
        __     __    __     __  __     ______   ______     ______     __  __     __  __    
       /\ \   /\ "-./  \   /\_\_\_\   /\  == \ /\  == \   /\  __ \   /\_\_\_\   /\ \_\ \   
      _\_\ \  \ \ \-./\ \  \/_/\_\/_  \ \  _-/ \ \  __<   \ \ \/\ \  \/_/\_\/_  \ \____ \  
     /\_____\  \ \_\ \ \_\   /\_\/\_\  \ \_\    \ \_\ \_\  \ \_____\   /\_\/\_\  \/\_____\ 
     \/_____/   \/_/  \/_/   \/_/\/_/   \/_/     \/_/ /_/   \/_____/   \/_/\/_/   \/_____/ 
     ...
-
 
 
 Usage
@@ -262,6 +280,14 @@ This script allows easy extensions by creating another script that imports `jmxp
     datanode001.datanode.writes_from_local_client 50 1363022233
     datanode001.datanode.writes_from_remote_client 142 1363022233
 
+
+Web Interface
+-------------
+JMXProxy comes with an interactive web interface available by pointing a browser at the root URL.
+![Overview](https://raw.githubusercontent.com/mk23/jmxproxy/master/misc/overview.png)
+![MBeans](https://raw.githubusercontent.com/mk23/jmxproxy/master/misc/mbeans.png)
+
+
 Libraries
 ---------
 | Name                                                      | Version | License                                                                                           |
@@ -274,6 +300,7 @@ Libraries
 | [bootstrap](http://getbootstrap.com)                      | 3.3.1   | [MIT](https://github.com/twbs/bootstrap/blob/master/LICENSE)                                      |
 | [fuelux](http://getfuelux.com)                            | 3.3.1   | [BSD3](https://github.com/ExactTarget/fuelux/blob/master/LICENSE)                                 |
 | [font-awesome](http://fortawesome.github.io/Font-Awesome) | 4.2.0   | [MIT](http://opensource.org/licenses/mit-license.html), [SIL OFL 1.1](http://scripts.sil.org/OFL) |
+
 
 License
 -------
