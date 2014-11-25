@@ -192,6 +192,10 @@ var endpointDataClass = function() {
             })
             .on('selected.fu.tree', function(e, node) {
                 buildBeanData(node.target.attr.title);
+                $('#attr-banner, #mbeans-data').toggleClass('hidden');
+            })
+            .on('deselected.fu.tree', function(e, node) {
+                $('#attr-banner, #mbeans-data').toggleClass('hidden');
             });
         });
     };
