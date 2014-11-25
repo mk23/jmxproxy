@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="css/bootstrap.css" rel="stylesheet" media="screen">
         <link href="css/fuelux.css" rel="stylesheet" media="screen">
+        <link href="css/font-awesome.css" rel="stylesheet" media="screen">
         <link href="css/jmxproxy.css" rel="stylesheet" media="screen">
         <link href="img/favicon.ico" rel="icon">
     </head>
@@ -30,16 +31,16 @@
         <div id="endpoint-navbar" class="nav navbar-inverse hidden" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a id="navbar-label" class="navbar-brand" href="#"></a>
+                    <div class="navbar-brand"><i class="fa fa-coffee"></i> <span id="navbar-label"></span></div>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul id="endpoint-tabs" class="nav navbar-nav" role="tablist">
-                        <li><a href="#overview" data-toggle="tab" role="tab">Overview</a></li>
-                        <li><a href="#memory" data-toggle="tab" role="tab">Memory</a></li>
-                        <li><a href="#threads" data-toggle="tab" role="tab">Threads</a></li>
-                        <li><a href="#classes" data-toggle="tab" role="tab">Classes</a></li>
-                        <li><a href="#summary" data-toggle="tab" role="tab">Summary</a></li>
-                        <li><a href="#mbeans" data-toggle="tab" role="tab">MBeans</a></li>
+                        <li><a href="#overview" data-toggle="tab" role="tab"><i class="fa fa-dashboard"></i> Overview </a></li>
+                        <li><a href="#memory" data-toggle="tab" role="tab"><i class="fa fa-link"></i> Memory</a></li>
+                        <li><a href="#threads" data-toggle="tab" role="tab"><i class="fa fa-tasks"></i> Threads</a></li>
+                        <li><a href="#classes" data-toggle="tab" role="tab"><i class="fa fa-cubes"></i> Classes</a></li>
+                        <li><a href="#summary" data-toggle="tab" role="tab"><i class="fa fa-info-circle"></i> Summary</a></li>
+                        <li><a href="#mbeans" data-toggle="tab" role="tab"><i class="fa fa-list-ul"></i> MBeans</a></li>
                     </ul>
                 </div>
             </div>
@@ -49,13 +50,13 @@
             <button type="button" class="close">
                 <span aria-hidden="true">&times;</span>
             </button>
-            <span class="glyphicon glyphicon-warning-sign"></span>
+            <i class="fa fa-warning"></i>
             <span id="endpoint-error"></span>
         </div>
 
         <div id="welcome-banner" class="banner-container">
             <div class="text-info">
-                <h1>JMXProxy</h1>
+                <h1><i class="fa fa-coffee"></i> JMXProxy</h1>
                 <hr>
                 <h3>&#X2196; please select an endpoint</h3>
             </div>
@@ -96,7 +97,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="well">
-                                <h5>Heap Usage</h5>
+                                <h5><i class="fa fa-link"></i> Heap Usage</h5>
                                 <div id="overview-mem-gr" class="overview-graph"></div>
                                 <ul class="list-inline">
                                     <li><small>Used:</small></li>
@@ -110,7 +111,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="well">
-                                <h5>Running Threads</h5>
+                                <h5><i class="fa fa-tasks"></i> Running Threads</h5>
                                 <div id="overview-thr-gr" class="overview-graph"></div>
                                 <ul class="list-inline">
                                     <li><small>Live:</small></li>
@@ -126,7 +127,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="well">
-                                <h5>Loaded Classes</h5>
+                                <h5><i class="fa fa-cubes"></i> Loaded Classes</h5>
                                 <div id="overview-cls-gr" class="overview-graph"></div>
                                 <ul class="list-inline">
                                     <li><small>Loaded:</small></li>
@@ -140,7 +141,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="well">
-                                <h5>CPU Usage</h5>
+                                <h5><i class="fa fa-cogs"></i> CPU Usage</h5>
                                 <div id="overview-cpu-gr" class="overview-graph"></div>
                                 <ul class="list-inline">
                                     <li><small>Process CPU Usage:</small></li>
@@ -158,7 +159,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="well">
-                                <h4 id="memory-text">&nbsp;</h4>
+                                <h4><i class="fa fa-link"></i> <span id="memory-text"></span></h4>
                                 <div id="memory-gr" class="focused-graph"></div>
                             </div>
                         </div>
@@ -204,7 +205,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="well">
-                                <h4>Running Threads</h4>
+                                <h4><i class="fa fa-tasks"></i> Running Threads</h4>
                                 <div id="threads-gr" class="focused-graph"></div>
                             </div>
                         </div>
@@ -216,7 +217,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="well">
-                                <h4>Loaded Classes</h4>
+                                <h4><i class="fa fa-cubes"></i> Loaded Classes</h4>
                                 <div id="classes-gr" class="focused-graph"></div>
                             </div>
                         </div>
@@ -484,9 +485,9 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <button class="btn btn-danger" type="button" title="Close" data-dismiss="modal" data-toggle="tooltip" data-placement="bottom">
-                                        <span class="glyphicon glyphicon-eject"></span>
-                                    </button>
+                                    <a class="btn btn-danger" title="Close" data-dismiss="modal" data-toggle="tooltip" data-placement="bottom">
+                                        <i class="fa fa-times"></i>
+                                    </a>
                                 </div>
                             </div>
                             <div class="repeater-viewport">

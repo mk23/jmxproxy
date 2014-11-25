@@ -799,7 +799,7 @@ $(document).ready(function() {
         endpointHost.resetAuth($('#endpoint-user').val(), $('#endpoint-pass').val());
 
         $('#endpoint-auth').modal({
-            show: false
+            show: false,
         });
         return false;
     });
@@ -821,16 +821,17 @@ $(document).ready(function() {
         endpointHost.refreshGraphs($(this).attr('id'));
     });
     $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-        if (e.target.text == 'Overview') {
+        text = e.target.text.toLowerCase().trim();
+        if (text == 'overview') {
             endpointHost.refreshGraphs('overview-mem-gr', true, formatSize);
             endpointHost.refreshGraphs('overview-thr-gr', true);
             endpointHost.refreshGraphs('overview-cls-gr', true);
             endpointHost.refreshGraphs('overview-cpu-gr', true, formatPercent);
-        } else if (e.target.text == 'Memory') {
+        } else if (text == 'memory') {
             endpointHost.refreshMemory('hm');
-        } else if (e.target.text == 'Classes' || e.target.text == 'Threads') {
-            endpointHost.refreshGraphs(e.target.text.toLowerCase()+'-gr');
-        } else if (e.target.text == 'MBeans') {
+        } else if (text == 'classes' || text == 'threads') {
+            endpointHost.refreshGraphs(text + '-gr');
+        } else if (text == 'mbeans') {
             endpointHost.buildBeanTree();
         }
     });
