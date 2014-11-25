@@ -1,13 +1,14 @@
 JMXPROXY [![Build status](https://travis-ci.org/mk23/jmxproxy.png)](https://travis-ci.org/mk23/jmxproxy)
 ========
 
-JMXProxy exposes all available MBean attributes on a given JVM via simple HTTP request.  The results are in easily-parsable JSON format.  The server component is built using [Dropwizard](http://dropwizard.codahale.com/).
+JMXProxy exposes all available MBean attributes on a given JVM via simple HTTP request.  The results are in easily-parsable JSON format.  The server component is built using [Dropwizard](http://dropwizard.io/).
 
 
 Downloading
 -----------
 
-- Latest version: [jmxproxy-3.0.0.jar](http://d2g50xfw6d567v.cloudfront.net/jmxproxy/jmxproxy-3.0.0.jar)
+- Latest version compiled artifact: [jmxproxy-3.0.0.jar](https://github.com/mk23/jmxproxy/releases/download/jmxproxy.3.0.0/jmxproxy-3.0.0.jar)
+- Latest version source code archive: [jmxproxy.3.0.0.tar.gz](https://github.com/mk23/jmxproxy/archive/jmxproxy.3.0.0.tar.gz)
 
 
 Compiling
@@ -23,9 +24,9 @@ The resulting package is a self-executable "fat jar" file located at `target/jmx
 Configuration
 -------------
 
-Configuration is handled entirely by [Dropwizard](http://dropwizard.codahale.com/manual/core/#configuration-defaults).  For example, to change the server listen port via command-line add this parameter:
+Configuration is handled entirely by [Dropwizard](http://dropwizard.io/manual/core.html#configuration).  For example, to change the server listen port via command-line add this parameter:
 
-    $ -Ddw.http.port=9090
+    $ -Ddw.server.applicationConnectors[0].port=9090
 
 For more complex configuration settings, create a yaml file and point to it at startup by adding it to the command-line as the last parameter.
 
@@ -276,4 +277,4 @@ Libraries
 
 License
 -------
-[MIT](http://mk23.mit-license.org/2011-2013/license.html)
+[MIT](http://mk23.mit-license.org/2011-2014/license.html)
