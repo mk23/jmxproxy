@@ -270,8 +270,8 @@ Libraries
 | [underscore](http://underscorejs.org)                  | 1.7.0   | MIT       |
 | [flot](http://www.flotcharts.org)                      | 0.8.3   | MIT       |
 | [flot.tooltip](https://github.com/krzysu/flot.tooltip) | 0.8.4   | MIT       |
-| [bootstrap](http://getbootstrap.com)                   | 3.3.0   | MIT       |
-| [fuelux](http://getfuelux.com)                         | 3.2.1   | BSD V3    |
+| [bootstrap](http://getbootstrap.com)                   | 3.3.1   | MIT       |
+| [fuelux](http://getfuelux.com)                         | 3.3.1   | BSD V3    |
 
 License
 -------
