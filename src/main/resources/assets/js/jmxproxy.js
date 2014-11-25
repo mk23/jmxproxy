@@ -765,6 +765,7 @@ var endpointHostClass = function(host) {
             $(document).attr('title', 'JMXProxy - ' + fetchName());
             $('#summary-cn').text(fetchName());
             $('#navbar-label').text(fetchName());
+            $('#welcome-banner').toggleClass('hidden');
             $('#endpoint-select').toggleClass('hidden');
             $('#endpoint-navbar').toggleClass('hidden');
             $('a[data-toggle="tab"]:first').tab('show');
@@ -864,8 +865,10 @@ $(document).ready(function() {
                 );
             });
 
+            $('#welcome-banner h3').text($('#welcome-banner h3').text().replace('enter', 'select'));
             $('#endpoint-choice').toggleClass('hidden');
         } else {
+            $('#welcome-banner h3').text($('#welcome-banner h3').text().replace('select', 'enter'));
             $('#endpoint-insert').toggleClass('hidden');
             $('#endpoint-insert input').focus();
         }
