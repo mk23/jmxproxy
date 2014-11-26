@@ -741,6 +741,7 @@ var endpointHostClass = function(host) {
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
                     $('#endpoint-auth').modal();
+                    $('#endpoint-user').focus();
                 } else if (jqXHR.status == 404) {
                     displayError('Selected endpoint is unavailable.');
                 }
@@ -750,6 +751,7 @@ var endpointHostClass = function(host) {
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
                     $('#endpoint-auth').modal();
+                    $('#endpoint-user').focus();
                 } else if (jqXHR.status == 404) {
                     displayError('Selected endpoint is unavailable.');
                 }
