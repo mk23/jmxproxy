@@ -759,10 +759,13 @@ var endpointHostClass = function(host) {
         }
     };
     var checkHost = function() {
+        $('#welcome-banner, #endpoint-select').addClass('hidden');
+        $('#endpoint-navbar, #endpoint-loader').removeClass('hidden');
+
         fetchData('/java.lang:type=Runtime/Uptime', function(test) {
+            $('#endpoint-loader').addClass('hidden');
             $(document).attr('title', 'JMXProxy - ' + fetchName());
             $('#summary-cn, #navbar-label').text(fetchName());
-            $('#welcome-banner, #endpoint-select, #endpoint-navbar').toggleClass('hidden');
             $('a[data-toggle="tab"]:first').tab('show');
         });
 
@@ -785,6 +788,14 @@ var endpointHost;
 var alertTimeout;
 
 $(document).ready(function() {
+    $(window).resize(function() {
+        loader = $('#endpoint-loader');
+        loader.css({
+            'margin-top': '-' + Math.round(loader.height() / 2) + 'px',
+            'margin-left': '-' + Math.round(loader.width() / 2) + 'px',
+        });
+    }).trigger('resize');
+
     $('#endpoint-input')
     .keypress(function(e) {
         if (e.keyCode == 13 && this.validity.valid) {
