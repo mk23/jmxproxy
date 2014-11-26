@@ -25,8 +25,8 @@ Table of Contents
 Downloading
 -----------
 
-- Latest version compiled artifact: [jmxproxy-3.0.0.jar](https://github.com/mk23/jmxproxy/releases/download/jmxproxy.3.0.0/jmxproxy-3.0.0.jar)
-- Latest version source code archive: [jmxproxy.3.0.0.tar.gz](https://github.com/mk23/jmxproxy/archive/jmxproxy.3.0.0.tar.gz)
+- Latest version compiled artifact: [jmxproxy-3.1.0.jar](https://github.com/mk23/jmxproxy/releases/download/jmxproxy.3.1.0/jmxproxy-3.1.0.jar)
+- Latest version source code archive: [jmxproxy.3.1.0.tar.gz](https://github.com/mk23/jmxproxy/archive/jmxproxy.3.1.0.tar.gz)
 
 
 Compiling
@@ -36,7 +36,7 @@ The build is a simple [maven](http://maven.apache.org) invocation.  To compile, 
 
     $ mvn clean package
 
-The resulting package is a self-executable "fat jar" file located at `target/jmxproxy-3.0.0.jar`.
+The resulting package is a self-executable "fat jar" file located at `target/jmxproxy-3.1.0.jar`.
 
 
 Configuration
@@ -48,7 +48,7 @@ Configuration is handled entirely by [Dropwizard](http://dropwizard.io/manual/co
 
 For more complex configuration settings, create a yaml file and point to it at startup by adding it to the command-line as the last parameter.
 
-    $ java -jar target/jmxproxy-3.0.0.jar server config.yaml
+    $ java -jar target/jmxproxy-3.1.0.jar server config.yaml
 
 JMXProxy itself has the following configuration parameters:
 
@@ -82,11 +82,11 @@ Execution
 
 The self-executing fat jar file contains all the bits necessary to start and run the server.
 
-    $ java -jar target/jmxproxy-3.0.0.jar server
+    $ java -jar target/jmxproxy-3.1.0.jar server
 
 A more complex example that enables the [JMX](http://docs.oracle.com/javase/7/docs/technotes/guides/management/agent.html) agent and limits heap may look something like this:
 
-    $ java -Xmx100m -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=1123 -jar target/jmxproxy-3.0.0.jar server
+    $ java -Xmx100m -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=1123 -jar target/jmxproxy-3.1.0.jar server
 
 An example startup script exists that will launch the server listening on port 8080 and enable authenticated JMX agent in the jvm on port 1123:
 

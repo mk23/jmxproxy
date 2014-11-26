@@ -1,3 +1,114 @@
+jmxproxy (3.1.0) stable; urgency=medium
+
+  * Tagging 3.1.0
+  * [6b51e22] Issue #49: Consolidate endpointHost and endpointData to
+    simplify auth check and initial data load.
+  * [3d097e3] Issue #49: Add loader spinner.
+  * [0d589bc] Issue #49: Focus on username field on authentication modal
+    show.
+  * [c962184] Issue #49: Properly hide authentication modal on
+    submission.
+  * [ecc5c63] Fix release driver documentation updater.
+  * [80a5b6a] Add documentation table of contents and web interface
+    sections.
+  * [bc8f3d9] Add a couple of screenshots.
+  * [ba2b2ce] Issue #33: Update documentation to with new dropwizard 7
+    facts.
+  * [ead710c] Issue #48: Document font-awesome library version and
+    licence.
+  * [7f9be6f] Issue #48: Litter new icons in various places.
+  * [e017ee0] Issue #48: Add font-awesome assets.
+  * [06256ac] Issue #46: Add back endpoint error alert banner.
+  * [486efcd] Issue #47: Make long string truncation dynamic with the
+    cell in the mbeans data tables.
+  * [97b5f52] Issue #44: Fix hide/show logic on attribute banner.
+  * [baa4d33] Consolidate some repetitive jquery calls.
+  * [9b85c3b] Issue #44: Add attribute selection banner.
+  * [5a9167b] Issue #44: Add welcome screen banner.
+  * [25c30d3] Issue #42: Fix a couple minor html5 validator warnings.
+  * [be03c65] Issue #34: Update bootstrap and fuelux depenency versions
+    in docs.
+  * [4445b83] Issue #45: Fix bad search input breaking mbeans data
+    table.
+  * [fc488d6] Better modal close button.
+  * [338d736] Issue #34: upgrade fuelux to 3.3.1.
+  * [ec8a351] Issue #34: upgrade bootstrap to 3.3.1.
+  * [535901b] Minor polish.
+  * [bdc5b56] Issue #37: Implement popup modals for object and array
+    mbean value types.
+  * [7e24234] Issue #37: Implement refresh button on mbean data table.
+  * [78f6294] Issue #37: Fix 'items' namespace collision that prevented
+    data updates.
+  * [6b24332] Issue #38: Add flot.tooltip library to docs.
+  * [bc1087c] Issue #37: Rework mbean table rendering with a custom
+    column builder, better searcher, and better sorter.
+  * [7b81fe1] Issue #26: Dynamically resize mbean data table to number
+    of displayed items.
+  * [b5a046b] Issue #42: Fix html to pass W3 Validator.
+  * [c081648] Issue #43: Disable automatic form submittals to fix
+    endpoint input in Chrome.
+  * [094b1e9] Issue #38: Add external libraries, versions, and lincenses
+    to docs.
+  * [74afdd7] Issue #37: Fully implement sorting in mbean data.
+  * [6716f89] Issue #33: Detect branches and offer to push upstream when
+    releasing.  Also be resilient to release script being unavailable.
+  * [bfc1cc8] Remove unneeded attributes from login button.
+  * [2cb5824] Issue #37: Begin replacing dataTables with FuelUX
+    repeater. Current working features are: basic display, type styling,
+    pagination, search, partial sort.
+  * [8cb8ce9] Issue #41: Integrate underscore.js.
+  * [3d4a0fa] Issue #40: Fix minify plugin trying to compress *.css.map
+    files.
+  * [df59b9f] Issue #37: Remove datatables javascript and css files.
+  * [7d8cffe] Issue #37: Convert mbeans tree menu to FuelUX tree
+    component.
+  * [48d1f29] Issue #37: Remove bootstrap-tree and datatables, add
+    FuelUX.
+  * [a351790] Issue #39: Colorize endpoint input validity.
+  * [d46ed84] Issue #34: upgrade bootstrap to 3.3.0.  Currently mbeans
+    tab is blank and will be reworked as part of Issue #37.
+  * [8ea062d] Issue #34: upgrade jquery to 1.11.1.
+  * [d4b1c20] Issue #36: Use package initials for long class names in
+    the mbeans menu.
+  * [71acf24] Issue #35: skip building usage bars for memory pools that
+    don't have a maximum value. Fixes memory tab view for endpoints
+    configured with G1GC.
+  * [d19a4be] Issue #34: upgrade flot to 0.8.3.
+  * [408b162] Issue #34: upgrade datatables to 1.10.3.
+  * [5ca9e29] Issue #32: Add init script and defaults.
+  * [1f885e7] Issue #33: Fix debian packaging warning by configuring
+    source version 3.0 (native).
+  * [a619a14] Issue #33: Add example config file.
+  * [9a9f381] Issue #33: Update debian dependency to maven (v3).
+  * [5bae8b5] Issue #30: Add enforcer plugin to the build.  It comes
+    back clean.
+  * [d4ce4df] Issue #29: [findbugs fix] be consistant on host
+    synchronization.
+  * [096c370] Issue #29: [findbugs fix] use long instead of int for
+    timing variables to be compatible with System.currentTimeMillis().
+  * [008de36] Issue #29: [findbugs fix] hashCode() should also be
+    implemented if overriding equals().
+  * [009197c] Issue #29: [findbugs fix] equals() override should check
+    param object type.
+  * [c7b0088] Issue #29: Add findbugs plugin and tie to test phase.
+  * [8e12f02] Issue #31: Update maven plugins to latest version and add
+    default implementation entries in the resulting jar.
+  * [e38dac0] Remove unnecessary import of a class in the same package.
+  * [ae10099] Issue #31: Fix jackson deprecation warnings.
+  * [67b06fb] Issue #31: Update tests to work with dropwizard 0.7.1
+  * [5fd45f2] Issue #31: Update codebase to dropwizard 0.7.1
+  * [387707b] Issue #31: Update project to dropwizard 0.7.1
+  * [bb212e8] Issue #31: rename Service to Application to represent dw7
+    terminology.
+  * [84a6284] Ignore debian packaging files.
+  * [e233e9b] Issue #28: Add license file to repo, jar, and package.
+  * [baf303c] Avoid creating the reduced dependency pom.
+  * [8cbf442] Issue #27: Automatically update download link on new
+    releases.
+  * [a6b94cc] Issue #27: Add compiled jar download links to docs.
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Tue, 25 Nov 2014 22:49:49 -0800
+
 jmxproxy (3.0.0) precise; urgency=low
 
   * Tagging 3.0.0
