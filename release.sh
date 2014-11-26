@@ -18,7 +18,6 @@ echo
 ) |
 	exec /usr/bin/env python2.7 - ${COMMIT} --release stable \
 		-e pom.xml '<artifactId>jmxproxy</artifactId>\s+<version>{version}</version>' \
-		-e README.md 'jmxproxy(-\.){version}.jar' \
 		-e README.md 'jmxproxy-{version}.jar' \
 		-e README.md 'jmxproxy.{version}.tar.gz' \
 		-e README.md '/download/jmxproxy.{version}/' \
