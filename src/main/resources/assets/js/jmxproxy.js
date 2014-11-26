@@ -1,4 +1,10 @@
-var endpointDataClass = function() {
+var jmxproxyConf;
+var endpointHost;
+var alertTimeout;
+
+var endpointHostClass = function(host) {
+    var creds = null;
+
     var items = {
         'overview-mem-gr': [{
             'label': 'Heap Used',
@@ -120,7 +126,7 @@ var endpointDataClass = function() {
     };
 
     var buildBeanTree = function() {
-        endpointHost.fetchData('/', function(data) {
+        fetchData('/', function(data) {
             tree = [];
             data.sort();
 
@@ -205,7 +211,7 @@ var endpointDataClass = function() {
     };
 
     var buildBeanData = function(bean) {
-        endpointHost.fetchData('/'+bean+'?full=true', function(data) {
+        fetchData('/'+bean+'?full=true', function(data) {
             var columns = [{
                 label: 'Name',
                 property: 'key',
@@ -543,16 +549,16 @@ var endpointDataClass = function() {
     var gatherObjects = function() {
         ts = new Date().getTime();
 
-        endpointHost.fetchData('/', function(data) {
+        fetchData('/', function(data) {
             $('#summary-gc, #memory-gc, #memory-bar-hm, #memory-bar-nm').empty();
             for (item in data) {
                 if (data[item].lastIndexOf('java.lang:type=GarbageCollector', 0) === 0) {
-                    endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
+                    fetchData('/'+data[item]+'?full=true', function(item) {
                         $('#summary-gc').append('Name = "'+item.Name+'"; Collections = '+item.CollectionCount+'; Time spent = '+formatTime(item.CollectionTime, 2)+'<br>');
                         $('#memory-gc').append(formatTime(item.CollectionTime, 2)+' on '+item.Name+' ('+item.CollectionCount+' collections)<br>');
                     });
                 } else if (data[item].lastIndexOf('java.lang:type=MemoryPool') === 0) {
-                    endpointHost.fetchData('/'+data[item]+'?full=true', function(item) {
+                    fetchData('/'+data[item]+'?full=true', function(item) {
                         if (item.Usage.max <= 0) {
                             return;
                         }
@@ -619,7 +625,7 @@ var endpointDataClass = function() {
             }
         });
 
-        endpointHost.fetchData('/java.lang:type=ClassLoading?full=true', function(data) {
+        fetchData('/java.lang:type=ClassLoading?full=true', function(data) {
             $('#summary-cl').text(data.LoadedClassCount);
             $('#summary-cu').text(data.UnloadedClassCount);
             $('#summary-ct').text(data.TotalLoadedClassCount);
@@ -634,11 +640,11 @@ var endpointDataClass = function() {
             items['overview-cls-gr'][0].data.push([ts, data.LoadedClassCount]);
             refreshGraphs('overview-cls-gr', true);
         });
-        endpointHost.fetchData('/java.lang:type=Compilation?full=true', function(data) {
+        fetchData('/java.lang:type=Compilation?full=true', function(data) {
             $('#summary-jc').text(data.Name);
             $('#summary-jt').text(formatTime(data.TotalCompilationTime, 2));
         });
-        endpointHost.fetchData('/java.lang:type=Memory?full=true', function(data) {
+        fetchData('/java.lang:type=Memory?full=true', function(data) {
             $('#overview-mem-hh').text(formatSize(data.HeapMemoryUsage.used));
             $('#overview-mem-hc').text(formatSize(data.HeapMemoryUsage.committed));
             $('#overview-mem-hm').text(formatSize(data.HeapMemoryUsage.max));
@@ -669,7 +675,7 @@ var endpointDataClass = function() {
             };
             refreshGraphs('memory-gr', true, formatSize);
         });
-        endpointHost.fetchData('/java.lang:type=OperatingSystem?full=true', function(data) {
+        fetchData('/java.lang:type=OperatingSystem?full=true', function(data) {
             $('#summary-pt').text(formatTime(data.ProcessCpuTime / 1000000, 3));
             $('#summary-mr').text(formatSize(data.TotalPhysicalMemorySize));
             $('#summary-ml').text(formatSize(data.FreePhysicalMemorySize));
@@ -686,13 +692,13 @@ var endpointDataClass = function() {
             items['overview-cpu-gr'][0].data.push([ts, data.ProcessCpuLoad]);
             refreshGraphs('overview-cpu-gr', true, formatPercent);
         });
-        endpointHost.fetchData('/java.lang:type=Runtime?full=true', function(data) {
+        fetchData('/java.lang:type=Runtime?full=true', function(data) {
             $('#summary-ut').text(formatTime(data.Uptime));
             $('#summary-vm').text(data.VmName);
             $('#summary-vv').text(data.VmVendor);
             $('#summary-vn').text(data.Name);
         });
-        endpointHost.fetchData('/java.lang:type=Threading?full=true', function(data) {
+        fetchData('/java.lang:type=Threading?full=true', function(data) {
             $('#summary-tc').text(data.ThreadCount);
             $('#summary-tp').text(data.PeakThreadCount);
             $('#summary-td').text(data.DaemonThreadCount);
@@ -712,32 +718,21 @@ var endpointDataClass = function() {
         setTimeout(gatherObjects, jmxproxyConf.cache_duration * 60 * 1000);
     };
 
-    setTimeout(gatherObjects, 0);
-
-    return {
-        refreshMemory: refreshMemory,
-        refreshGraphs: refreshGraphs,
-        buildBeanTree: buildBeanTree,
-    };
-};
-
-var endpointHostClass = function(host) {
-    var auth = null;
-    var data = null;
-
     var fetchName = function() {
-        return auth == null ? host : auth.username+'@'+host;
+        return creds == null ? host : creds.username+'@'+host;
     };
+
     var resetAuth = function(username, password) {
-        auth = {
+        creds = {
             username: username,
             password: password,
         }
         checkHost();
     };
+
     var fetchData = function(item, callback) {
-        if (auth != null) {
-            $.post('/jmxproxy/'+host+item, auth, callback, 'json')
+        if (creds != null) {
+            $.post('/jmxproxy/'+host+item, creds, callback, 'json')
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
                     $('#endpoint-auth').modal();
@@ -767,25 +762,20 @@ var endpointHostClass = function(host) {
             $(document).attr('title', 'JMXProxy - ' + fetchName());
             $('#summary-cn, #navbar-label').text(fetchName());
             $('a[data-toggle="tab"]:first').tab('show');
-        });
 
-        return endpointDataClass();
+            setTimeout(gatherObjects, 0);
+        });
     };
 
-    data = checkHost();
+    checkHost();
 
     return {
         resetAuth: resetAuth,
-        fetchData: fetchData,
-        refreshGraphs: data.refreshGraphs,
-        refreshMemory: data.refreshMemory,
-        buildBeanTree: data.buildBeanTree,
+        refreshMemory: refreshMemory,
+        refreshGraphs: refreshGraphs,
+        buildBeanTree: buildBeanTree,
     };
 };
-
-var jmxproxyConf;
-var endpointHost;
-var alertTimeout;
 
 $(document).ready(function() {
     $(window).resize(function() {
