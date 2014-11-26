@@ -798,9 +798,7 @@ $(document).ready(function() {
     $('#endpoint-creds').submit(function() {
         endpointHost.resetAuth($('#endpoint-user').val(), $('#endpoint-pass').val());
 
-        $('#endpoint-auth').modal({
-            show: false,
-        });
+        $('#endpoint-auth').modal('hide');
         return false;
     });
 
