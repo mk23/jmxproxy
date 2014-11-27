@@ -1,3 +1,12 @@
+jmxproxy (3.1.1) stable; urgency=medium
+
+  * Tagging 3.1.1
+  * [d585616] Merge pull request #50 from grweigold/master
+  * [6321f89] Issue #51: default-jdk is a build dependency
+  * [aa6a24f] Issue #51: Should require maven 3.0.4
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Thu, 27 Nov 2014 07:12:17 -0800
+
 jmxproxy (3.1.0) stable; urgency=medium
 
   * Tagging 3.1.0
