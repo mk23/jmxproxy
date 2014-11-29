@@ -42,15 +42,28 @@ The resulting package is a self-executable "fat jar" file located at `target/jmx
 Configuration
 -------------
 
-Configuration is handled entirely by [Dropwizard](http://dropwizard.io/manual/core.html#configuration).  For example, to change the server listen port via command-line add this parameter:
-
-    $ -Ddw.server.applicationConnectors[0].port=9090
-
-For more complex configuration settings, create a yaml file and point to it at startup by adding it to the command-line as the last parameter.
+Configuration is handled entirely by [Dropwizard](http://dropwizard.io/manual/core.html#configuration).  Create a yaml file and point to it at startup by adding it to the command-line as the last parameter.
 
     $ java -jar target/jmxproxy-3.1.1.jar server config.yaml
 
-JMXProxy itself has the following configuration parameters:
+For example to configure the port server listen port for both application and admin servlets:
+
+```yaml
+server:
+    type: simple
+    applicationContextPath: /
+    connector:
+        type: http
+        port: 8000
+```
+
+Note, it is important to specify the `applicationContextPath`, otherwise all requests will have to be prefixed with `/application` in the URI.  Once this entry is in the configuration file, any part of it may be overriden on the command-line, i.e.:
+
+    $ java -Ddw.server.connector.port=9000 target/jmxproxy-3.1.1.jar server config.yaml
+
+For more built-in configuration options, please see the [Dropwizard Configuration Reference](https://dropwizard.github.io/dropwizard/manual/configuration.html)
+
+JMXProxy itself has the following configuration parameters, which are added to the same file:
 
 ```yaml
 jmxproxy:
