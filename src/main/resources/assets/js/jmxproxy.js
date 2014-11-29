@@ -2,7 +2,7 @@ var jmxproxyConf;
 var endpointHost;
 var alertTimeout;
 
-var endpointHostClass = function(host) {
+var endpointHostClass = function(prefix, host) {
     var creds = null;
 
     var items = {
@@ -732,7 +732,7 @@ var endpointHostClass = function(host) {
 
     var fetchData = function(item, callback) {
         if (creds != null) {
-            $.post('/jmxproxy/'+host+item, creds, callback, 'json')
+            $.post(prefix+'/jmxproxy/'+host+item, creds, callback, 'json')
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
                     $('#endpoint-auth').modal();
@@ -742,7 +742,7 @@ var endpointHostClass = function(host) {
                 }
             });
         } else {
-            $.getJSON('/jmxproxy/'+host+item, callback)
+            $.getJSON(prefix+'/jmxproxy/'+host+item, callback)
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
                     $('#endpoint-auth').modal();
@@ -778,6 +778,8 @@ var endpointHostClass = function(host) {
 };
 
 $(document).ready(function() {
+    prefix = window.location.pathname.replace(/\/(?:index\.html)?$/, '');
+
     $(window).resize(function() {
         loader = $('#endpoint-loader');
         loader.css({
@@ -789,7 +791,7 @@ $(document).ready(function() {
     $('#endpoint-input')
     .keypress(function(e) {
         if (e.keyCode == 13 && this.validity.valid) {
-            endpointHost = endpointHostClass($(this).val());
+            endpointHost = endpointHostClass(prefix, $(this).val());
         }
     })
     .keyup(function(e) {
@@ -843,7 +845,7 @@ $(document).ready(function() {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    $.getJSON('/jmxproxy/config', function(data) {
+    $.getJSON(prefix+'/jmxproxy/config', function(data) {
         jmxproxyConf = data;
 
         if (data.allowed_endpoints.length > 0) {
@@ -855,7 +857,7 @@ $(document).ready(function() {
                         $('<a/>')
                         .attr('href', '#')
                         .click(function() {
-                            endpointHost = endpointHostClass($(this).text());
+                            endpointHost = endpointHostClass(prefix, $(this).text());
                         })
                         .text(val)
                     )
