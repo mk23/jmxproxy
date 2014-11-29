@@ -1,3 +1,14 @@
+jmxproxy (3.1.2) stable; urgency=medium
+
+  * Tagging 3.1.2
+  * [b286840] Issue #52: Update javascript to dynamically figure out and
+    use the server's application context path.
+  * [d958656] Issue #52: Update documentation about changing server
+    ports.
+  * [40a04c2] Issue #53: Fix wrong chuid variable in debian init script.
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Sat, 29 Nov 2014 00:07:50 -0800
+
 jmxproxy (3.1.1) stable; urgency=medium
 
   * Tagging 3.1.1
