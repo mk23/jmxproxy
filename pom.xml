@@ -51,7 +51,7 @@
   </properties>
 
   <prerequisites>
-    <maven>3.0.5</maven>
+    <maven>3.0.4</maven>
   </prerequisites>
 
   <dependencies>
@@ -225,7 +225,7 @@
               <rules>
                 <DependencyConvergence/>
                 <requireMavenVersion>
-                  <version>3.0.5</version>
+                  <version>3.0.4</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>1.7</version>
