@@ -4,6 +4,7 @@ import com.topsy.jmxproxy.jmx.ConnectionManager;
 
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.server.AbstractServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
@@ -34,7 +35,7 @@ public class JMXProxyApplication extends Application<JMXProxyConfiguration> {
         final JMXProxyResource resource = new JMXProxyResource(manager);
         final JMXProxyHealthCheck healthCheck = new JMXProxyHealthCheck(manager);
 
-        environment.jersey().setUrlPattern("/jmxproxy/*");
+        ((AbstractServerFactory) configuration.getServerFactory()).setJerseyRootPath("/jmxproxy/*");
 
         environment.lifecycle().manage(manager);
         environment.jersey().register(resource);
