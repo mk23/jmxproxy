@@ -87,6 +87,11 @@ jmxproxy:
         - 'host1:1234'
         - 'host1:4321'
         - 'host2:5678'
+
+    # maximum number of historical attribute values to
+    # retain and provide when the history query parameter
+    # is specified to the attribute request call
+    history_size: 1
 ```
 
 
@@ -144,6 +149,16 @@ JMXProxy provides fine-grained access to MBeans exposed by a target JVM.  Client
         $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem/Name
         "Mac OS X"
 
+6. Get the full history of attribute values in reverse chronological order
+
+        $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=ClassLoading/LoadedClassCount?history=0
+        [5176,5155,5136,5119,5016]
+
+7. Get a partial history of attribute values in reverse chronological order
+
+        $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=ClassLoading/LoadedClassCount?history=3
+        [5176,5155,5136]
+
 For JMX agents that require authentication, JMXProxy allows clients to submit credentials via HTTP POST as either `application/json` or `application/x-www-form-urlencoded` content-type:
 
 1. Get the list of mbeans available on a target JVM with form-urlencoded credentials
@@ -166,7 +181,7 @@ Limitations
 Load Balancing
 --------------
 
-Because JMXProxy caches results for a configurable amount of time to quickly service consecutive requests, load balancers should be configured to balance traffic based on the first component of the request path.  Below is an example [haproxy](http://haproxy.1wt.eu) configuration snippet.  It shows how to balance traffic between five JMXProxy servers as well as check health each instance's health.
+Because JMXProxy caches results for a configurable amount of time to quickly service consecutive requests, load balancers should be configured to balance traffic based on the first component of the request path.  Below is an example [haproxy](http://haproxy.1wt.eu) configuration snippet.  It shows how to balance traffic between five JMXProxy servers as well as check each instance's health.
 
 ```conf
 listen  SRV_JMXPROXY:8080       :8080
