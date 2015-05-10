@@ -28,6 +28,10 @@ public class JMXProxyConfiguration extends Configuration {
         @JsonProperty
         private long accessDuration = 30;
 
+        @Min(1)
+        @JsonProperty
+        private int historySize = 1;
+
         @JsonProperty
         private List<String> allowedEndpoints = new ArrayList<String>();
 
@@ -50,6 +54,13 @@ public class JMXProxyConfiguration extends Configuration {
         }
         public void setAccessDuration(long accessDuration) {
             this.accessDuration = accessDuration;
+        }
+
+        public int getHistorySize() {
+            return historySize;
+        }
+        public void setHistorySize(int historySize) {
+            this.historySize = historySize;
         }
 
         public List<String> getAllowedEndpoints() {

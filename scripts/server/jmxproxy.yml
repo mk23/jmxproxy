@@ -1,6 +1,7 @@
 jmxproxy:
     allowed_endpoints:
         - 'localhost:1123'
+    history_size: 20
 
 logging:
     level: INFO
