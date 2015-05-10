@@ -33,6 +33,10 @@ public class Attribute implements JsonSerializable {
         this.attributeValue = attributeValue;
     }
 
+    public Object getAttributeValue() {
+        return attributeValue;
+    }
+
     public void serialize(JsonGenerator jgen, SerializerProvider sp) throws IOException, JsonProcessingException {
         buildJson(jgen, attributeValue);
     }
