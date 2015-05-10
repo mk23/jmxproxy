@@ -13,17 +13,19 @@ import java.util.Map;
 import java.util.Set;
 
 public class MBean implements JsonSerializable {
-    private Map<String, Attribute> attributes;
+    private Map<String, History> attributes;
 
     public MBean() {
-        attributes = new HashMap<String, Attribute>();
+        attributes = new HashMap<String, History>();
     }
 
-    public Attribute addAttribute(String attributeName) {
-        Attribute attribute = new Attribute();
-        attributes.put(attributeName, attribute);
+    public History addHistory(String attributeName, int size) {
+        if (!attributes.containsKey(attributeName)) {
+            History history = new History(size);
+            attributes.put(attributeName, history);
+        }
 
-        return attribute;
+        return attributes.get(attributeName);
     }
 
     public Set<String> getAttributes() {
@@ -31,7 +33,21 @@ public class MBean implements JsonSerializable {
     }
 
     public Attribute getAttribute(String attribute) {
-        return attributes.get(attribute);
+        History history = attributes.get(attribute);
+        if (history == null) {
+            return null;
+        }
+
+        return history.getAttribute();
+    }
+
+    public Attribute[] getAttributes(String attribute, int limit) {
+        History history = attributes.get(attribute);
+        if (history == null) {
+            return new Attribute[0];
+        }
+
+        return history.getAttributes(limit);
     }
 
     public void serialize(JsonGenerator jgen, SerializerProvider sp) throws IOException, JsonProcessingException {
@@ -44,8 +60,8 @@ public class MBean implements JsonSerializable {
 
     private void buildJson(JsonGenerator jgen) throws IOException, JsonProcessingException {
         jgen.writeStartObject();
-        for (Map.Entry<String, Attribute>attributeEntry : attributes.entrySet()) {
-            jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue());
+        for (Map.Entry<String, History>attributeEntry : attributes.entrySet()) {
+            jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getAttribute());
         }
         jgen.writeEndObject();
     }

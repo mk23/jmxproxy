@@ -25,10 +25,12 @@ public class Host implements JsonSerializable {
     }
 
     public MBean addMBean(String domain, String mbeanName) {
-        MBean mbean = new MBean();
-        mbeans.put(mbeanName, mbean);
+        if (!mbeans.containsKey(mbeanName)) {
+            MBean mbean = new MBean();
+            mbeans.put(mbeanName, mbean);
+        }
 
-        return mbean;
+        return mbeans.get(mbeanName);
     }
 
     public Set<String> getMBeans() {

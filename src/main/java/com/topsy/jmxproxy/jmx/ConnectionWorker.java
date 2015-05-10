@@ -1,6 +1,6 @@
 package com.topsy.jmxproxy.jmx;
 
-import com.topsy.jmxproxy.core.Attribute;
+import com.topsy.jmxproxy.core.History;
 import com.topsy.jmxproxy.core.Host;
 import com.topsy.jmxproxy.core.MBean;
 
@@ -30,6 +30,8 @@ public class ConnectionWorker {
     private Host host = null;
     private ConnectionCredentials auth = null;
 
+    private int historySize;
+
     private JMXServiceURL url;
 
     private long accessTime;
@@ -37,8 +39,9 @@ public class ConnectionWorker {
 
     private ScheduledExecutorService fetch;
 
-    public ConnectionWorker(String hostName, ConnectionCredentials auth, long cacheDuration) throws Exception {
+    public ConnectionWorker(String hostName, ConnectionCredentials auth, long cacheDuration, int historySize) throws Exception {
         this.auth = auth;
+        this.historySize = historySize;
 
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + "/jmxrmi");
         fetch = Executors.newSingleThreadScheduledExecutor();
@@ -88,7 +91,9 @@ public class ConnectionWorker {
             connection = JMXConnectorFactory.connect(url, environment);
             server = connection.getMBeanServerConnection();
 
-            host = new Host();
+            if (host == null) {
+                host = new Host();
+            }
             for (String domainName : server.getDomains()) {
                 LOG.debug("discovered domain " + domainName);
 
@@ -101,8 +106,8 @@ public class ConnectionWorker {
                             for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {
                                 if (attributeObject.isReadable()) {
                                     try {
-                                        Attribute attribute = mbean.addAttribute(attributeObject.getName());
-                                        attribute.setAttributeValue(server.getAttribute(mbeanName, attributeObject.getName()));
+                                        History history = mbean.addHistory(attributeObject.getName(), historySize);
+                                        history.addAttributeValue(server.getAttribute(mbeanName, attributeObject.getName()));
                                     } catch (java.lang.NullPointerException e) {
                                         LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
                                     } catch (java.rmi.UnmarshalException e) {

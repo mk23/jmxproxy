@@ -29,7 +29,7 @@ public class Attribute implements JsonSerializable {
 
     private Object attributeValue;
 
-    public void setAttributeValue(Object attributeValue) {
+    public Attribute(Object attributeValue) {
         this.attributeValue = attributeValue;
     }
 
