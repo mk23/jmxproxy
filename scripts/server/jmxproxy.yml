@@ -7,4 +7,4 @@ logging:
     level: INFO
 
     loggers:
-        "com.topsy.jmxproxy": DEBUG
+        "com.github.mk23.jmxproxy": DEBUG

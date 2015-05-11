@@ -1,8 +1,8 @@
-package com.topsy.jmxproxy.jmx;
+package com.github.mk23.jmxproxy.jmx;
 
-import com.topsy.jmxproxy.core.History;
-import com.topsy.jmxproxy.core.Host;
-import com.topsy.jmxproxy.core.MBean;
+import com.github.mk23.jmxproxy.core.History;
+import com.github.mk23.jmxproxy.core.Host;
+import com.github.mk23.jmxproxy.core.MBean;
 
 import java.io.IOException;
 

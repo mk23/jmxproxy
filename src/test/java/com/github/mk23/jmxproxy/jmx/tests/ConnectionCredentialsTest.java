@@ -1,6 +1,7 @@
-package com.topsy.jmxproxy.jmx.tests;
+package com.github.mk23.jmxproxy.jmx.tests;
 
-import com.topsy.jmxproxy.jmx.ConnectionCredentials;
+import com.github.mk23.jmxproxy.jmx.ConnectionCredentials;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;

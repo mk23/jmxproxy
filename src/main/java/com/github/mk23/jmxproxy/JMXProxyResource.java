@@ -1,9 +1,9 @@
-package com.topsy.jmxproxy;
+package com.github.mk23.jmxproxy;
 
-import com.topsy.jmxproxy.core.Host;
-import com.topsy.jmxproxy.core.MBean;
-import com.topsy.jmxproxy.jmx.ConnectionCredentials;
-import com.topsy.jmxproxy.jmx.ConnectionManager;
+import com.github.mk23.jmxproxy.core.Host;
+import com.github.mk23.jmxproxy.core.MBean;
+import com.github.mk23.jmxproxy.jmx.ConnectionCredentials;
+import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
 import io.dropwizard.jersey.params.BooleanParam;
 

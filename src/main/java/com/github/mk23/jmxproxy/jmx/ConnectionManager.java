@@ -1,7 +1,7 @@
-package com.topsy.jmxproxy.jmx;
+package com.github.mk23.jmxproxy.jmx;
 
-import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
-import com.topsy.jmxproxy.core.Host;
+import com.github.mk23.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
+import com.github.mk23.jmxproxy.core.Host;
 
 import io.dropwizard.lifecycle.Managed;
 

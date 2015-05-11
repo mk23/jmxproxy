@@ -1,6 +1,6 @@
-package com.topsy.jmxproxy;
+package com.github.mk23.jmxproxy;
 
-import com.topsy.jmxproxy.jmx.ConnectionManager;
+import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;

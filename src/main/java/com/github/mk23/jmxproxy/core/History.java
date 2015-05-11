@@ -1,4 +1,4 @@
-package com.topsy.jmxproxy.core;
+package com.github.mk23.jmxproxy.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
-package com.topsy.jmxproxy.jmx.tests;
+package com.github.mk23.jmxproxy.jmx.tests;
 
-import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
-import com.topsy.jmxproxy.jmx.ConnectionManager;
+import com.github.mk23.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
+import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
 import java.util.Arrays;
 

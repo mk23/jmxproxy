@@ -1,4 +1,4 @@
-package com.topsy.jmxproxy.core;
+package com.github.mk23.jmxproxy.core;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

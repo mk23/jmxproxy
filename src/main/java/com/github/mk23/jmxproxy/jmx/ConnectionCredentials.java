@@ -1,4 +1,4 @@
-package com.topsy.jmxproxy.jmx;
+package com.github.mk23.jmxproxy.jmx;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

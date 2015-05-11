@@ -1,11 +1,11 @@
-package com.topsy.jmxproxy.core.tests;
+package com.github.mk23.jmxproxy.core.tests;
+
+import com.github.mk23.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
+import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.topsy.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
-import com.topsy.jmxproxy.jmx.ConnectionManager;
 
 import java.io.IOException;
 

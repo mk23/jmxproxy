@@ -1,7 +1,7 @@
-package com.topsy.jmxproxy.core.tests;
+package com.github.mk23.jmxproxy.core.tests;
 
-import com.topsy.jmxproxy.core.Attribute;
-import com.topsy.jmxproxy.core.History;
+import com.github.mk23.jmxproxy.core.Attribute;
+import com.github.mk23.jmxproxy.core.History;
 
 import java.util.ArrayList;
 

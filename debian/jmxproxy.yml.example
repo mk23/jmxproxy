@@ -48,7 +48,7 @@
 #
 #    # set jmxproxy classes to log at DEBUG level
 #    loggers:
-#        "com.topsy.jmxproxy": DEBUG
+#        "com.github.mk23.jmxproxy": DEBUG
 #
 #    # configure syslog host and facility
 #    # the local syslog server will need listen on an inet socket
