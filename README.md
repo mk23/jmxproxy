@@ -126,37 +126,57 @@ JMXProxy provides fine-grained access to MBeans exposed by a target JVM.  Client
 
 1. Get the list of mbeans available on a target JVM
 
-        $ curl -s http://localhost:8080/jmxproxy/localhost:1123
-        [ "java.lang:type=OperatingSystem", ...
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123'
+        ["java.lang:type=OperatingSystem", ...
 
 2. Get the dictionary of all mbeans, attributes, and values available on a target JVM
 
-        $ curl -s http://localhost:8080/jmxproxy/localhost:1123?full=true
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123?full=true'
         {"java.lang:type=OperatingSystem": {"name": "Mac OS X", ...
 
-3. Get the list of attributes available for a specific mbean on a target JVM
+3. Get the dictionary of all mbeans, and full history of associated attribute values in reverse chronological order on a target JVM
 
-        $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem
-        [ "Name", "Arch", ...
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123?full=true&limit=0'
+        {"java.lang:type=OperatingSystem": {"name": ["Mac OS X", ...
 
-4. Get the dictionary of all attributes and values available for a specific mbean on a target JVM
+4. Get the dictionary of all mbeans, and partial history of associated attribute values in reverse chronological order on a target JVM
 
-        $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem?full=true
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123?full=true&limit=3'
+        {"java.lang:type=OperatingSystem": {"name": ["Mac OS X", ...
+
+5. Get the list of attributes available for a specific mbean on a target JVM
+
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem'
+        ["Name","Arch", ...
+
+6. Get the dictionary of all attributes and values available for a specific mbean on a target JVM
+
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem?full=true'
         {"name": "Mac OS X", "arch": "x86_64" ...
 
-5. Get the attribute value available for a specific mbean on a target JVM
+7. Get the dictionary of all attributes and full history of associated attribute values in reverse chronological order for a specific mbean on a target JVM
 
-        $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem/Name
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem?full=true&limit=0'
+        {"name": ["Mac OS X", ...
+
+8. Get the dictionary of all attributes and partial history of associated attribute values in reverse chronological order for a specific mbean on a target JVM
+
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem?full=true&limit=3'
+        {"name": ["Mac OS X", ...
+
+9. Get an attribute value available for an attribute of a specific mbean on a target JVM
+
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=OperatingSystem/Name'
         "Mac OS X"
 
-6. Get the full history of attribute values in reverse chronological order
+10. Get a full history of attribute values in reverse chronological order of an attribute of a specific mbean on a target JVM
 
-        $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=ClassLoading/LoadedClassCount?history=0
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=ClassLoading/LoadedClassCount?limit=0'
         [5176,5155,5136,5119,5016]
 
-7. Get a partial history of attribute values in reverse chronological order
+11. Get a partial history of attribute values in reverse chronological order of an attribute of a specific mbean on a target JVM
 
-        $ curl -s http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=ClassLoading/LoadedClassCount?history=3
+        $ curl -s 'http://localhost:8080/jmxproxy/localhost:1123/java.lang:type=ClassLoading/LoadedClassCount?limit=3'
         [5176,5155,5136]
 
 For JMX agents that require authentication, JMXProxy allows clients to submit credentials via HTTP POST as either `application/json` or `application/x-www-form-urlencoded` content-type:
