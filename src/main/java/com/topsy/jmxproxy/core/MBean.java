@@ -14,6 +14,11 @@ import java.util.Set;
 
 public class MBean implements JsonSerializable {
     private Map<String, History> attributes;
+    private ThreadLocal<Integer> limit = new ThreadLocal<Integer>() {
+        @Override protected Integer initialValue() {
+            return -1;
+        }
+    };
 
     public MBean() {
         attributes = new HashMap<String, History>();
@@ -26,6 +31,11 @@ public class MBean implements JsonSerializable {
         }
 
         return attributes.get(attributeName);
+    }
+
+    public MBean setLimit(Integer limit) {
+        this.limit.set(limit);
+        return this;
     }
 
     public Set<String> getAttributes() {
@@ -59,9 +69,15 @@ public class MBean implements JsonSerializable {
     }
 
     private void buildJson(JsonGenerator jgen) throws IOException, JsonProcessingException {
+        int limit = this.limit.get();
+
         jgen.writeStartObject();
         for (Map.Entry<String, History>attributeEntry : attributes.entrySet()) {
-            jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getAttribute());
+            if (limit < 0) {
+                jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getAttribute());
+            } else {
+                jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getAttributes(limit));
+            }
         }
         jgen.writeEndObject();
     }

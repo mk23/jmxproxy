@@ -30,7 +30,7 @@ public class History {
     }
 
     public Attribute[] getAttributes(int limit) {
-        int size = Math.min(limit, Math.min(current, attributes.length));
+        int size = Math.min(limit != 0 ? limit : Integer.MAX_VALUE, Math.min(current, attributes.length));
         Attribute[] rval = new Attribute[size];
 
         for (int i = 0; i < size; i++) {

@@ -46,99 +46,142 @@ public class JMXProxyResource {
 
     @GET
     @Path("{host}:{port:\\d+}/{mbean}/{attribute}")
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("mbean") String mbean, @PathParam("attribute") String attribute, @QueryParam("history") @DefaultValue("-1") int history) {
+    public Response getJMXHostData(
+        @PathParam("host") String host,
+        @PathParam("port") int port,
+        @PathParam("mbean") String mbean,
+        @PathParam("attribute") String attribute,
+        @QueryParam("limit") @DefaultValue("-1") int limit
+    ) {
         LOG.debug("fetching jmx data for " + host + ":" + port + "/" + mbean + "/" + attribute);
-        return getJMXHost(host, port, mbean, attribute, history, null);
+        return getJMXHost(host, port, mbean, attribute, limit, null);
     }
 
     @POST
     @Path("{host}:{port:\\d+}/{mbean}/{attribute}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("mbean") String mbean, @PathParam("attribute") String attribute, @QueryParam("history") @DefaultValue("-1") int history, @FormParam("username") String username, @FormParam("password") String password) {
+    public Response getJMXHostData(
+        @PathParam("host") String host,
+        @PathParam("port") int port,
+        @PathParam("mbean") String mbean,
+        @PathParam("attribute") String attribute,
+        @QueryParam("limit") @DefaultValue("-1") int limit,
+        @FormParam("username") String username,
+        @FormParam("password") String password
+    ) {
         LOG.debug("fetching jmx data for " + username + "@" + host + ":" + port + "/" + mbean + "/" + attribute);
-        return getJMXHost(host, port, mbean, attribute, history, new ConnectionCredentials(username, password));
+        return getJMXHost(host, port, mbean, attribute, limit, new ConnectionCredentials(username, password));
     }
 
     @POST
     @Path("{host}:{port:\\d+}/{mbean}/{attribute}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("mbean") String mbean, @PathParam("attribute") String attribute, @QueryParam("history") @DefaultValue("-1") int history, @Valid ConnectionCredentials auth) {
+    public Response getJMXHostData(
+        @PathParam("host") String host,
+        @PathParam("port") int port,
+        @PathParam("mbean") String mbean,
+        @PathParam("attribute") String attribute,
+        @QueryParam("limit") @DefaultValue("-1") int limit,
+        @Valid ConnectionCredentials auth
+    ) {
         LOG.debug("fetching jmx data for " + auth.getUsername() + "@" + host + ":" + port + "/" + mbean + "/" + attribute);
-
-        return getJMXHost(host, port, mbean, attribute, history, auth);
+        return getJMXHost(host, port, mbean, attribute, limit, auth);
     }
 
     @GET
     @Path("{host}:{port:\\d+}/{mbean}")
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("mbean") String mbean, @QueryParam("full") @DefaultValue("false") BooleanParam full) {
+    public Response getJMXHostData(
+        @PathParam("host") String host,
+        @PathParam("port") int port,
+        @PathParam("mbean") String mbean,
+        @QueryParam("limit") @DefaultValue("-1") int limit,
+        @QueryParam("full") @DefaultValue("false") BooleanParam full
+    ) {
         LOG.debug("fetching jmx data for " + host + ":" + port + "/" + mbean + " (full:" + full.get() + ")");
-        return getJMXHost(host, port, mbean, full.get(), null);
+        return getJMXHost(host, port, mbean, full.get(), limit, null);
     }
 
     @POST
     @Path("{host}:{port:\\d+}/{mbean}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("mbean") String mbean, @QueryParam("full") @DefaultValue("false") BooleanParam full, @FormParam("username") String username, @FormParam("password") String password) {
+    public Response getJMXHostData(
+        @PathParam("host") String host,
+        @PathParam("port") int port,
+        @PathParam("mbean") String mbean,
+        @QueryParam("limit") @DefaultValue("-1") int limit,
+        @QueryParam("full") @DefaultValue("false") BooleanParam full,
+        @FormParam("username") String username,
+        @FormParam("password") String password
+    ) {
         LOG.debug("fetching jmx data for " + username + "@" + host + ":" + port + "/" + mbean + " (full:" + full.get() + ")");
-        return getJMXHost(host, port, mbean, full.get(), new ConnectionCredentials(username, password));
+        return getJMXHost(host, port, mbean, full.get(), limit, new ConnectionCredentials(username, password));
     }
 
     @POST
     @Path("{host}:{port:\\d+}/{mbean}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @PathParam("mbean") String mbean, @QueryParam("full") @DefaultValue("false") BooleanParam full, @Valid ConnectionCredentials auth) {
+    public Response getJMXHostData(
+        @PathParam("host") String host,
+        @PathParam("port") int port,
+        @PathParam("mbean") String mbean,
+        @QueryParam("limit") @DefaultValue("-1") int limit,
+        @QueryParam("full") @DefaultValue("false") BooleanParam full,
+        @Valid ConnectionCredentials auth
+    ) {
         LOG.debug("fetching jmx data for " + auth.getUsername() + "@" + host + ":" + port + "/" + mbean + " (full:" + full.get() + ")");
-
-        return getJMXHost(host, port, mbean, full.get(), auth);
+        return getJMXHost(host, port, mbean, full.get(), limit, auth);
     }
 
     @GET
     @Path("{host}:{port:\\d+}")
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @QueryParam("full") @DefaultValue("false") BooleanParam full) {
+    public Response getJMXHostData(
+        @PathParam("host") String host,
+        @PathParam("port") int port,
+        @QueryParam("limit") @DefaultValue("-1") int limit,
+        @QueryParam("full") @DefaultValue("false") BooleanParam full
+    ) {
         LOG.debug("fetching jmx data for " + host + ":" + port + " (full:" + full.get() + ")");
-        return getJMXHost(host, port, full.get(), null);
+        return getJMXHost(host, port, full.get(), limit, null);
     }
 
     @POST
     @Path("{host}:{port:\\d+}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @QueryParam("full") @DefaultValue("false") BooleanParam full, @FormParam("username") String username, @FormParam("password") String password) {
+    public Response getJMXHostData(
+        @PathParam("host") String host,
+        @PathParam("port") int port,
+        @QueryParam("limit") @DefaultValue("-1") int limit,
+        @QueryParam("full") @DefaultValue("false") BooleanParam full,
+        @FormParam("username") String username, @FormParam("password") String password
+    ) {
         LOG.debug("fetching jmx data for " + username + "@" + host + ":" + port + " (full:" + full.get() + ")");
-        return getJMXHost(host, port, full.get(), new ConnectionCredentials(username, password));
+        return getJMXHost(host, port, full.get(), limit, new ConnectionCredentials(username, password));
     }
 
     @POST
     @Path("{host}:{port:\\d+}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getJMXHostData(@PathParam("host") String host, @PathParam("port") int port, @QueryParam("full") @DefaultValue("false") BooleanParam full, @Valid ConnectionCredentials auth) {
+    public Response getJMXHostData(
+        @PathParam("host") String host,
+        @PathParam("port") int port,
+        @QueryParam("limit") @DefaultValue("-1") int limit,
+        @QueryParam("full") @DefaultValue("false") BooleanParam full,
+        @Valid ConnectionCredentials auth
+    ) {
         LOG.debug("fetching jmx data for " + auth.getUsername() + "@" + host + ":" + port + " (full:" + full.get() + ")");
-        return getJMXHost(host, port, full.get(), auth);
+        return getJMXHost(host, port, full.get(), limit, auth);
     }
 
-    private Response getJMXHost(String hostName, int port, boolean full, ConnectionCredentials auth) {
+    private Response getJMXHost(String hostName, int port, boolean full, int limit, ConnectionCredentials auth) {
         Host host = manager.getHost(hostName + ":" + port, auth);
         if (host == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        return Response.ok(full ? host : host.getMBeans()).build();
+        return Response.ok(full ? host.setLimit(limit) : host.getMBeans()).build();
     }
 
-    private Response getJMXHost(String hostName, int port, String mbeanName, boolean full, ConnectionCredentials auth) {
-        Host host = manager.getHost(hostName + ":" + port, auth);
-        if (host == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        MBean mbean = host.getMBean(mbeanName);
-        if (mbean == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        return Response.ok(full ? mbean : mbean.getAttributes()).build();
-    }
-
-    private Response getJMXHost(String hostName, int port, String mbeanName, String attribute, int history, ConnectionCredentials auth) {
+    private Response getJMXHost(String hostName, int port, String mbeanName, boolean full, int limit, ConnectionCredentials auth) {
         Host host = manager.getHost(hostName + ":" + port, auth);
         if (host == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -149,10 +192,24 @@ public class JMXProxyResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        if (history < 0) {
+        return Response.ok(full ? mbean.setLimit(limit) : mbean.getAttributes()).build();
+    }
+
+    private Response getJMXHost(String hostName, int port, String mbeanName, String attribute, int limit, ConnectionCredentials auth) {
+        Host host = manager.getHost(hostName + ":" + port, auth);
+        if (host == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        MBean mbean = host.getMBean(mbeanName);
+        if (mbean == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        if (limit < 0) {
             return Response.ok(mbean.getAttribute(attribute)).build();
         } else {
-            return Response.ok(mbean.getAttributes(attribute, history != 0 ? history : Integer.MAX_VALUE)).build();
+            return Response.ok(mbean.getAttributes(attribute, limit)).build();
         }
     }
 }

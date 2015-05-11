@@ -32,6 +32,11 @@ public class HistoryTest {
         assertTrue(history.getAttributes().length == 0);
     }
     @Test
+    public void check0ArrayZero() throws Exception {
+        History history = new History(3);
+        assertTrue(history.getAttributes(0).length == 0);
+    }
+    @Test
     public void check0ArrayTen() throws Exception {
         History history = new History(3);
         assertTrue(history.getAttributes(10).length == 0);
@@ -62,6 +67,14 @@ public class HistoryTest {
 
         history.addAttributeValue(new String("1"));
         assertArrayEquals(getAttributeValues(history.getAttributes()), target);
+    }
+    @Test
+    public void check1ArrayZero() throws Exception {
+        History history = new History(3);
+        String[] target = new String[] { new String("1") };
+
+        history.addAttributeValue(new String("1"));
+        assertArrayEquals(getAttributeValues(history.getAttributes(0)), target);
     }
     @Test
     public void check1ArrayTen() throws Exception {
@@ -105,6 +118,15 @@ public class HistoryTest {
         history.addAttributeValue(new String("1"));
         history.addAttributeValue(new String("2"));
         assertArrayEquals(getAttributeValues(history.getAttributes()), target);
+    }
+    @Test
+    public void check2ArrayZero() throws Exception {
+        History history = new History(3);
+        String[] target = new String[] { new String("2"), new String("1") };
+
+        history.addAttributeValue(new String("1"));
+        history.addAttributeValue(new String("2"));
+        assertArrayEquals(getAttributeValues(history.getAttributes(0)), target);
     }
     @Test
     public void check2ArrayTen() throws Exception {
@@ -153,6 +175,16 @@ public class HistoryTest {
         history.addAttributeValue(new String("2"));
         history.addAttributeValue(new String("3"));
         assertArrayEquals(getAttributeValues(history.getAttributes()), target);
+    }
+    @Test
+    public void check3ArrayZero() throws Exception {
+        History history = new History(3);
+        String[] target = new String[] { new String("3"), new String("2"), new String("1") };
+
+        history.addAttributeValue(new String("1"));
+        history.addAttributeValue(new String("2"));
+        history.addAttributeValue(new String("3"));
+        assertArrayEquals(getAttributeValues(history.getAttributes(0)), target);
     }
     @Test
     public void check3ArrayTen() throws Exception {
@@ -206,6 +238,17 @@ public class HistoryTest {
         history.addAttributeValue(new String("3"));
         history.addAttributeValue(new String("4"));
         assertArrayEquals(getAttributeValues(history.getAttributes()), target);
+    }
+    @Test
+    public void check4ArrayZero() throws Exception {
+        History history = new History(3);
+        String[] target = new String[] { new String("4"), new String("3"), new String("2") };
+
+        history.addAttributeValue(new String("1"));
+        history.addAttributeValue(new String("2"));
+        history.addAttributeValue(new String("3"));
+        history.addAttributeValue(new String("4"));
+        assertArrayEquals(getAttributeValues(history.getAttributes(0)), target);
     }
     @Test
     public void check4ArrayTen() throws Exception {

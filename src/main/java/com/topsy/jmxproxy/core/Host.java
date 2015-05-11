@@ -19,6 +19,11 @@ public class Host implements JsonSerializable {
     private static final Logger LOG = LoggerFactory.getLogger(Host.class);
 
     private Map<String, MBean> mbeans;
+    private ThreadLocal<Integer> limit = new ThreadLocal<Integer>() {
+        @Override protected Integer initialValue() {
+            return -1;
+        }
+    };
 
     public Host() {
         mbeans = new HashMap<String, MBean>();
@@ -31,6 +36,11 @@ public class Host implements JsonSerializable {
         }
 
         return mbeans.get(mbeanName);
+    }
+
+    public Host setLimit(Integer limit) {
+        this.limit.set(limit);
+        return this;
     }
 
     public Set<String> getMBeans() {
@@ -50,9 +60,15 @@ public class Host implements JsonSerializable {
     }
 
     public void buildJson(JsonGenerator jgen) throws IOException, JsonProcessingException {
+        int limit = this.limit.get();
+
         jgen.writeStartObject();
         for (Map.Entry<String, MBean>mbeanEntry : mbeans.entrySet()) {
-            jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue());
+            if (limit < 0) {
+                jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue());
+            } else {
+                jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue().setLimit(limit));
+            }
         }
         jgen.writeEndObject();
     }
