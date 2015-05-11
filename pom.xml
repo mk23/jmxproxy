@@ -112,8 +112,10 @@
         <version>1.7.4</version>
         <executions>
           <execution>
-            <id>default-minify</id>
-            <phase>process-resources</phase>
+            <phase>package</phase>
+            <goals>
+              <goal>minify</goal>
+            </goals>
             <configuration>
               <cssSourceDir>css</cssSourceDir>
               <cssSourceIncludes>
@@ -134,9 +136,6 @@
               <webappSourceDir>${basedir}/src/main/resources/assets</webappSourceDir>
               <webappTargetDir>${project.build.outputDirectory}/assets</webappTargetDir>
             </configuration>
-            <goals>
-              <goal>minify</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
@@ -233,6 +232,9 @@
         <executions>
           <execution>
             <phase>test</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
             <configuration>
               <rules>
                 <DependencyConvergence/>
@@ -249,9 +251,6 @@
                 </requireSameVersions>
               </rules>
             </configuration>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
