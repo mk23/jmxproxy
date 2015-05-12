@@ -596,9 +596,10 @@ var endpointHostClass = function(prefix, host) {
                                 .attr('title', 'Memory Pool "'+item.Name+'"')
                                 .data('toggle', 'tooltip')
                                 .data('placement', 'left')
+                                .data('target', item.Name)
                                 .tooltip()
                                 .click(function() {
-                                    refreshMemory(item.Name);
+                                    refreshMemory($(this).data('target'));
                                 })
                                 .append(
                                     $('<div/>')
@@ -615,9 +616,10 @@ var endpointHostClass = function(prefix, host) {
                                 .attr('title', 'Memory Pool "'+item.Name+'"')
                                 .data('toggle', 'tooltip')
                                 .data('placement', 'left')
+                                .data('target', item.Name)
                                 .tooltip()
                                 .click(function() {
-                                    refreshMemory(item.Name);
+                                    refreshMemory($(this).data('target'));
                                 })
                                 .append(
                                     $('<div/>')
