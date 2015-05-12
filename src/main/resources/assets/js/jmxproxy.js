@@ -546,8 +546,15 @@ var endpointHostClass = function(prefix, host) {
         });
     };
 
-    var gatherObjects = function() {
+    var gatherObjects = function(limit) {
         ts = new Date().getTime();
+
+        loadHistory = function(item, data, prop) {
+            mapped = _.map(data, function(v, k) {
+                return [ts - k * jmxproxyConf.cache_duration * 60 * 1000, _.has(v, prop) ? v[prop] : v];
+            }).reverse();
+            return _.isUndefined(item) ? mapped : item.concat(mapped);
+        }
 
         fetchData('/', function(data) {
             $('#summary-gc, #memory-gc, #memory-bar-hm, #memory-bar-nm').empty();
@@ -558,7 +565,8 @@ var endpointHostClass = function(prefix, host) {
                         $('#memory-gc').append(formatTime(item.CollectionTime, 2)+' on '+item.Name+' ('+item.CollectionCount+' collections)<br>');
                     });
                 } else if (data[item].lastIndexOf('java.lang:type=MemoryPool') === 0) {
-                    fetchData('/'+data[item]+'?full=true', function(item) {
+                    fetchData('/'+data[item]+'?full=true&limit='+limit, function(full) {
+                        item = _.mapObject(full, function(v, k) { return v[0]; });
                         if (item.Usage.max <= 0) {
                             return;
                         }
@@ -572,7 +580,7 @@ var endpointHostClass = function(prefix, host) {
                         } else {
                             items['memory-gr'][item.Name] = [{
                                 label: item.Name+' Memory Usage',
-                                data: [ [ts, item.Usage.used] ],
+                                data: loadHistory(undefined, full.Usage, 'used'),
                                 info: {
                                     used:      item.Usage.used,
                                     committed: item.Usage.committed,
@@ -625,7 +633,8 @@ var endpointHostClass = function(prefix, host) {
             }
         });
 
-        fetchData('/java.lang:type=ClassLoading?full=true', function(data) {
+        fetchData('/java.lang:type=ClassLoading?full=true&limit='+limit, function(full) {
+            data = _.mapObject(full, function(v, k) { return v[0]; });
             $('#summary-cl').text(data.LoadedClassCount);
             $('#summary-cu').text(data.UnloadedClassCount);
             $('#summary-ct').text(data.TotalLoadedClassCount);
@@ -633,18 +642,19 @@ var endpointHostClass = function(prefix, host) {
             $('#overview-cls-cu').text(data.UnloadedClassCount);
             $('#overview-cls-ct').text(data.TotalLoadedClassCount);
 
-            items['classes-gr'][0].data.push([ts, data.LoadedClassCount]);
-            items['classes-gr'][1].data.push([ts, data.TotalLoadedClassCount]);
+            items['classes-gr'][0].data = loadHistory(items['classes-gr'][0].data, full.LoadedClassCount);
+            items['classes-gr'][1].data = loadHistory(items['classes-gr'][1].data, full.TotalLoadedClassCount);
             refreshGraphs('classes-gr');
 
-            items['overview-cls-gr'][0].data.push([ts, data.LoadedClassCount]);
+            items['overview-cls-gr'][0].data = loadHistory(items['overview-cls-gr'][0].data, full.LoadedClassCount);
             refreshGraphs('overview-cls-gr', true);
         });
         fetchData('/java.lang:type=Compilation?full=true', function(data) {
             $('#summary-jc').text(data.Name);
             $('#summary-jt').text(formatTime(data.TotalCompilationTime, 2));
         });
-        fetchData('/java.lang:type=Memory?full=true', function(data) {
+        fetchData('/java.lang:type=Memory?full=true&limit='+limit, function(full) {
+            data = _.mapObject(full, function(v, k) { return v[0]; });
             $('#overview-mem-hh').text(formatSize(data.HeapMemoryUsage.used));
             $('#overview-mem-hc').text(formatSize(data.HeapMemoryUsage.committed));
             $('#overview-mem-hm').text(formatSize(data.HeapMemoryUsage.max));
@@ -658,11 +668,11 @@ var endpointHostClass = function(prefix, host) {
             $('#summary-hm').text(formatSize(data.HeapMemoryUsage.max));
             $('#summary-hf').text(data.ObjectPendingFinalizationCount+' object(s)');
 
-            items['overview-mem-gr'][0].data.push([ts, data.HeapMemoryUsage.used]);
+            items['overview-mem-gr'][0].data = loadHistory(items['overview-mem-gr'][0].data, full.HeapMemoryUsage, 'used');
             refreshGraphs('overview-mem-gr', true, formatSize);
 
-            items['memory-gr']['hm'][0].data.push([ts, data.HeapMemoryUsage.used]);
-            items['memory-gr']['nm'][0].data.push([ts, data.NonHeapMemoryUsage.used]);
+            items['memory-gr']['hm'][0].data = loadHistory(items['memory-gr']['hm'][0].data, full.HeapMemoryUsage, 'used');
+            items['memory-gr']['nm'][0].data = loadHistory(items['memory-gr']['nm'][0].data, full.NonHeapMemoryUsage, 'used');
             items['memory-gr']['hm'][0].info = {
                 used:      data.HeapMemoryUsage.used,
                 committed: data.HeapMemoryUsage.committed,
@@ -675,7 +685,8 @@ var endpointHostClass = function(prefix, host) {
             };
             refreshGraphs('memory-gr', true, formatSize);
         });
-        fetchData('/java.lang:type=OperatingSystem?full=true', function(data) {
+        fetchData('/java.lang:type=OperatingSystem?full=true&limit='+limit, function(full) {
+            data = _.mapObject(full, function(v, k) { return v[0]; });
             $('#summary-pt').text(formatTime(data.ProcessCpuTime / 1000000, 3));
             $('#summary-mr').text(formatSize(data.TotalPhysicalMemorySize));
             $('#summary-ml').text(formatSize(data.FreePhysicalMemorySize));
@@ -689,7 +700,7 @@ var endpointHostClass = function(prefix, host) {
             $('#overview-cpu-up').text(formatPercent(data.ProcessCpuLoad));
             $('#overview-cpu-us').text(formatPercent(data.SystemCpuLoad));
 
-            items['overview-cpu-gr'][0].data.push([ts, data.ProcessCpuLoad]);
+            items['overview-cpu-gr'][0].data = loadHistory(items['overview-cpu-gr'][0].data, full.ProcessCpuLoad);
             refreshGraphs('overview-cpu-gr', true, formatPercent);
         });
         fetchData('/java.lang:type=Runtime?full=true', function(data) {
@@ -698,7 +709,8 @@ var endpointHostClass = function(prefix, host) {
             $('#summary-vv').text(data.VmVendor);
             $('#summary-vn').text(data.Name);
         });
-        fetchData('/java.lang:type=Threading?full=true', function(data) {
+        fetchData('/java.lang:type=Threading?full=true&limit='+limit, function(full) {
+            data = _.mapObject(full, function(v, k) { return v[0]; });
             $('#summary-tc').text(data.ThreadCount);
             $('#summary-tp').text(data.PeakThreadCount);
             $('#summary-td').text(data.DaemonThreadCount);
@@ -707,15 +719,15 @@ var endpointHostClass = function(prefix, host) {
             $('#overview-thr-tp').text(data.PeakThreadCount);
             $('#overview-thr-tt').text(data.TotalStartedThreadCount);
 
-            items['threads-gr'][0].data.push([ts, data.ThreadCount]);
-            items['threads-gr'][1].data.push([ts, data.PeakThreadCount]);
+            items['threads-gr'][0].data = loadHistory(items['threads-gr'][0].data, full.ThreadCount);
+            items['threads-gr'][1].data = loadHistory(items['threads-gr'][1].data, full.PeakThreadCount);
             refreshGraphs('threads-gr');
 
-            items['overview-thr-gr'][0].data.push([ts, data.ThreadCount]);
+            items['overview-thr-gr'][0].data = loadHistory(items['overview-thr-gr'][0].data, full.ThreadCount);
             refreshGraphs('overview-thr-gr', true);
         });
 
-        setTimeout(gatherObjects, jmxproxyConf.cache_duration * 60 * 1000);
+        setTimeout(function() { gatherObjects(1); }, jmxproxyConf.cache_duration * 60 * 1000);
     };
 
     var fetchName = function() {
@@ -763,7 +775,7 @@ var endpointHostClass = function(prefix, host) {
             $('#summary-cn, #navbar-label').text(fetchName());
             $('a[data-toggle="tab"]:first').tab('show');
 
-            setTimeout(gatherObjects, 0);
+            setTimeout(function() { gatherObjects(0) }, 0);
         });
     };
 
