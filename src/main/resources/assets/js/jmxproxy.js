@@ -542,7 +542,7 @@ var endpointHostClass = function(prefix, host) {
             });
             $('#mbean-title').text(bean);
             $('#mbean-reset').click(function() {
-                buildBeanData(bean);
+                buildBeanData($('#mbean-title').text());
             });
         });
     };
