@@ -137,21 +137,22 @@ var endpointHostClass = function(prefix, host) {
             };
 
             var addHeader = function(tree, name) {
-                find = _.find(tree, function(o, i) {
-                    return o.text == name;
-                });
+                find = _.findIndex(tree, {text: name});
+                item = {
+                    text: name,
+                    type: 'folder',
+                    tree: [],
+                };
 
-                if (find) {
-                    return find;
-                } else {
-                    item = {
-                        text: name,
-                        type: 'folder',
-                        tree: [],
-                    };
+                if (find == -1) {
                     tree.push(item);
-                    return item;
+                } else if (tree[find].type == 'item') {
+                    tree.splice(find, 0, item);
+                } else {
+                    item = tree[find];
                 }
+
+                return item;
             };
 
             for (bean in data) {
