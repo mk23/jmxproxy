@@ -540,9 +540,16 @@ var endpointHostClass = function(prefix, host) {
                 dataSource: mainDataSource,
                 list_columnRendered: mainColBuilder,
             });
-            $('#mbean-title').text(bean);
-            $('#mbean-reset').click(function() {
-                buildBeanData($('#mbean-title').text());
+            $('#mbean-title')
+            .text(bean.length > 75 ? bean.substring(0, 72) + '...' : bean)
+            .attr('title', bean)
+            .data('toggle', 'tooltip')
+            .data('placement', 'bottom')
+            .tooltip();
+            $('#mbean-reset')
+            .data('target', bean)
+            .click(function() {
+                buildBeanData($(this).data('target'));
             });
         });
     };
