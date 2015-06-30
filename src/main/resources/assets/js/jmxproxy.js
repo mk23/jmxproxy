@@ -903,7 +903,7 @@ function formatTime(s, n) {
 
     v = s % 60000;
     m = (s - v) / 60000;
-    s = (v / 1000).toFixed($.type(n) !== 'undefined' ? n : 0);
+    s = (v / 1000).toFixed(_.isUndefined(n) ? 0 : n);
 
     parts = [];
     if (d) {
