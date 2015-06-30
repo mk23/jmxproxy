@@ -802,13 +802,31 @@ var endpointHostClass = function(prefix, host) {
 $(document).ready(function() {
     prefix = window.location.pathname.replace(/\/(?:index\.html)?$/, '');
 
-    $(window).resize(function() {
+    $(window)
+    .resize(function() {
         loader = $('#endpoint-loader');
         loader.css({
             'margin-top': '-' + Math.round(loader.height() / 2) + 'px',
             'margin-left': '-' + Math.round(loader.width() / 2) + 'px',
         });
-    }).trigger('resize');
+    })
+    .trigger('resize')
+    .keyup(function(e) {
+        if (e.which == 37) { // left
+            if ($('#endpoint-tabs li.active').is(':first-child')) {
+                $('#endpoint-tabs a:last').tab('show');
+            } else {
+                $('#endpoint-tabs li.active').prev().find('a').tab('show');
+            }
+        } else if (e.which == 39) { // right
+            if ($('#endpoint-tabs li.active').is(':last-child')) {
+                $('#endpoint-tabs a:first').tab('show');
+            } else {
+                $('#endpoint-tabs li.active').next().find('a').tab('show');
+            }
+        }
+    });
+
 
     $('#endpoint-input')
     .keypress(function(e) {
