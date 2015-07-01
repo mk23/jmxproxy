@@ -879,6 +879,16 @@ $(document).ready(function() {
         }
     });
 
+    $('#overview-mem-gr').parent().parent().click(function() {
+        $('#endpoint-tabs a[href="#memory"]').tab('show');
+    });
+    $('#overview-thr-gr').parent().parent().click(function() {
+        $('#endpoint-tabs a[href="#threads"]').tab('show');
+    });
+    $('#overview-cls-gr').parent().parent().click(function() {
+        $('#endpoint-tabs a[href="#classes"]').tab('show');
+    });
+
     $('form').submit(function(e) {
         return false;
     });
