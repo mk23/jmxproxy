@@ -1,3 +1,45 @@
+jmxproxy (3.2.0) stable; urgency=medium
+
+  * Tagging 3.2.0
+  * [e0b99d5] Issue #65: Update haproxy example documentation to reflect
+    the api path.
+  * [e9adbd9] Issue #64: Handle clicks on overview graphs by opening the
+    associated detail tab.
+  * [352119d] Issue #63: Use left/right arrow keys for tab navigation.
+  * [17d3896] Issue #61: Truncate mbean title to 75 characters to avoid
+    element wrapping.
+  * [bb0ce34] Use _.isUndefined() instead of $.type() === 'undefined'.
+  * [14f635d] Issue #62: Use the current attribute table title for
+    refresh button target.
+  * [61f5589] Issue #56: Detect beans with children and data and set up
+    a folder as well as an item in the Web UI mbean tree.
+  * [61115a9] Issue #55: Upgrade fuelux to 3.6.3.
+  * [689402a] Issue #55: Upgrade bootstrap to 3.3.5.
+  * [50b0716] Issue #55: Upgrade flot.tooltip to 0.8.5.
+  * [45aaa9f] Issue #60: Set a data attribute on the memory pool
+    progressbar and use it in the click handler.
+  * [8859ab9] Issue #55: Upgrade font-awesome to 4.3.0.
+  * [dc76034] Issue #55: Upgrade jquery to 1.11.3.
+  * [ef3d401] Issue #57: Load historic attribute values in the web ui
+    graphs.
+  * [f412178] Issue #55: Upgrade underscore to 1.8.3.
+  * [52f2d9a] Issue #59: Move minifying to package phase.
+  * [f8f41d0] Issue #58: Update java package names to com.github.mk23
+    base.
+  * [bfdefc8] Issue #57: Add documentation for host and mbean history
+    request usage.
+  * [5e9289d] Issue #57: Support attribute history in host and mbean
+    requests as well.
+  * [ddbf330] Issue #57: Add attribute history documentation.
+  * [a207b0f] Issue #57: Add attribute history tests.
+  * [b706f4a] Issue #57: API implementation for attribute history.
+  * [be89568] Issue #57: Add request query param for attribute history.
+  * [d23a033] Issue #57: Add configuration for attribute history.
+  * [b95289a] Issue #54: Update Dropwizard to 0.8.1 in documentation.
+  * [5b7dd75] Issue #54: Update Dropwizard to 0.8.1.
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Wed, 01 Jul 2015 19:19:39 -0700
+
 jmxproxy (3.1.2) stable; urgency=medium
 
   * Tagging 3.1.2
