@@ -205,7 +205,7 @@ Because JMXProxy caches results for a configurable amount of time to quickly ser
 
 ```conf
 listen  SRV_JMXPROXY:8080       :8080
-        balance         uri     depth 1
+        balance         uri     depth 2
 
         cookie          SRVID   insert indirect
 
