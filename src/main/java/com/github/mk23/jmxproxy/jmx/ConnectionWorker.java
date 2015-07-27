@@ -6,8 +6,7 @@ import com.github.mk23.jmxproxy.core.MBean;
 
 import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -94,15 +93,20 @@ public class ConnectionWorker {
             if (host == null) {
                 host = new Host();
             }
+            HashSet<String> actualMBeans = new HashSet<>();
+
             for (String domainName : server.getDomains()) {
                 LOG.debug("discovered domain " + domainName);
 
                 try {
                     for (ObjectName mbeanName : server.queryNames(new ObjectName(domainName + ":*"), null)) {
                         LOG.debug("discovered mbean " + mbeanName);
-
                         MBean mbean = host.addMBean(domainName, mbeanName.toString());
+
                         try {
+                            LOG.debug("Add " + mbeanName.toString() +" to actual mbeans");
+                            actualMBeans.add(mbeanName.toString());
+
                             for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {
                                 if (attributeObject.isReadable()) {
                                     try {
@@ -133,11 +137,26 @@ public class ConnectionWorker {
                     LOG.error("invalid object name: " + domainName + ":*", e);
                 }
             }
+            // remove outdated MBeams
+            HashSet<String> mbeansToRemove = new HashSet<>();
 
+            for (String mbeanName : host.getMBeans()) {
+                if (!actualMBeans.contains(mbeanName)) {
+                    LOG.debug("Mark " + mbeanName + " as outdated.");
+                    mbeansToRemove.add(mbeanName);
+                }
+            }
+
+            for (String outdatedMBean : mbeansToRemove) {
+                host.removeMBeam(outdatedMBean);
+                LOG.debug("Remove mbean" + outdatedMBean + " as outdated.");
+            }
             cacheTime = System.currentTimeMillis();
         } catch (IOException e) {
             host = null;
             LOG.error("communication failure with " + url, e);
+        } catch (Exception e) {
+            LOG.error("Unexpected error: ", e);
         } finally {
             if (connection != null) {
                 try {
