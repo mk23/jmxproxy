@@ -38,6 +38,10 @@ public class Host implements JsonSerializable {
         return mbeans.get(mbeanName);
     }
 
+    public void removeMBeam(String mbeanName) {
+        mbeans.remove(mbeanName);
+    }
+
     public Host setLimit(Integer limit) {
         this.limit.set(limit);
         return this;
