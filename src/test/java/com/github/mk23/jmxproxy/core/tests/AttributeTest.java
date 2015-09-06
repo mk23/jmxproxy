@@ -9,11 +9,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
+import java.lang.management.ManagementFactory;
+
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.lang.management.ManagementFactory;
 
 import javax.management.ObjectName;
 
@@ -25,7 +25,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class AttributeTest {
-    private final ObjectMapper om = new ObjectMapper();
+    private final ObjectMapper om   = new ObjectMapper();
 
     private final String validHost  = "localhost:" + System.getProperty("com.sun.management.jmxremote.port");
     private final String validMBean = "AttributeTest:type=test";
