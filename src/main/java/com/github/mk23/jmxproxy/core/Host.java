@@ -38,7 +38,11 @@ public class Host implements JsonSerializable {
         return mbeans.get(mbeanName);
     }
 
+<<<<<<< Updated upstream
     public void removeMBeam(String mbeanName) {
+=======
+    public void removeMBean(String mbeanName) {
+>>>>>>> Stashed changes
         mbeans.remove(mbeanName);
     }
 

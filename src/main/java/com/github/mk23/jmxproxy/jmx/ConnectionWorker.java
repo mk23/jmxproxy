@@ -137,7 +137,7 @@ public class ConnectionWorker {
                     LOG.error("invalid object name: " + domainName + ":*", e);
                 }
             }
-            // remove outdated MBeams
+            // remove outdated MBeans
             HashSet<String> mbeansToRemove = new HashSet<>();
 
             for (String mbeanName : host.getMBeans()) {
@@ -148,7 +148,7 @@ public class ConnectionWorker {
             }
 
             for (String outdatedMBean : mbeansToRemove) {
-                host.removeMBeam(outdatedMBean);
+                host.removeMBean(outdatedMBean);
                 LOG.debug("Remove mbean" + outdatedMBean + " as outdated.");
             }
             cacheTime = System.currentTimeMillis();
