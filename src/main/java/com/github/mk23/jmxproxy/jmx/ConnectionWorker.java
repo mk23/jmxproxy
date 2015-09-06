@@ -6,7 +6,10 @@ import com.github.mk23.jmxproxy.core.MBean;
 
 import java.io.IOException;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -93,7 +96,7 @@ public class ConnectionWorker {
             if (host == null) {
                 host = new Host();
             }
-            HashSet<String> actualMBeans = new HashSet<>();
+            Set<String> freshMBeans = new HashSet<String>();
 
             for (String domainName : server.getDomains()) {
                 LOG.debug("discovered domain " + domainName);
@@ -101,12 +104,10 @@ public class ConnectionWorker {
                 try {
                     for (ObjectName mbeanName : server.queryNames(new ObjectName(domainName + ":*"), null)) {
                         LOG.debug("discovered mbean " + mbeanName);
+                        freshMBeans.add(mbeanName.toString());
+
                         MBean mbean = host.addMBean(domainName, mbeanName.toString());
-
                         try {
-                            LOG.debug("Add " + mbeanName.toString() +" to actual mbeans");
-                            actualMBeans.add(mbeanName.toString());
-
                             for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {
                                 if (attributeObject.isReadable()) {
                                     try {
@@ -137,20 +138,14 @@ public class ConnectionWorker {
                     LOG.error("invalid object name: " + domainName + ":*", e);
                 }
             }
-            // remove outdated MBeans
-            HashSet<String> mbeansToRemove = new HashSet<>();
 
-            for (String mbeanName : host.getMBeans()) {
-                if (!actualMBeans.contains(mbeanName)) {
-                    LOG.debug("Mark " + mbeanName + " as outdated.");
-                    mbeansToRemove.add(mbeanName);
-                }
+            Set<String> staleMBeans = new HashSet<String>(host.getMBeans());
+            staleMBeans.removeAll(freshMBeans);
+            for (String mbeanName : staleMBeans) {
+                host.removeMBean(mbeanName);
+                LOG.debug("removed stale mbean " + mbeanName);
             }
 
-            for (String outdatedMBean : mbeansToRemove) {
-                host.removeMBean(outdatedMBean);
-                LOG.debug("Remove mbean" + outdatedMBean + " as outdated.");
-            }
             cacheTime = System.currentTimeMillis();
         } catch (IOException e) {
             host = null;
