@@ -38,36 +38,41 @@ public class JMXProxyConfiguration extends Configuration {
         public long getCleanInterval() {
             return cleanInterval;
         }
-        public void setCleanInterval(long cleanInterval) {
+        public JMXProxyApplicationConfiguration setCleanInterval(long cleanInterval) {
             this.cleanInterval = cleanInterval;
+            return this;
         }
 
         public long getCacheDuration() {
             return cacheDuration;
         }
-        public void setCacheDuration(long cacheDuration) {
+        public JMXProxyApplicationConfiguration setCacheDuration(long cacheDuration) {
             this.cacheDuration = cacheDuration;
+            return this;
         }
 
         public long getAccessDuration() {
             return accessDuration;
         }
-        public void setAccessDuration(long accessDuration) {
+        public JMXProxyApplicationConfiguration setAccessDuration(long accessDuration) {
             this.accessDuration = accessDuration;
+            return this;
         }
 
         public int getHistorySize() {
             return historySize;
         }
-        public void setHistorySize(int historySize) {
+        public JMXProxyApplicationConfiguration setHistorySize(int historySize) {
             this.historySize = historySize;
+            return this;
         }
 
         public List<String> getAllowedEndpoints() {
             return allowedEndpoints;
         }
-        public void setAllowedEndpoints(List<String> allowedEndpoints) {
+        public JMXProxyApplicationConfiguration setAllowedEndpoints(List<String> allowedEndpoints) {
             this.allowedEndpoints = allowedEndpoints;
+            return this;
         }
     }
 
