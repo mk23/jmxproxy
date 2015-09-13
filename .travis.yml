@@ -4,6 +4,13 @@ language: java
 
 install: /bin/true
 script: mvn clean package
+after_success:
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site init'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site config user.name "$(curl -s https://api.github.com/user?access_token=${GH_OAUTH2} | jq .name)"'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site config user.email "$(curl -s https://api.github.com/user?access_token=${GH_OAUTH2} | jq .email)"'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site add .'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site commit -m "Deploy site from https://travis-ci.org/${TRAVIS_REPO_SLUG}/builds/${TRAVIS_BUILD_ID}"'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site push --force --quiet "https://${GH_OAUTH2}@github.com/${TRAVIS_REPO_SLUG}.git" master:gh-pages'
 
 branches:
   only:
