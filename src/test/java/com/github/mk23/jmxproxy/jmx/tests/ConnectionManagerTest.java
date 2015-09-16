@@ -127,7 +127,7 @@ public class ConnectionManagerTest {
     /* Custom MBean tests */
     @Test
     public void checkValidHostRemovedMBean() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration().setCacheDuration(Duration.seconds(60))); // 60 second refresh
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration().setCacheDuration(Duration.seconds(3)));
 
         assertNotNull(manager.getHost(validHost).getMBean(localMBean));
 
@@ -135,7 +135,7 @@ public class ConnectionManagerTest {
             new ObjectName(localMBean)
         );
 
-        java.lang.Thread.sleep(Duration.seconds(65).toMilliseconds()); // sleep 65 seconds to allow cache refresh
+        java.lang.Thread.sleep(Duration.seconds(5).toMilliseconds());
 
         assertNull(manager.getHost(validHost).getMBean(localMBean));
     }
