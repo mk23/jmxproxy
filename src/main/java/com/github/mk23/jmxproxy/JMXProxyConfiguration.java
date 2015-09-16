@@ -27,9 +27,9 @@ public class JMXProxyConfiguration extends Configuration {
         @JsonProperty
         private Duration cacheDuration = Duration.minutes(5);
 
-        @Min(1)
+        @Valid
         @JsonProperty
-        private long accessDuration = 30;
+        private Duration accessDuration = Duration.minutes(30);
 
         @Min(1)
         @JsonProperty
@@ -54,10 +54,10 @@ public class JMXProxyConfiguration extends Configuration {
             return this;
         }
 
-        public long getAccessDuration() {
+        public Duration getAccessDuration() {
             return accessDuration;
         }
-        public JMXProxyApplicationConfiguration setAccessDuration(long accessDuration) {
+        public JMXProxyApplicationConfiguration setAccessDuration(Duration accessDuration) {
             this.accessDuration = accessDuration;
             return this;
         }

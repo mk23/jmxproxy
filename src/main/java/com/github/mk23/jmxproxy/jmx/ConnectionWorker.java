@@ -68,7 +68,7 @@ public class ConnectionWorker {
     }
 
     public boolean isExpired(long accessDuration) {
-        return System.currentTimeMillis() - accessTime > accessDuration * 60 * 1000;
+        return System.currentTimeMillis() - accessTime > accessDuration;
     }
 
     public void shutdown() {
