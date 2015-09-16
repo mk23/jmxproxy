@@ -3,6 +3,8 @@ package com.github.mk23.jmxproxy.jmx.tests;
 import com.github.mk23.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
 import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
+import io.dropwizard.util.Duration;
+
 import java.lang.management.ManagementFactory;
 
 import java.util.Arrays;
@@ -125,7 +127,7 @@ public class ConnectionManagerTest {
     /* Custom MBean tests */
     @Test
     public void checkValidHostRemovedMBean() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration().setCacheDuration(1)); // 60 second refresh
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration().setCacheDuration(Duration.seconds(60))); // 60 second refresh
 
         assertNotNull(manager.getHost(validHost).getMBean(localMBean));
 
@@ -133,7 +135,7 @@ public class ConnectionManagerTest {
             new ObjectName(localMBean)
         );
 
-        java.lang.Thread.sleep(65000); // sleep 65 seconds to allow cache refresh
+        java.lang.Thread.sleep(Duration.seconds(65).toMilliseconds()); // sleep 65 seconds to allow cache refresh
 
         assertNull(manager.getHost(validHost).getMBean(localMBean));
     }

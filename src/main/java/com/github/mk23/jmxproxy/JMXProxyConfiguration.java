@@ -3,7 +3,10 @@ package com.github.mk23.jmxproxy;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.dropwizard.Configuration;
+
 import io.dropwizard.jackson.JsonSnakeCase;
+
+import io.dropwizard.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,9 +23,9 @@ public class JMXProxyConfiguration extends Configuration {
         @JsonProperty
         private long cleanInterval = 1;
 
-        @Min(0)
+        @Valid
         @JsonProperty
-        private long cacheDuration = 5;
+        private Duration cacheDuration = Duration.minutes(5);
 
         @Min(1)
         @JsonProperty
@@ -43,10 +46,10 @@ public class JMXProxyConfiguration extends Configuration {
             return this;
         }
 
-        public long getCacheDuration() {
+        public Duration getCacheDuration() {
             return cacheDuration;
         }
-        public JMXProxyApplicationConfiguration setCacheDuration(long cacheDuration) {
+        public JMXProxyApplicationConfiguration setCacheDuration(Duration cacheDuration) {
             this.cacheDuration = cacheDuration;
             return this;
         }

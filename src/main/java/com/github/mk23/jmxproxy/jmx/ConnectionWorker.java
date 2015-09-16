@@ -53,7 +53,7 @@ public class ConnectionWorker {
             public void run() {
                 fetchJMXValues();
             }
-        }, cacheDuration, cacheDuration, TimeUnit.MINUTES);
+        }, cacheDuration, cacheDuration, TimeUnit.MILLISECONDS);
 
         fetchJMXValues();
     }

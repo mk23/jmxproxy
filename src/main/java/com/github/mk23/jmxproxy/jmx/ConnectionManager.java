@@ -57,7 +57,7 @@ public class ConnectionManager implements Managed {
 
                 if (!hosts.containsKey(host)) {
                     LOG.info("creating new worker for " + host);
-                    hosts.put(host, new ConnectionWorker(host, auth, config.getCacheDuration(), config.getHistorySize()));
+                    hosts.put(host, new ConnectionWorker(host, auth, config.getCacheDuration().toMilliseconds(), config.getHistorySize()));
                 }
             }
 
