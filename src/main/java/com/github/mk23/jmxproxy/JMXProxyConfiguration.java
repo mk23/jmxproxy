@@ -19,9 +19,9 @@ import javax.validation.constraints.NotNull;
 public class JMXProxyConfiguration extends Configuration {
     @JsonSnakeCase
     public static class JMXProxyApplicationConfiguration {
-        @Min(1)
+        @Valid
         @JsonProperty
-        private long cleanInterval = 1;
+        private Duration cleanInterval = Duration.minutes(1);
 
         @Valid
         @JsonProperty
@@ -38,10 +38,10 @@ public class JMXProxyConfiguration extends Configuration {
         @JsonProperty
         private List<String> allowedEndpoints = new ArrayList<String>();
 
-        public long getCleanInterval() {
+        public Duration getCleanInterval() {
             return cleanInterval;
         }
-        public JMXProxyApplicationConfiguration setCleanInterval(long cleanInterval) {
+        public JMXProxyApplicationConfiguration setCleanInterval(Duration cleanInterval) {
             this.cleanInterval = cleanInterval;
             return this;
         }

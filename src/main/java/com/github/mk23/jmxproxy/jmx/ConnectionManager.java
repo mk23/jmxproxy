@@ -95,7 +95,7 @@ public class ConnectionManager implements Managed {
                 }
                 LOG.debug("end expiring stale hosts");
             }
-        }, config.getCleanInterval(), config.getCleanInterval(), TimeUnit.MINUTES);
+        }, config.getCleanInterval().toMilliseconds(), config.getCleanInterval().toMilliseconds(), TimeUnit.MILLISECONDS);
         started = true;
     }
 
