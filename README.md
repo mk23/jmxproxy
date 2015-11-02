@@ -67,17 +67,18 @@ JMXProxy itself has the following configuration parameters, which are added to t
 
 ```yaml
 jmxproxy:
-    # how often (in minutes) for the cleaner thread to
+    # how often for the cleaner thread to
     # wake up to purge unaccessed hosts
-    clean_interval: 1
+    # Time units: ns, us, ms, s, m, h, d
+    clean_interval: 1m
 
     # how long to keep unaccessed hosts before purging
     # by the cleaner thread
-    access_duration: 5
+    access_duration: 5m
 
     # how long to cache JMX attribute values before
     # reconnecting to the agent and pulling new data
-    cache_duration: 5
+    cache_duration: 5m
 
     # white list of allowed endpoints in host:port
     # format for this agent to connect to, defaulting
