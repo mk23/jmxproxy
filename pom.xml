@@ -5,10 +5,11 @@
   <groupId>com.github.mk23.jmxproxy</groupId>
   <artifactId>jmxproxy</artifactId>
   <version>3.2.0</version>
+  <packaging>jar</packaging>
 
   <name>JMXProxy</name>
   <description>JMX to HTTP Proxy</description>
-  <url>https://github.com/mk23/jmxproxy</url>
+  <url>https://mk23.github.io/jmxproxy</url>
   <inceptionYear>2011</inceptionYear>
 
   <licenses>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="${project.name}" xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+
+  <bannerLeft>
+    <name>${project.name}</name>
+  </bannerLeft>
+
+  <googleAnalyticsAccountId>67784002</googleAnalyticsAccountId>
+
+  <publishDate position="right"/>
+  <version position="right"/>
+
+
+  <body>
+    <menu name="Documentation" ref="reports"/>
+    <breadcrumbs>
+      <item name="" position="left" href="${project.ciManagement.url}" img="${project.ciManagement.url}.png"/>
+	    <item name="&#9660; .jar" position="left" href="${project.scm.url}/releases/download/${project.artifactId}.${project.version}/${project.artifactId}-${project.version}.jar"/>
+      <item name="&#9660; .tgz" position="left" href="${project.scm.url}/tarball/${project.artifactId}.${project.version}"/>
+    </breadcrumbs>
+  </body>
+
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.4</version>
+  </skin>
+
+  <custom>
+    <fluidoSkin>
+      <leftColumnClass>span3</leftColumnClass>
+      <bodyColumnClass>span9</bodyColumnClass>
+
+      <topBarEnabled>false</topBarEnabled>
+
+      <sideBarEnabled>true</sideBarEnabled>
+
+      <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
+
+      <copyrightClass>pull-right</copyrightClass>
+
+      <breadcrumbDivider>|</breadcrumbDivider>
+
+      <gitHub>
+        <projectId>mk23/jmxproxy</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>red</ribbonColor>
+      </gitHub>
+    </fluidoSkin>
+  </custom>
+
+</project>
