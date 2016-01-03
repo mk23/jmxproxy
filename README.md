@@ -353,4 +353,4 @@ Libraries
 
 License
 -------
-[MIT](http://mk23.mit-license.org/2011-2015/license.html)
+[MIT](http://mk23.mit-license.org/2011-2016/license.html)
