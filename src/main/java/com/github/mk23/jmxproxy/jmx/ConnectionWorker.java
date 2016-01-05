@@ -150,8 +150,6 @@ public class ConnectionWorker {
         } catch (IOException e) {
             host = null;
             LOG.error("communication failure with " + url, e);
-        } catch (Exception e) {
-            LOG.error("Unexpected error: ", e);
         } finally {
             if (connection != null) {
                 try {
