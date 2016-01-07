@@ -2,8 +2,13 @@ package com.github.mk23.jmxproxy.jmx.tests;
 
 import com.github.mk23.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
 import com.github.mk23.jmxproxy.jmx.ConnectionManager;
+import com.github.mk23.jmxproxy.jmx.ConnectionCredentials;
 
 import io.dropwizard.util.Duration;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
 import java.lang.management.ManagementFactory;
 
@@ -20,6 +25,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ConnectionManagerTest {
+    private final String passwdFile       = System.getProperty("com.sun.management.jmxremote.password.file");
+
     private final String validHost        = "localhost:" + System.getProperty("com.sun.management.jmxremote.port");
     private final String invalidHost      = "localhost:0";
 
@@ -30,6 +37,8 @@ public class ConnectionManagerTest {
     private final String validAttribute   = "Name";
     private final String invalidAttribute = "InvalidAttribute";
 
+    private final ConnectionCredentials validAuth;
+
     public interface ConnectionManagerTestJMXMBean {
     }
 
@@ -37,6 +46,13 @@ public class ConnectionManagerTest {
     }
 
     public ConnectionManagerTest() throws Exception {
+        if (passwdFile != null) {
+            String[] creds = new BufferedReader(new FileReader(new File(passwdFile))).readLine().split("\\s+");
+            validAuth = new ConnectionCredentials(creds[0], creds[1]);
+        } else {
+            validAuth = null;
+        }
+
         try {
             ManagementFactory.getPlatformMBeanServer().registerMBean(
                 new ConnectionManagerTestJMX(), new ObjectName(localMBean)
@@ -50,14 +66,14 @@ public class ConnectionManagerTest {
     public void checkValidHost() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
 
-        assertNotNull(manager.getHost(validHost));
+        assertNotNull(manager.getHost(validHost, validAuth));
     }
 
     @Test
     public void checkInvalidHost() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
 
-        assertNull(manager.getHost(invalidHost));
+        assertNull(manager.getHost(invalidHost, validAuth));
     }
 
     @Test
@@ -67,7 +83,7 @@ public class ConnectionManagerTest {
 
         final ConnectionManager manager = new ConnectionManager(serviceConfig);
 
-        assertNotNull(manager.getHost(validHost));
+        assertNotNull(manager.getHost(validHost, validAuth));
     }
 
     @Test(expected=WebApplicationException.class)
@@ -77,7 +93,7 @@ public class ConnectionManagerTest {
 
         final ConnectionManager manager = new ConnectionManager(serviceConfig);
 
-        manager.getHost(invalidHost);
+        manager.getHost(invalidHost, validAuth);
     }
 
     /* MBean tests */
@@ -85,21 +101,21 @@ public class ConnectionManagerTest {
     public void checkValidHostMBeans() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
 
-        assertTrue(manager.getHost(validHost).getMBeans().contains(validMBean));
+        assertTrue(manager.getHost(validHost, validAuth).getMBeans().contains(validMBean));
     }
 
     @Test
     public void checkValidHostValidMBean() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
 
-        assertNotNull(manager.getHost(validHost).getMBean(validMBean));
+        assertNotNull(manager.getHost(validHost, validAuth).getMBean(validMBean));
     }
 
     @Test
     public void checkValidHostInvalidMBean() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
 
-        assertNull(manager.getHost(validHost).getMBean(invalidMBean));
+        assertNull(manager.getHost(validHost, validAuth).getMBean(invalidMBean));
     }
 
     /* Attribute tests */
@@ -107,21 +123,21 @@ public class ConnectionManagerTest {
     public void checkValidHostValidMBeanAttributes() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
 
-        assertTrue(manager.getHost(validHost).getMBean(validMBean).getAttributes().contains(validAttribute));
+        assertTrue(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttributes().contains(validAttribute));
     }
 
     @Test
     public void checkValidHostValidMBeanValidAttribute() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
 
-        assertNotNull(manager.getHost(validHost).getMBean(validMBean).getAttribute(validAttribute));
+        assertNotNull(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(validAttribute));
     }
 
     @Test
     public void checkValidHostValidMBeanInvalidAttribute() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
 
-        assertNull(manager.getHost(validHost).getMBean(validMBean).getAttribute(invalidAttribute));
+        assertNull(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(invalidAttribute));
     }
 
     /* Custom MBean tests */
@@ -129,7 +145,7 @@ public class ConnectionManagerTest {
     public void checkValidHostRemovedMBean() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration().setCacheDuration(Duration.seconds(3)));
 
-        assertNotNull(manager.getHost(validHost).getMBean(localMBean));
+        assertNotNull(manager.getHost(validHost, validAuth).getMBean(localMBean));
 
         ManagementFactory.getPlatformMBeanServer().unregisterMBean(
             new ObjectName(localMBean)
@@ -137,6 +153,6 @@ public class ConnectionManagerTest {
 
         java.lang.Thread.sleep(Duration.seconds(5).toMilliseconds());
 
-        assertNull(manager.getHost(validHost).getMBean(localMBean));
+        assertNull(manager.getHost(validHost, validAuth).getMBean(localMBean));
     }
 }

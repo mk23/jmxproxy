@@ -1,12 +1,16 @@
 package com.github.mk23.jmxproxy.core.tests;
 
 import com.github.mk23.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
+import com.github.mk23.jmxproxy.jmx.ConnectionCredentials;
 import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 import java.lang.management.ManagementFactory;
@@ -27,10 +31,13 @@ import static org.junit.Assert.assertThat;
 public class AttributeTest {
     private final ObjectMapper om   = new ObjectMapper();
 
+    private final String passwdFile = System.getProperty("com.sun.management.jmxremote.password.file");
+
     private final String validHost  = "localhost:" + System.getProperty("com.sun.management.jmxremote.port");
     private final String validMBean = "AttributeTest:type=test";
 
     private final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+    private final ConnectionCredentials validAuth;
 
     public interface AttributeTestJMXMBean {
         Object getNullValue();
@@ -116,6 +123,13 @@ public class AttributeTest {
     }
 
     public AttributeTest() throws Exception {
+        if (passwdFile != null) {
+            String[] creds = new BufferedReader(new FileReader(new File(passwdFile))).readLine().split("\\s+");
+            validAuth = new ConnectionCredentials(creds[0], creds[1]);
+        } else {
+            validAuth = null;
+        }
+
         try {
             ManagementFactory.getPlatformMBeanServer().registerMBean(
                 new AttributeTestJMX(), new ObjectName(validMBean)
@@ -137,7 +151,7 @@ public class AttributeTest {
     public void checkNull() throws Exception {
         final String attributeKey = "NullValue";
         final String expectedResult = new String("null");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check null serialization", acquiredResult, is(expectedResult));
     }
@@ -146,7 +160,7 @@ public class AttributeTest {
     public void checkBoolean() throws Exception {
         final String attributeKey = "BooleanValue";
         final String expectedResult = new String("true");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check boolean serialization", acquiredResult, is(expectedResult));
     }
@@ -155,7 +169,7 @@ public class AttributeTest {
     public void checkBoxedBooleanArray() throws Exception {
         final String attributeKey = "BoxedBooleanArrayValue";
         final String expectedResult = jsonFixture("fixtures/boxed_boolean_array.json");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check boolean array serialization", acquiredResult, is(expectedResult));
     }
@@ -164,7 +178,7 @@ public class AttributeTest {
     public void checkInt() throws Exception {
         final String attributeKey = "IntValue";
         final String expectedResult = new String("1");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check int serialization", acquiredResult, is(expectedResult));
     }
@@ -173,7 +187,7 @@ public class AttributeTest {
     public void checkBoxedIntegerArray() throws Exception {
         final String attributeKey = "BoxedIntegerArrayValue";
         final String expectedResult = jsonFixture("fixtures/boxed_integer_array.json");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check integer array serialization", acquiredResult, is(expectedResult));
     }
@@ -182,7 +196,7 @@ public class AttributeTest {
     public void checkDouble() throws Exception {
         final String attributeKey = "DoubleValue";
         final String expectedResult = new String("1.23");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check double serialization", acquiredResult, is(expectedResult));
     }
@@ -191,7 +205,7 @@ public class AttributeTest {
     public void checkBoxedDoubleArray() throws Exception {
         final String attributeKey = "BoxedDoubleArrayValue";
         final String expectedResult = jsonFixture("fixtures/boxed_double_array.json");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check double array serialization", acquiredResult, is(expectedResult));
     }
@@ -200,7 +214,7 @@ public class AttributeTest {
     public void checkListInteger() throws Exception {
         final String attributeKey = "ListIntegerValue";
         final String expectedResult = jsonFixture("fixtures/list_integer.json");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check integer list serialization", acquiredResult, is(expectedResult));
     }
@@ -209,7 +223,7 @@ public class AttributeTest {
     public void checkListListInteger() throws Exception {
         final String attributeKey = "ListListIntegerValue";
         final String expectedResult = jsonFixture("fixtures/list_list_integer.json");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check list of integer lists serialization", acquiredResult, is(expectedResult));
     }
@@ -218,7 +232,7 @@ public class AttributeTest {
     public void checkString() throws Exception {
         final String attributeKey = "StringValue";
         final String expectedResult = new String("\"val\"");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check string serialization", acquiredResult, is(expectedResult));
     }
@@ -227,7 +241,7 @@ public class AttributeTest {
     public void checkStringArray() throws Exception {
         final String attributeKey = "StringArrayValue";
         final String expectedResult = jsonFixture("fixtures/list_string.json");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check string array serialization", acquiredResult, is(expectedResult));
     }
@@ -236,7 +250,7 @@ public class AttributeTest {
     public void checkListString() throws Exception {
         final String attributeKey = "ListStringValue";
         final String expectedResult = jsonFixture("fixtures/list_string.json");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check string list serialization", acquiredResult, is(expectedResult));
     }
@@ -245,7 +259,7 @@ public class AttributeTest {
     public void checkListListString() throws Exception {
         final String attributeKey = "ListListStringValue";
         final String expectedResult = jsonFixture("fixtures/list_list_string.json");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check list of string lists serialization", acquiredResult, is(expectedResult));
     }
@@ -255,7 +269,7 @@ public class AttributeTest {
     public void checkSingleJsonString() throws Exception {
         final String attributeKey = "SingleJsonStringValue";
         final String expectedResult = new String("\"val\"");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check single json string serialization", acquiredResult, is(expectedResult));
     }
@@ -265,7 +279,7 @@ public class AttributeTest {
     public void checkMultiJsonString() throws Exception {
         final String attributeKey = "MultiJsonStringValue";
         final String expectedResult = jsonFixture("fixtures/multi_json_string.json");
-        final String acquiredResult = asJson(manager.getHost(validHost).getMBean(validMBean).getAttribute(attributeKey));
+        final String acquiredResult = asJson(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(attributeKey));
 
         assertThat("check multiple json strings serialization", acquiredResult, is(expectedResult));
     }
