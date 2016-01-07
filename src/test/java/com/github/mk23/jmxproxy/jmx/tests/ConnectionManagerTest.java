@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.lang.management.ManagementFactory;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import javax.management.ObjectName;
 
@@ -23,6 +24,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeNotNull;
 
 public class ConnectionManagerTest {
     private final String passwdFile       = System.getProperty("com.sun.management.jmxremote.password.file");
@@ -38,6 +40,7 @@ public class ConnectionManagerTest {
     private final String invalidAttribute = "InvalidAttribute";
 
     private final ConnectionCredentials validAuth;
+    private final ConnectionCredentials invalidAuth = new ConnectionCredentials(UUID.randomUUID().toString(), UUID.randomUUID().toString());
 
     public interface ConnectionManagerTestJMXMBean {
     }
@@ -59,6 +62,36 @@ public class ConnectionManagerTest {
             );
         } catch (javax.management.InstanceAlreadyExistsException e) {
         }
+    }
+
+    /* Auth tests */
+    @Test
+    public void checkValidHostValidAuth() throws Exception {
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+
+        assumeNotNull(passwdFile);
+        assertNotNull(manager.getHost(validHost, validAuth));
+    }
+    @Test(expected=WebApplicationException.class)
+    public void checkValidHostNoAuth() throws Exception {
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+
+        assumeNotNull(passwdFile);
+        manager.getHost(validHost);
+    }
+    @Test(expected=WebApplicationException.class)
+    public void checkValidHostNullAuth() throws Exception {
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+
+        assumeNotNull(passwdFile);
+        manager.getHost(validHost, null);
+    }
+    @Test(expected=WebApplicationException.class)
+    public void checkValidHostInvalidAuth() throws Exception {
+        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+
+        assumeNotNull(passwdFile);
+        manager.getHost(validHost, invalidAuth);
     }
 
     /* Host tests */
