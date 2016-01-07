@@ -11,26 +11,43 @@ import io.dropwizard.setup.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>JMXProxy main application.</p>
+ * Configures, initializes, and starts the service.
+ *
+ * @author  mk23
+ * @since   2015-05-11
+ */
 public class JMXProxyApplication extends Application<JMXProxyConfiguration> {
     private static final Logger LOG = LoggerFactory.getLogger(JMXProxyApplication.class);
 
-    public static void main(String[] args) throws Exception {
+    /**
+     * <p>main.</p>
+     * Starts main application.
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @throws java.lang.Exception if any.
+     */
+    public static void main(final String[] args) throws Exception {
         LOG.info("starting jmxproxy service");
         new JMXProxyApplication().run(args);
     }
 
+    /** {@inheritDoc} */
     @Override
-    public String getName() {
+    public final String getName() {
         return "jmxproxy";
     }
 
+    /** {@inheritDoc} */
     @Override
-    public void initialize(Bootstrap<JMXProxyConfiguration> bootstrap) {
+    public final void initialize(final Bootstrap<JMXProxyConfiguration> bootstrap) {
         bootstrap.addBundle(new AssetsBundle("/assets/", "/", "index.html"));
     }
 
+    /** {@inheritDoc} */
     @Override
-    public void run(JMXProxyConfiguration configuration, Environment environment) {
+    public final void run(final JMXProxyConfiguration configuration, final Environment environment) {
         final ConnectionManager manager = new ConnectionManager(configuration.getApplicationConfiguration());
         final JMXProxyResource resource = new JMXProxyResource(manager);
         final JMXProxyHealthCheck healthCheck = new JMXProxyHealthCheck(manager);
