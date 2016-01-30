@@ -1,5 +1,6 @@
 package com.github.mk23.jmxproxy;
 
+import com.github.mk23.jmxproxy.conf.MainConfig;
 import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
 import io.dropwizard.Application;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * @author  mk23
  * @since   2015-05-11
  */
-public class JMXProxyApplication extends Application<JMXProxyConfiguration> {
+public class JMXProxyApplication extends Application<MainConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(JMXProxyApplication.class);
 
     /**
@@ -41,14 +42,14 @@ public class JMXProxyApplication extends Application<JMXProxyConfiguration> {
 
     /** {@inheritDoc} */
     @Override
-    public final void initialize(final Bootstrap<JMXProxyConfiguration> bootstrap) {
+    public final void initialize(final Bootstrap<MainConfig> bootstrap) {
         bootstrap.addBundle(new AssetsBundle("/assets/", "/", "index.html"));
     }
 
     /** {@inheritDoc} */
     @Override
-    public final void run(final JMXProxyConfiguration configuration, final Environment environment) {
-        final ConnectionManager manager = new ConnectionManager(configuration.getApplicationConfiguration());
+    public final void run(final MainConfig configuration, final Environment environment) {
+        final ConnectionManager manager = new ConnectionManager(configuration.getAppConfig());
         final JMXProxyResource resource = new JMXProxyResource(manager);
         final JMXProxyHealthCheck healthCheck = new JMXProxyHealthCheck(manager);
 

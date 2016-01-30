@@ -1,6 +1,6 @@
 package com.github.mk23.jmxproxy.jmx;
 
-import com.github.mk23.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
+import com.github.mk23.jmxproxy.conf.AppConfig;
 import com.github.mk23.jmxproxy.core.Host;
 
 import io.dropwizard.lifecycle.Managed;
@@ -21,21 +21,21 @@ import org.slf4j.LoggerFactory;
 public class ConnectionManager implements Managed {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManager.class);
 
-    private final JMXProxyApplicationConfiguration config;
+    private final AppConfig config;
 
     private Map<String, ConnectionWorker> hosts;
     private ScheduledExecutorService purge;
 
     private boolean started = false;
 
-    public ConnectionManager(JMXProxyApplicationConfiguration config) {
+    public ConnectionManager(AppConfig config) {
         this.config = config;
 
         hosts = new HashMap<String, ConnectionWorker>();
         purge = Executors.newSingleThreadScheduledExecutor();
     }
 
-    public JMXProxyApplicationConfiguration getConfiguration() {
+    public AppConfig getConfiguration() {
         return config;
     }
 
