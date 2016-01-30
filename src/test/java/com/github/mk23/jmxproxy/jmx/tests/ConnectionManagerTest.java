@@ -1,6 +1,6 @@
 package com.github.mk23.jmxproxy.jmx.tests;
 
-import com.github.mk23.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
+import com.github.mk23.jmxproxy.conf.AppConfig;
 import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 import com.github.mk23.jmxproxy.jmx.ConnectionCredentials;
 
@@ -67,28 +67,28 @@ public class ConnectionManagerTest {
     /* Auth tests */
     @Test
     public void checkValidHostValidAuth() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assumeNotNull(passwdFile);
         assertNotNull(manager.getHost(validHost, validAuth));
     }
     @Test(expected=WebApplicationException.class)
     public void checkValidHostNoAuth() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assumeNotNull(passwdFile);
         manager.getHost(validHost);
     }
     @Test(expected=WebApplicationException.class)
     public void checkValidHostNullAuth() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assumeNotNull(passwdFile);
         manager.getHost(validHost, null);
     }
     @Test(expected=WebApplicationException.class)
     public void checkValidHostInvalidAuth() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assumeNotNull(passwdFile);
         manager.getHost(validHost, invalidAuth);
@@ -97,21 +97,21 @@ public class ConnectionManagerTest {
     /* Host tests */
     @Test
     public void checkValidHost() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assertNotNull(manager.getHost(validHost, validAuth));
     }
 
     @Test
     public void checkInvalidHost() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assertNull(manager.getHost(invalidHost, validAuth));
     }
 
     @Test
     public void checkValidHostWhitelist() throws Exception {
-        JMXProxyApplicationConfiguration serviceConfig = new JMXProxyApplicationConfiguration();
+        AppConfig serviceConfig = new AppConfig();
         serviceConfig.setAllowedEndpoints(Arrays.asList(new String[] { validHost }));
 
         final ConnectionManager manager = new ConnectionManager(serviceConfig);
@@ -121,7 +121,7 @@ public class ConnectionManagerTest {
 
     @Test(expected=WebApplicationException.class)
     public void checkInvalidHostWhitelist() throws Exception {
-        JMXProxyApplicationConfiguration serviceConfig = new JMXProxyApplicationConfiguration();
+        AppConfig serviceConfig = new AppConfig();
         serviceConfig.setAllowedEndpoints(Arrays.asList(new String[] { validHost }));
 
         final ConnectionManager manager = new ConnectionManager(serviceConfig);
@@ -132,21 +132,21 @@ public class ConnectionManagerTest {
     /* MBean tests */
     @Test
     public void checkValidHostMBeans() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assertTrue(manager.getHost(validHost, validAuth).getMBeans().contains(validMBean));
     }
 
     @Test
     public void checkValidHostValidMBean() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assertNotNull(manager.getHost(validHost, validAuth).getMBean(validMBean));
     }
 
     @Test
     public void checkValidHostInvalidMBean() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assertNull(manager.getHost(validHost, validAuth).getMBean(invalidMBean));
     }
@@ -154,21 +154,21 @@ public class ConnectionManagerTest {
     /* Attribute tests */
     @Test
     public void checkValidHostValidMBeanAttributes() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assertTrue(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttributes().contains(validAttribute));
     }
 
     @Test
     public void checkValidHostValidMBeanValidAttribute() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assertNotNull(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(validAttribute));
     }
 
     @Test
     public void checkValidHostValidMBeanInvalidAttribute() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assertNull(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(invalidAttribute));
     }
@@ -176,7 +176,7 @@ public class ConnectionManagerTest {
     /* Custom MBean tests */
     @Test
     public void checkValidHostRemovedMBean() throws Exception {
-        final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration().setCacheDuration(Duration.seconds(3)));
+        final ConnectionManager manager = new ConnectionManager(new AppConfig().setCacheDuration(Duration.seconds(3)));
 
         assertNotNull(manager.getHost(validHost, validAuth).getMBean(localMBean));
 

@@ -1,6 +1,6 @@
 package com.github.mk23.jmxproxy.core.tests;
 
-import com.github.mk23.jmxproxy.JMXProxyConfiguration.JMXProxyApplicationConfiguration;
+import com.github.mk23.jmxproxy.conf.AppConfig;
 import com.github.mk23.jmxproxy.jmx.ConnectionCredentials;
 import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
@@ -36,7 +36,7 @@ public class AttributeTest {
     private final String validHost  = "localhost:" + System.getProperty("com.sun.management.jmxremote.port");
     private final String validMBean = "AttributeTest:type=test";
 
-    private final ConnectionManager manager = new ConnectionManager(new JMXProxyApplicationConfiguration());
+    private final ConnectionManager manager = new ConnectionManager(new AppConfig());
     private final ConnectionCredentials validAuth;
 
     public interface AttributeTestJMXMBean {
