@@ -559,7 +559,7 @@ var endpointHostClass = function(prefix, host) {
 
         loadHistory = function(item, data, prop) {
             mapped = _.map(data, function(v, k) {
-                return [ts - k * jmxproxyConf.cache_duration * 60 * 1000, _.has(v, prop) ? v[prop] : v];
+                return [ts - k * jmxproxyConf.cache_duration, _.has(v, prop) ? v[prop] : v];
             }).reverse();
             return _.isUndefined(item) ? mapped : item.concat(mapped);
         }
@@ -737,7 +737,7 @@ var endpointHostClass = function(prefix, host) {
             refreshGraphs('overview-thr-gr', true);
         });
 
-        setTimeout(function() { gatherObjects(1); }, jmxproxyConf.cache_duration * 60 * 1000);
+        setTimeout(function() { gatherObjects(1); }, jmxproxyConf.cache_duration);
     };
 
     var fetchName = function() {
@@ -754,7 +754,7 @@ var endpointHostClass = function(prefix, host) {
 
     var fetchData = function(item, callback) {
         if (creds != null) {
-            $.post(prefix+'/jmxproxy/'+host+item, creds, callback, 'json')
+            $.post(prefix+'/jmxproxy/'+host+item, creds, callback)
             .fail(function(jqXHR) {
                 if (jqXHR.status == 401) {
                     $('#endpoint-auth').modal();
