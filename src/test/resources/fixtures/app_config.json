@@ -1,0 +1,10 @@
+{
+    "cleanInterval": 12,
+    "cacheDuration": 23000,
+    "accessDuration": 404276000,
+    "historySize": 11,
+    "allowedEndpoints": [
+        "localhost:1100",
+        "remotehost:2211"
+    ]
+}
