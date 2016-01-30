@@ -1,6 +1,7 @@
 package com.github.mk23.jmxproxy.conf;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.dropwizard.jackson.JsonSnakeCase;
 
@@ -49,6 +50,7 @@ public class AppConfig {
      */
     @Valid
     @JsonProperty
+    @JsonSerialize(using = DurationSerializer.class)
     private Duration cleanInterval = Duration.minutes(DEFAULT_CLEAN_INTERVAL);
 
     /**
@@ -57,6 +59,7 @@ public class AppConfig {
      */
     @Valid
     @JsonProperty
+    @JsonSerialize(using = DurationSerializer.class)
     private Duration cacheDuration = Duration.minutes(DEFAULT_CACHE_DURATION);
 
     /**
@@ -65,6 +68,7 @@ public class AppConfig {
      */
     @Valid
     @JsonProperty
+    @JsonSerialize(using = DurationSerializer.class)
     private Duration accessDuration = Duration.minutes(DEFAULT_ACCESS_DURATION);
 
     /**
