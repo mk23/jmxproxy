@@ -18,15 +18,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author  mk23
  * @since   2015-05-11
+ * @version 3.2.0
  */
 public class JMXProxyApplication extends Application<MainConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(JMXProxyApplication.class);
 
     /**
      * <p>main.</p>
+     *
      * Starts main application.
      *
-     * @param args an array of {@link java.lang.String} objects.
+     * @param args an array of {@link java.lang.String} command-line parameters.
+     *
      * @throws java.lang.Exception if any.
      */
     public static void main(final String[] args) throws Exception {

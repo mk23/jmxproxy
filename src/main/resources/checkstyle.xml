@@ -81,10 +81,16 @@
 
         <!-- Checks for Javadoc comments.                     -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
-        <module name="JavadocMethod"/>
-        <module name="JavadocType"/>
+        <module name="JavadocMethod">
+            <property name="scope" value="public"/>
+        </module>
+        <module name="JavadocType">
+            <property name="scope" value="public"/>
+            <property name="authorFormat" value="\S"/>
+            <property name="versionFormat" value="\S"/>
+        </module>
         <module name="JavadocVariable">
-            <property name="ignoreNamePattern" value="LOG"/>
+            <property name="scope" value="public"/>
         </module>
         <module name="JavadocStyle"/>
 
@@ -144,7 +150,9 @@
 
         <!-- Checks for common coding problems               -->
         <!-- See http://checkstyle.sf.net/config_coding.html -->
+        <!--
         <module name="AvoidInlineConditionals"/>
+        -->
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
         <module name="HiddenField">
