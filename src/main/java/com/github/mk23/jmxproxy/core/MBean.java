@@ -12,19 +12,49 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * <p>JMX MBean tracker and serializer.</p>
+ *
+ * Maintains a map of JMX {@link Attribute} names and a {@link History} of
+ * their values.  Implements JsonSerializable interface to convert the
+ * stored map into JSON.
+ *
+ * @see <a href="https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializable.html">com.fasterxml.jackson.databind.JsonSerializable</a>
+ *
+ * @author  mk23
+ * @since   2015-05-11
+ * @version 3.2.0
+ */
 public class MBean implements JsonSerializable {
-    private Map<String, History> attributes;
-    private ThreadLocal<Integer> limit = new ThreadLocal<Integer>() {
-        @Override protected Integer initialValue() {
+    private final Map<String, History> attributes;
+    private final ThreadLocal<Integer> limit = new ThreadLocal<Integer>() {
+        @Override
+        protected Integer initialValue() {
             return -1;
         }
     };
 
+    /**
+     * <p>Default constructor.</p>
+     *
+     * Creates a map of {@link Attribute} name to {@link History} of associated values.
+     */
     public MBean() {
         attributes = new HashMap<String, History>();
     }
 
-    public History addHistory(String attributeName, int size) {
+    /**
+     * <p>Inserts a new Attribute name to History association.</p>
+     *
+     * Creates a new {@link Attribute} value {@link History} object and inserts into
+     * the map store associating it to the specified attribute name.
+     *
+     * @param attributeName name of the {@link Attribute} used as the map key.
+     * @param size number of items to preserve in the associated {@link History}.
+     *
+     * @return the newly created empty {@link History} object.
+     */
+    public final History addHistory(final String attributeName, final int size) {
         if (!attributes.containsKey(attributeName)) {
             History history = new History(size);
             attributes.put(attributeName, history);
@@ -33,16 +63,47 @@ public class MBean implements JsonSerializable {
         return attributes.get(attributeName);
     }
 
-    public MBean setLimit(Integer limit) {
-        this.limit.set(limit);
+    /**
+     * <p>Sets the thread local history request limit.</p>
+     *
+     * Set the thread local limit for all {@link History} when serializing to JSON.
+     * Because this method returns its object, requesting serialization can be done
+     * with a single statement.  For example:
+     *
+     * <p><code>return {@link javax.ws.rs.core.Response}.ok(mbean.setLimit(5)).build();</code></p>
+     *
+     * @param bound the number of items to retreive from {@link History} for this thread.
+     *
+     * @return this mbean object for chaining calls.
+     */
+    public final MBean setLimit(final Integer bound) {
+        this.limit.set(bound);
         return this;
     }
 
-    public Set<String> getAttributes() {
+    /**
+     * <p>Getter for attribute names.</p>
+     *
+     * Extracts and returns the unique {@link java.util.Set} of all currently stored
+     * {@link Attribute} names.
+     *
+     * @return {@link java.util.Set} of {@link Attribute} name {@link java.lang.String}s.
+     */
+    public final Set<String> getAttributes() {
         return attributes.keySet();
     }
 
-    public Attribute getAttribute(String attribute) {
+    /**
+     * <p>Getter for most recent attribute.</p>
+     *
+     * Fetches the most recent {@link Attribute} value for the specified name from the
+     * associated {@link History} in the map store.
+     *
+     * @param attribute name of the {@link Attribute} to look up in the map store.
+     *
+     * @return latest {@link Attribute} object from {@link History} if found, null otherwise.
+     */
+    public final Attribute getAttribute(final String attribute) {
         History history = attributes.get(attribute);
         if (history == null) {
             return null;
@@ -51,32 +112,54 @@ public class MBean implements JsonSerializable {
         return history.getAttribute();
     }
 
-    public Attribute[] getAttributes(String attribute, int limit) {
+    /**
+     * <p>Getter for a subset of historical attribute values.</p>
+     *
+     * Fetches an array, limited by the requested bound, of most recent {@link Attribute} values
+     * for the specified name from the associated {@link History} in the map store.
+     *
+     * @param attribute name of the {@link Attribute} to look up in the map store.
+     * @param bound size of the resulting array or full history if this exceeds capacity or less than 1.
+     *
+     * @return array of the latest {@link Attribute} objects from {@link History} if found, empty otherwise.
+     */
+    public final Attribute[] getAttributes(final String attribute, final int bound) {
         History history = attributes.get(attribute);
         if (history == null) {
             return new Attribute[0];
         }
 
-        return history.getAttributes(limit);
+        return history.getAttributes(bound);
     }
 
-    public void serialize(JsonGenerator jgen, SerializerProvider sp) throws IOException, JsonProcessingException {
+    /** {@inheritDoc} */
+    @Override
+    public final void serialize(
+        final JsonGenerator jgen,
+        final SerializerProvider sp
+    ) throws IOException, JsonProcessingException {
         buildJson(jgen);
     }
 
-    public void serializeWithType(JsonGenerator jgen, SerializerProvider sp, TypeSerializer ts) throws IOException, JsonProcessingException {
+    /** {@inheritDoc} */
+    @Override
+    public final void serializeWithType(
+        final JsonGenerator jgen,
+        final SerializerProvider sp,
+        final TypeSerializer ts
+    ) throws IOException, JsonProcessingException {
         buildJson(jgen);
     }
 
-    private void buildJson(JsonGenerator jgen) throws IOException, JsonProcessingException {
-        int limit = this.limit.get();
+    private void buildJson(final JsonGenerator jgen) throws IOException, JsonProcessingException {
+        int bound = limit.get();
 
         jgen.writeStartObject();
-        for (Map.Entry<String, History>attributeEntry : attributes.entrySet()) {
-            if (limit < 0) {
+        for (Map.Entry<String, History> attributeEntry : attributes.entrySet()) {
+            if (bound < 0) {
                 jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getAttribute());
             } else {
-                jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getAttributes(limit));
+                jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getAttributes(bound));
             }
         }
         jgen.writeEndObject();
