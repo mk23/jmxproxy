@@ -12,12 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class Host implements JsonSerializable {
-    private static final Logger LOG = LoggerFactory.getLogger(Host.class);
-
     private Map<String, MBean> mbeans;
     private ThreadLocal<Integer> limit = new ThreadLocal<Integer>() {
         @Override protected Integer initialValue() {

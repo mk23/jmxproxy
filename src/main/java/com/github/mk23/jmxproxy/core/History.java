@@ -1,8 +1,5 @@
 package com.github.mk23.jmxproxy.core;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * <p>Fixed size historical attribute value store.</p>
  *
@@ -16,8 +13,6 @@ import org.slf4j.LoggerFactory;
  * @version 3.2.0
  */
 public class History {
-    private static final Logger LOG = LoggerFactory.getLogger(History.class);
-
     private Attribute[] attributes;
     private int current;
 

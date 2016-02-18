@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * <p>JMX Attribute tracker and serializer.</p>
  *
@@ -59,8 +56,6 @@ import org.slf4j.LoggerFactory;
  * @version 3.2.0
  */
 public class Attribute implements JsonSerializable {
-    private static final Logger LOG = LoggerFactory.getLogger(Attribute.class);
-
     private Object attributeValue;
 
     /**

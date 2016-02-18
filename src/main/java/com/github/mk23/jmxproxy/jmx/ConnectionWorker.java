@@ -37,7 +37,6 @@ public class ConnectionWorker {
     private JMXServiceURL url;
 
     private long accessTime;
-    private long cacheTime;
 
     private ScheduledExecutorService fetch;
 
@@ -145,8 +144,6 @@ public class ConnectionWorker {
                 host.removeMBean(mbeanName);
                 LOG.debug("removed stale mbean " + mbeanName);
             }
-
-            cacheTime = System.currentTimeMillis();
         } catch (IOException e) {
             host = null;
             LOG.error("communication failure with " + url, e);
