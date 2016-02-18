@@ -105,7 +105,7 @@ public class ConnectionWorker {
                         LOG.debug("discovered mbean " + mbeanName);
                         freshMBeans.add(mbeanName.toString());
 
-                        MBean mbean = host.addMBean(domainName, mbeanName.toString());
+                        MBean mbean = host.addMBean(mbeanName.toString());
                         try {
                             for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {
                                 if (attributeObject.isReadable()) {

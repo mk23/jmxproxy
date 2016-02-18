@@ -12,19 +12,46 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * <p>JMX Host tracker and serializer.</p>
+ *
+ * Maintains a map of JMX {@link MBean} names and their values. Implements
+ * JsonSerializable interface to convert the stored map into JSON.
+ *
+ * @see <a href="https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializable.html">com.fasterxml.jackson.databind.JsonSerializable</a>
+ *
+ * @author  mk23
+ * @since   2015-05-11
+ * @version 3.2.0
+ */
 public class Host implements JsonSerializable {
-    private Map<String, MBean> mbeans;
-    private ThreadLocal<Integer> limit = new ThreadLocal<Integer>() {
+    private final Map<String, MBean> mbeans;
+    private final ThreadLocal<Integer> limit = new ThreadLocal<Integer>() {
         @Override protected Integer initialValue() {
             return -1;
         }
     };
 
+    /**
+     * <p>Default constructor.</p>
+     *
+     * Creates a map of {@link MBean} name to associated values.
+     */
     public Host() {
         mbeans = new HashMap<String, MBean>();
     }
 
-    public MBean addMBean(String domain, String mbeanName) {
+    /**
+     * <p>Inserts a new MBean name to value association.</p>
+     *
+     * Creates a new {@link MBean} object and inserts into the map store
+     * associating it to the specified mbean name.
+     *
+     * @param mbeanName name of the {@link MBean} used as the map key.
+     *
+     * @return the newly created {@link MBean} object.
+     */
+    public final MBean addMBean(final String mbeanName) {
         if (!mbeans.containsKey(mbeanName)) {
             MBean mbean = new MBean();
             mbeans.put(mbeanName, mbean);
@@ -33,40 +60,86 @@ public class Host implements JsonSerializable {
         return mbeans.get(mbeanName);
     }
 
-    public void removeMBean(String mbeanName) {
+    /**
+     * <p>Deletes an mbean association.</p>
+     *
+     * Removes an associated {@link MBean} from the map store for this host.
+     *
+     * @param mbeanName name of the {@link MBean} to remove.
+     */
+    public final void removeMBean(final String mbeanName) {
         mbeans.remove(mbeanName);
     }
 
-    public Host setLimit(Integer limit) {
-        this.limit.set(limit);
+    /**
+     * <p>Sets the thread local history request limit.</p>
+     *
+     * Set the thread local limit for all {@link History} when serializing to JSON.
+     * Because this method returns its object, requesting serialization can be done
+     * with a single statement.  For example:
+     *
+     * <p><code>return {@link javax.ws.rs.core.Response}.ok(host.setLimit(5)).build();</code></p>
+     *
+     * @param bound the number of items to retreive from {@link History} for this thread.
+     *
+     * @return this host object for chaining calls.
+     */
+    public final Host setLimit(final Integer bound) {
+        limit.set(bound);
         return this;
     }
 
-    public Set<String> getMBeans() {
+    /**
+     * <p>Getter for mbean names.</p>
+     *
+     * Extracts and returns the unique {@link java.util.Set} of all currently stored
+     * {@link MBean} names.
+     *
+     * @return {@link java.util.Set} of {@link MBean} name {@link java.lang.String}s.
+     */
+    public final Set<String> getMBeans() {
         return mbeans.keySet();
     }
 
-    public MBean getMBean(String mbean) {
+    /**
+     * <p>Getter for specific mbean.</p>
+     *
+     * Fetches the specified {@link MBean} from the map store.
+     *
+     * @param mbean name of the {@link MBean} to look up in the map store.
+     *
+     * @return {@link MBean} object if found, null otherwise.
+     */
+    public final MBean getMBean(final String mbean) {
         return mbeans.get(mbean);
     }
 
-    public void serialize(JsonGenerator jgen, SerializerProvider sp) throws IOException, JsonProcessingException {
+    /** {@inheritDoc} */
+    public final void serialize(
+        final JsonGenerator jgen,
+        final SerializerProvider sp
+    ) throws IOException, JsonProcessingException {
         buildJson(jgen);
     }
 
-    public void serializeWithType(JsonGenerator jgen, SerializerProvider sp, TypeSerializer ts) throws IOException, JsonProcessingException {
+    /** {@inheritDoc} */
+    public final void serializeWithType(
+        final JsonGenerator jgen,
+        final SerializerProvider sp,
+        final TypeSerializer ts
+    ) throws IOException, JsonProcessingException {
         buildJson(jgen);
     }
 
-    public void buildJson(JsonGenerator jgen) throws IOException, JsonProcessingException {
-        int limit = this.limit.get();
+    private void buildJson(final JsonGenerator jgen) throws IOException, JsonProcessingException {
+        int bound = limit.get();
 
         jgen.writeStartObject();
-        for (Map.Entry<String, MBean>mbeanEntry : mbeans.entrySet()) {
-            if (limit < 0) {
+        for (Map.Entry<String, MBean> mbeanEntry : mbeans.entrySet()) {
+            if (bound < 0) {
                 jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue());
             } else {
-                jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue().setLimit(limit));
+                jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue().setLimit(bound));
             }
         }
         jgen.writeEndObject();
