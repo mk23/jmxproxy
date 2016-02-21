@@ -5,6 +5,8 @@ import com.github.mk23.jmxproxy.core.Host;
 
 import io.dropwizard.lifecycle.Managed;
 
+import java.net.MalformedURLException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +66,8 @@ public class ConnectionManager implements Managed {
             return hosts.get(host).getHost();
         } catch (SecurityException e) {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        } catch (MalformedURLException e) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } catch (Exception e) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
