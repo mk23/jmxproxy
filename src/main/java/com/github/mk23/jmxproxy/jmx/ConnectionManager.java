@@ -20,32 +20,103 @@ import javax.ws.rs.WebApplicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>Main application lifecycle object that manages all JMX Agent Connections.</p>
+ *
+ * Implements the dropwizard lifecycle Managed interface to create the object responsible
+ * for all application data management.  Creates workers for connecting to JMX endpoints and
+ * handles requests for data retreival.  Controls purging unaccessed endpoints as well as
+ * their runtime state.
+ *
+ * @see <a href="http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-lifecycle/apidocs/io/dropwizard/lifecycle/Managed.html">io.dropwizard.lifecycle.Managed</a>
+ *
+ * @author  mk23
+ * @since   2015-05-11
+ * @version 3.2.0
+ */
 public class ConnectionManager implements Managed {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManager.class);
 
     private final AppConfig config;
 
-    private Map<String, ConnectionWorker> hosts;
-    private ScheduledExecutorService purge;
+    private final Map<String, ConnectionWorker> hosts;
+    private final ScheduledExecutorService purge;
 
     private boolean started = false;
 
-    public ConnectionManager(AppConfig config) {
+    /**
+     * <p>Default constructor.</p>
+     *
+     * Called by the application initializer.  Creates the map of host:port {@link String}s to
+     * associated {@link ConnectionWorker} instances.  Creates an instance of the unaccessed
+     * endpoints purge thread.  Saves the provided applicaiton configuration for later retreival
+     * request.
+     *
+     * @param config configuration as specified by the administrator at application invocation.
+     */
+    public ConnectionManager(final AppConfig config) {
         this.config = config;
 
         hosts = new HashMap<String, ConnectionWorker>();
         purge = Executors.newSingleThreadScheduledExecutor();
     }
 
-    public AppConfig getConfiguration() {
+    /**
+     * <p>Getter for config.</p>
+     *
+     * Fetches the application run-time configuration object.
+     *
+     * @return application configuration.
+     */
+    public final AppConfig getConfiguration() {
         return config;
     }
 
-    public Host getHost(String host) throws WebApplicationException {
+    /**
+     * <p>Anonymous getter for host.</p>
+     *
+     * Fetches the specified {@link Host} with anonymous (null) credentials.
+     * Equivalent to calling: <br/>
+     *
+     * <code>return getHost(host, null);</code>
+     *
+     * @param host endpoint host:port {@link String}.
+     *
+     * @return {@link Host} object for the requested endpoint.
+     *
+     * @throws WebApplicationException if unauthorized, forbidden, or invalid endpoint.
+     */
+    public final Host getHost(final String host) throws WebApplicationException {
         return getHost(host, null);
     }
 
-    public Host getHost(String host, ConnectionCredentials auth) throws WebApplicationException {
+    /**
+     * <p>Authenticated getter for host.</p>
+     *
+     * Fetches the specified {@link Host} with provided credentials.  Validates endpoint
+     * access against a configured whitelist.  Validates provided credentials against
+     * previous requests and if different, a new {@link ConnectionWorker} object is
+     * instanciated and associated with the specified endpoint.  Lastly, if specified
+     * endpoint is not yet in the map store, instanciates a new {@link ConnectionWorker}
+     * and saves it for later retreival.
+     *
+     * @param host endpoint host:port {@link String}.
+     * @param auth endpoint {@link ConnectionCredentials} or null for anonymous access.
+     *
+     * @return {@link Host} object for the requested endpoint.
+     *
+     * @throws WebApplicationException if
+     *     <ul>
+     *         <li>forbidden (not whitelisted)</li>
+     *         <li>unauthized (incorrect credentials)</li>
+     *         <li>bad request (malformed host:port)</li>
+     *         <li>not found (any other exception)</li>
+     *     </ul>
+     */
+    public final Host getHost(
+        final String host,
+        final ConnectionCredentials auth
+    ) throws WebApplicationException {
         if (!config.getAllowedEndpoints().isEmpty() && !config.getAllowedEndpoints().contains(host)) {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
@@ -59,7 +130,14 @@ public class ConnectionManager implements Managed {
 
                 if (!hosts.containsKey(host)) {
                     LOG.info("creating new worker for " + host);
-                    hosts.put(host, new ConnectionWorker(host, auth, config.getCacheDuration().toMilliseconds(), config.getHistorySize()));
+                    ConnectionWorker worker = new ConnectionWorker(
+                        host,
+                        auth,
+                        config.getCacheDuration().toMilliseconds(),
+                        config.getHistorySize()
+                    );
+
+                    hosts.put(host, worker);
                 }
             }
 
@@ -73,11 +151,23 @@ public class ConnectionManager implements Managed {
         }
     }
 
-    public boolean isStarted() {
+    /**
+     * <p>Getter for started.</p>
+     *
+     * Used by the application health check to verify the manager start() method has been invoked.
+     *
+     * @return true if the manager was started, false otherwise.
+     */
+    public final boolean isStarted() {
         return started;
     }
 
-    public void start() {
+    /**
+     * <p>Handler for application startup.</p>
+     *
+     * Starts the unaccessed endpoint purge thread at application initialization.
+     */
+    public final void start() {
         LOG.info("starting jmx connection manager");
 
         LOG.debug("allowedEndpoints: " + config.getAllowedEndpoints().size());
@@ -85,12 +175,14 @@ public class ConnectionManager implements Managed {
             LOG.debug("    " + ae);
         }
 
+        long cleanInterval = config.getCleanInterval().toMilliseconds();
+
         purge.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 LOG.debug("begin expiring stale hosts");
                 synchronized (hosts) {
-                    for (Map.Entry<String, ConnectionWorker>hostEntry : hosts.entrySet()) {
+                    for (Map.Entry<String, ConnectionWorker> hostEntry : hosts.entrySet()) {
                         if (hostEntry.getValue().isExpired(config.getAccessDuration().toMilliseconds())) {
                             LOG.debug("purging " + hostEntry.getKey());
                             hosts.remove(hostEntry.getKey()).shutdown();
@@ -99,15 +191,21 @@ public class ConnectionManager implements Managed {
                 }
                 LOG.debug("end expiring stale hosts");
             }
-        }, config.getCleanInterval().toMilliseconds(), config.getCleanInterval().toMilliseconds(), TimeUnit.MILLISECONDS);
+        }, cleanInterval, cleanInterval, TimeUnit.MILLISECONDS);
+
         started = true;
     }
 
-    public void stop() {
+    /**
+     * <p>Handler for application shutdown.</p>
+     *
+     * Stops the purge thread and all currently tracked {@link ConnectionWorker} instances.
+     */
+    public final void stop() {
         LOG.info("stopping jmx connection manager");
         purge.shutdown();
         synchronized (hosts) {
-            for (Map.Entry<String, ConnectionWorker>hostEntry : hosts.entrySet()) {
+            for (Map.Entry<String, ConnectionWorker> hostEntry : hosts.entrySet()) {
                 LOG.debug("purging " + hostEntry.getKey());
                 hosts.remove(hostEntry.getKey()).shutdown();
             }
