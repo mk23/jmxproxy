@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
  *
  * @see <a href="http://docs.oracle.com/javaee/7/api/javax/ws/rs/core/Response.html">javax.ws.rs.core.Response</a>
  *
- * @author  mk23
  * @since   2015-05-11
+ * @author  mk23
  * @version 3.2.0
  */
 @Path("/")
@@ -172,7 +172,7 @@ public class JMXProxyResource {
      *     Specified as a URI query param.
      * @param auth credentials for the requested endpoint specified as the POST body
      *     param as a JSON object (e.g. <code>{"username": "max", "password": "12345"}</code>)
-     *     and marshaled into {@link com.github.mk23.jmxproxy.jmx.ConnectionCredentials}.
+     *     and marshaled into {@link ConnectionCredentials}.
      *
      * @return The requested value, or list of values, marshalled into an API Response.
      */
@@ -295,7 +295,7 @@ public class JMXProxyResource {
      *     Specified as a URI query param.
      * @param auth credentials for the requested endpoint specified as the POST body
      *     param as a JSON object (e.g. <code>{"username": "max", "password": "12345"}</code>)
-     *     and marshaled into {@link com.github.mk23.jmxproxy.jmx.ConnectionCredentials}.
+     *     and marshaled into {@link ConnectionCredentials}.
      *
      * @return List of attribute names or map of names and values, marshalled
      *     into an API Response.
@@ -411,7 +411,7 @@ public class JMXProxyResource {
      *     Specified as a URI query param.
      * @param auth credentials for the requested endpoint specified as the POST body
      *     param as a JSON object (e.g. <code>{"username": "max", "password": "12345"}</code>)
-     *     and marshaled into {@link com.github.mk23.jmxproxy.jmx.ConnectionCredentials}.
+     *     and marshaled into {@link ConnectionCredentials}.
      *
      * @return List of mbean names or map of names and values, marshalled
      *     into an API Response.

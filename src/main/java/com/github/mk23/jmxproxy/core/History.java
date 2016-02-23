@@ -8,8 +8,8 @@ package com.github.mk23.jmxproxy.core;
  * full stored history of values.  When number of stored values exceeds the fixed
  * size of the store, the oldest values are overwritten.
  *
- * @author  mk23
  * @since   2015-05-11
+ * @author  mk23
  * @version 3.2.0
  */
 public class History {

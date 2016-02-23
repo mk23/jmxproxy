@@ -22,17 +22,17 @@ import javax.validation.constraints.Min;
  *
  * <p>For example:</p>
  *
- * <pre>
+ * <code>
  * AppConfig cfg = new AppConfig()
  *     .setCleanInterval(Duration.minutes(5))
  *     .setCacheDuration(Duration.minutes(10))
  *     .setHistorySize(20);
- * </pre>
+ * </code>
  *
  * @see <a href="http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-util/apidocs/io/dropwizard/util/Duration.html">io.dropwizard.util.Duration</a>
  *
- * @author  mk23
  * @since   2016-01-28
+ * @author  mk23
  * @version 3.2.1
  */
 @JsonSnakeCase
@@ -92,17 +92,17 @@ public class AppConfig {
      * Configuration for how often to run the task that finds and
      * purges stale endpoints.
      *
-     * @return  Configured clean interval.
+     * @return Configured clean interval.
      */
     public final Duration getCleanInterval() {
         return cleanInterval;
     }
     /**
-     * Setter for cleanInterval.
+     * <p>Setter for cleanInterval.</p>
      *
-     * @param   cleanInterval period at which the purger tasks operates.
+     * @param cleanInterval period at which the purger tasks operates.
      *
-     * @return  Modified AppConfig for setter chaining.
+     * @return Modified AppConfig for setter chaining.
      */
     public final AppConfig setCleanInterval(final Duration cleanInterval) {
         this.cleanInterval = cleanInterval;
@@ -115,18 +115,18 @@ public class AppConfig {
      * Configuration for how often to reconnect to cached endpoints
      * and scrape available attributes.
      *
-     * @return  Configured cache duration.
+     * @return Configured cache duration.
      */
     public final Duration getCacheDuration() {
         return cacheDuration;
     }
     /**
-     * Setter for cacheDuration.
+     * <p>Setter for cacheDuration.</p>
      *
-     * @param   cacheDuration period at which the endpoint cache
+     * @param cacheDuration period at which the endpoint cache
      * refreshes.
      *
-     * @return  Modified AppConfig for setter chaining.
+     * @return Modified AppConfig for setter chaining.
      */
     public final AppConfig setCacheDuration(final Duration cacheDuration) {
         this.cacheDuration = cacheDuration;
@@ -139,18 +139,18 @@ public class AppConfig {
      * Configuration for how long an endpoint goes unaccessed before
      * the purger tasks removes it from the cache.
      *
-     * @return  Configured access duration.
+     * @return Configured access duration.
      */
     public final Duration getAccessDuration() {
         return accessDuration;
     }
     /**
-     * Setter for accessDuration.
+     * <p>Setter for accessDuration.</p>
      *
-     * @param   accessDuration time before an enpoint is removed
+     * @param accessDuration time before an enpoint is removed
      * from the cache.
      *
-     * @return  Modified AppConfig for setter chaining.
+     * @return Modified AppConfig for setter chaining.
      */
     public final AppConfig setAccessDuration(final Duration accessDuration) {
         this.accessDuration = accessDuration;
@@ -163,18 +163,18 @@ public class AppConfig {
      * Configuration for how many fetched attribute values to keep for
      * each cached endpoint.
      *
-     * @return  Configured history size.
+     * @return Configured history size.
      */
     public final int getHistorySize() {
         return historySize;
     }
     /**
-     * Setter for historySize.
+     * <p>Setter for historySize.</p>
      *
-     * @param   historySize number of values to keep for all cached
+     * @param historySize number of values to keep for all cached
      * attributes at every requested endpoint.
      *
-     * @return  Modified AppConfig for setter chaining.
+     * @return Modified AppConfig for setter chaining.
      */
     public final AppConfig setHistorySize(final int historySize) {
         this.historySize = historySize;
@@ -187,18 +187,17 @@ public class AppConfig {
      * Configuration for whitelisted endpoints, allowing all when this
      * is empty.
      *
-     * @return  Configured {@link java.util.List} of whitelisted endpoints.
+     * @return Configured {@link List} containing whitelisted endpoints.
      */
     public final List<String> getAllowedEndpoints() {
         return allowedEndpoints;
     }
     /**
-     * Setter for allowedEndpoints.
+     * <p>Setter for allowedEndpoints.</p>
      *
-     * @param   allowedEndpoints {@link java.util.List} containing
-     * whitelisted endpoints.
+     * @param allowedEndpoints {@link List} containing whitelisted endpoints.
      *
-     * @return  Modified AppConfig for setter chaining.
+     * @return Modified AppConfig for setter chaining.
      */
     public final AppConfig setAllowedEndpoints(final List<String> allowedEndpoints) {
         this.allowedEndpoints = allowedEndpoints;

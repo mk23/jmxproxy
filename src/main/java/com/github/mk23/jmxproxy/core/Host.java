@@ -20,8 +20,8 @@ import java.util.Set;
  *
  * @see <a href="https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializable.html">com.fasterxml.jackson.databind.JsonSerializable</a>
  *
- * @author  mk23
  * @since   2015-05-11
+ * @author  mk23
  * @version 3.2.0
  */
 public class Host implements JsonSerializable {
@@ -76,9 +76,13 @@ public class Host implements JsonSerializable {
      *
      * Set the thread local limit for all {@link History} when serializing to JSON.
      * Because this method returns its object, requesting serialization can be done
-     * with a single statement.  For example:
+     * with a single statement.
      *
-     * <p><code>return {@link javax.ws.rs.core.Response}.ok(host.setLimit(5)).build();</code></p>
+     * <p>For example:</p>
+     *
+     * <code>return Response.ok(host.setLimit(5)).build();</code>
+     *
+     * @see <a href="http://docs.oracle.com/javaee/7/api/javax/ws/rs/core/Response.html">javax.ws.rs.core.Response</a>
      *
      * @param bound the number of items to retreive from {@link History} for this thread.
      *
@@ -92,10 +96,9 @@ public class Host implements JsonSerializable {
     /**
      * <p>Getter for mbean names.</p>
      *
-     * Extracts and returns the unique {@link java.util.Set} of all currently stored
-     * {@link MBean} names.
+     * Extracts and returns the unique {@link Set} of all currently stored {@link MBean} names.
      *
-     * @return {@link java.util.Set} of {@link MBean} name {@link java.lang.String}s.
+     * @return {@link Set} of {@link MBean} name {@link String}s.
      */
     public final Set<String> getMBeans() {
         return mbeans.keySet();

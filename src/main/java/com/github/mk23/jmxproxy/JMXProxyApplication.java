@@ -14,23 +14,28 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>JMXProxy main application.</p>
- * Configures, initializes, and starts the service.
  *
- * @author  mk23
+ * Configures application from {@link MainConfig}, initializes, and starts the service.
+ *
+ * @see <a href="http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-core/apidocs/io/dropwizard/Application.html">io.dropwizard.Application</a>
+ * @see <a href="http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-core/apidocs/io/dropwizard/setup/Bootstrap.html">io.dropwizard.setup.Bootstrap</a>
+ * @see <a href="http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-core/apidocs/io/dropwizard/setup/Environment.html">io.dropwizard.setup.Environment</a>
+ *
  * @since   2015-05-11
+ * @author  mk23
  * @version 3.2.0
  */
 public class JMXProxyApplication extends Application<MainConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(JMXProxyApplication.class);
 
     /**
-     * <p>main.</p>
+     * <p>main application entrypoint.</p>
      *
      * Starts main application.
      *
-     * @param args an array of {@link java.lang.String} command-line parameters.
+     * @param args an array of {@link String} command-line parameters.
      *
-     * @throws java.lang.Exception if any.
+     * @throws Exception if initialization fails.
      */
     public static void main(final String[] args) throws Exception {
         LOG.info("starting jmxproxy service");

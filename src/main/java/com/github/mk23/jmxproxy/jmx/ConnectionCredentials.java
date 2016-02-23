@@ -9,8 +9,8 @@ import org.hibernate.validator.constraints.NotEmpty;
  *
  * Used to marshal JMX agent credentials and provide methods for comparing.
  *
- * @author  mk23
  * @since   2015-05-11
+ * @author  mk23
  * @version 3.2.0
  */
 public class ConnectionCredentials {
@@ -27,11 +27,11 @@ public class ConnectionCredentials {
     /**
      * <p>Default constructor.</p>
      *
-     * Sets the instance username and password {@link java.lang.String}s from provided parameters.
+     * Sets the instance username and password {@link String}s from provided parameters.
      * Builds a single combined credential string for the hashCode computation.
      *
-     * @param username username {@link java.lang.String} for the new credential instance.
-     * @param password password {@link java.lang.String} for the new credential instance.
+     * @param username username {@link String} for the new credential instance.
+     * @param password password {@link String} for the new credential instance.
      */
     public ConnectionCredentials(
         @JsonProperty("username") final String username,
@@ -45,7 +45,7 @@ public class ConnectionCredentials {
     /**
      * <p>Getter for username.</p>
      *
-     * Fetches the stored username {@link java.lang.String}.
+     * Fetches the stored username {@link String}.
      *
      * @return username string.
      */
@@ -56,7 +56,7 @@ public class ConnectionCredentials {
     /**
      * <p>Getter for password.</p>
      *
-     * Fetches the stored password {@link java.lang.String}.
+     * Fetches the stored password {@link String}.
      *
      * @return password string.
      */

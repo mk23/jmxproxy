@@ -14,8 +14,8 @@ import javax.validation.constraints.NotNull;
  * application initializer creates and marshals the object from
  * JSON or Yaml config file.
  *
- * @author  mk23
  * @since   2016-01-28
+ * @author  mk23
  * @version 3.2.1
  */
 public class MainConfig extends Configuration {
@@ -32,7 +32,7 @@ public class MainConfig extends Configuration {
      *
      * Application service config.
      *
-     * @return  Application subsection from the full configuration file.
+     * @return Application subsection from the full configuration file.
      */
     public final AppConfig getAppConfig() {
         return appConfig;

@@ -27,23 +27,25 @@ import javax.management.openmbean.TabularData;
  * Saves a JMX Attribute value object. Implements JsonSerializable
  * interface to convert the stored value into JSON. On serialization,
  * recursively inspects the value type and marshals it to JSON using
- * the supplied JsonGenerator. For {@link java.lang.reflect.Array},
- * {@link java.lang.Iterable}, or {@link javax.management.openmbean.TabularData},
- * builds a JSON array.  For {@link javax.management.openmbean.CompositeData},
+ * the supplied JsonGenerator. For {@link Array}, {@link Iterable},
+ * {@link TabularData}, builds a JSON array.  For {@link CompositeData},
  * builds a JSON object. For any other native types or null values, builds
- * a JSON equivalent.  Special cases:
+ * a JSON equivalent.
+ *
+ * <p>Special cases:</p>
+ *
  * <ul>
  *   <li>
- *   Any {@link java.lang.String} that contains valid JSON, will also be
- *   recursively serialized using a dynamic JsonParser.
+ *   Any {@link String} that contains valid JSON, will also be recursively
+ *   serialized using a dynamic JsonParser.
  *   </li>
  *   <li>
- *   Any <code>NaN</code> {@link java.lang.Double} or {@link java.lang.Float}
- *   value will yield a JSON string <code>"NaN"</code>.
+ *   Any <code>NaN</code> {@link Double} or {@link Float} value will yield
+ *   a JSON string <code>"NaN"</code>.
  *   </li>
  *   <li>
- *   Any <code>infinite</code> {@link java.lang.Double} or {@link java.lang.Float}
- *   value will yield a JSON string <code>"Infinity"</code>.
+ *   Any <code>infinite</code> {@link Double} or {@link Float} value will
+ *   yield a JSON string <code>"Infinity"</code>.
  *   </li>
  * </ul>
  *
@@ -51,8 +53,8 @@ import javax.management.openmbean.TabularData;
  * @see <a href="http://fasterxml.github.io/jackson-core/javadoc/2.6/com/fasterxml/jackson/core/JsonParser.html">com.fasterxml.jackson.core.JsonParser</a>
  * @see <a href="https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializable.html">com.fasterxml.jackson.databind.JsonSerializable</a>
  *
- * @author  mk23
  * @since   2015-05-11
+ * @author  mk23
  * @version 3.2.0
  */
 public class Attribute implements JsonSerializable {
@@ -101,23 +103,25 @@ public class Attribute implements JsonSerializable {
      *
      * Inspects the stored JMX Attribute value type and serializes it to
      * JSON using the supplied JsonGenerator. Recursively calls itself
-     * if finding JMX collections.  For an {@link java.lang.reflect.Array},
-     * {@link java.lang.Iterable}, or {@link javax.management.openmbean.TabularData},
-     * builds a JSON array.  For {@link  javax.management.openmbean.CompositeData},
+     * if finding JMX collections.  For an {@link Array}, {@link Iterable},
+     * or {@link TabularData}, builds a JSON array.  For {@link CompositeData},
      * builds a JSON object.  For any other native types or null values, builds
-     * a JSON equivalent.  Special cases:
+     * a JSON equivalent.
+     *
+     * <p>Special cases:</p>
+     *
      * <ul>
      *   <li>
-     *   Any {@link java.lang.String} that contains valid JSON, will also be
-     *   recursively serialized using a dynamic JsonParser.
+     *   Any {@link String} that contains valid JSON, will also be recursively
+     *   serialized using a dynamic JsonParser.
      *   </li>
      *   <li>
-     *   Any <code>NaN</code> {@link java.lang.Double} or {@link java.lang.Float}
-     *   value will yield a JSON string <code>"NaN"</code>.
+     *   Any <code>NaN</code> {@link Double} or {@link Float} value will yield
+     *   a JSON string <code>"NaN"</code>.
      *   </li>
      *   <li>
-     *   Any <code>infinite</code> {@link java.lang.Double} or {@link java.lang.Float}
-     *   value will yield a JSON string <code>"Infinity"</code>.
+     *   Any <code>infinite</code> {@link Double} or {@link Float} value will
+     *   yield a JSON string <code>"Infinity"</code>.
      *   </li>
      * </ul>
      *

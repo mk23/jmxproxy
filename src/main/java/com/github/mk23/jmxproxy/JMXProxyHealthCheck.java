@@ -9,8 +9,8 @@ import com.codahale.metrics.health.HealthCheck;
  *
  * Checks the state of the {@link ConnectionManager}.
  *
- * @author  mk23
  * @since   2015-05-11
+ * @author  mk23
  * @version 3.2.0
  */
 public class JMXProxyHealthCheck extends HealthCheck {

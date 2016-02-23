@@ -21,8 +21,8 @@ import java.util.Set;
  *
  * @see <a href="https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializable.html">com.fasterxml.jackson.databind.JsonSerializable</a>
  *
- * @author  mk23
  * @since   2015-05-11
+ * @author  mk23
  * @version 3.2.0
  */
 public class MBean implements JsonSerializable {
@@ -68,26 +68,29 @@ public class MBean implements JsonSerializable {
      *
      * Set the thread local limit for all {@link History} when serializing to JSON.
      * Because this method returns its object, requesting serialization can be done
-     * with a single statement.  For example:
+     * with a single statement.
      *
-     * <p><code>return {@link javax.ws.rs.core.Response}.ok(mbean.setLimit(5)).build();</code></p>
+     * <p>For example</p>
+     *
+     * <code>return Response.ok(mbean.setLimit(5)).build();</code>
+     *
+     * @see <a href="http://docs.oracle.com/javaee/7/api/javax/ws/rs/core/Response.html">javax.ws.rs.core.Response</a>
      *
      * @param bound the number of items to retreive from {@link History} for this thread.
      *
      * @return this mbean object for chaining calls.
      */
     public final MBean setLimit(final Integer bound) {
-        this.limit.set(bound);
+        limit.set(bound);
         return this;
     }
 
     /**
      * <p>Getter for attribute names.</p>
      *
-     * Extracts and returns the unique {@link java.util.Set} of all currently stored
-     * {@link Attribute} names.
+     * Extracts and returns the unique {@link Set} of all currently stored {@link Attribute} names.
      *
-     * @return {@link java.util.Set} of {@link Attribute} name {@link java.lang.String}s.
+     * @return {@link Set} of {@link Attribute} name {@link String}s.
      */
     public final Set<String> getAttributes() {
         return attributes.keySet();

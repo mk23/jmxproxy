@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
  *
  * @see <a href="http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-lifecycle/apidocs/io/dropwizard/lifecycle/Managed.html">io.dropwizard.lifecycle.Managed</a>
  *
- * @author  mk23
  * @since   2015-05-11
+ * @author  mk23
  * @version 3.2.0
  */
 public class ConnectionManager implements Managed {

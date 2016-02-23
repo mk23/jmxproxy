@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
  * {@link com.github.mk23.jmxproxy.core.Attribute}.  Also maintains the {@link Host} access
  * time to allow reaping of unaccessed workers.
  *
- * @author  mk23
  * @since   2015-05-11
+ * @author  mk23
  * @version 3.2.0
  */
 public class ConnectionWorker {
