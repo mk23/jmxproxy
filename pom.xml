@@ -11,7 +11,6 @@
   <description>JMX to HTTP Proxy</description>
   <url>https://mk23.github.io/jmxproxy</url>
   <inceptionYear>2011</inceptionYear>
-
   <licenses>
     <license>
       <name>MIT License</name>
@@ -31,30 +30,28 @@
     </developer>
   </developers>
 
-  <issueManagement>
-    <system>GitHub</system>
-    <url>https://github.com/mk23/jmxproxy/issues</url>
-  </issueManagement>
-
-  <ciManagement>
-    <system>Travis CI</system>
-    <url>https://travis-ci.org/mk23/jmxproxy</url>
-  </ciManagement>
+  <prerequisites>
+    <maven>3.0.4</maven>
+  </prerequisites>
 
   <scm>
     <connection>scm:git:git://github.com/mk23/jmxproxy.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/mk23/jmxproxy.git</developerConnection>
     <url>https://github.com/mk23/jmxproxy</url>
   </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/mk23/jmxproxy/issues</url>
+  </issueManagement>
+  <ciManagement>
+    <system>Travis CI</system>
+    <url>https://travis-ci.org/mk23/jmxproxy</url>
+  </ciManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jmxproxy.test.port>11123</jmxproxy.test.port>
   </properties>
-
-  <prerequisites>
-    <maven>3.0.4</maven>
-  </prerequisites>
 
   <dependencies>
     <dependency>
@@ -120,6 +117,7 @@
   </dependencies>
 
   <build>
+    <pluginManagement/>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -355,6 +353,7 @@
       </plugin>
     </plugins>
   </build>
+
   <reporting>
     <excludeDefaults>true</excludeDefaults>
     <plugins>
@@ -404,6 +403,7 @@
         <version>3.6</version>
         <configuration>
           <linkXRef>false</linkXRef>
+	  <skipEmptyReport>false</skipEmptyReport>
         </configuration>
         <reportSets>
           <reportSet>
