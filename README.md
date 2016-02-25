@@ -347,7 +347,7 @@ Libraries
 | [flot](http://www.flotcharts.org)                         | 0.8.3   | [MIT](https://github.com/flot/flot/blob/master/LICENSE.txt)                                       |
 | [flot.tooltip](https://github.com/krzysu/flot.tooltip)    | 0.8.5   | [MIT](https://github.com/krzysu/flot.tooltip/blob/master/README.md)                               |
 | [bootstrap](http://getbootstrap.com)                      | 3.3.6   | [MIT](https://github.com/twbs/bootstrap/blob/master/LICENSE)                                      |
-| [fuelux](http://getfuelux.com)                            | 3.6.3   | [BSD3](https://github.com/ExactTarget/fuelux/blob/master/LICENSE)                                 |
+| [fuelux](http://getfuelux.com)                            | 3.13.0  | [BSD3](https://github.com/ExactTarget/fuelux/blob/master/LICENSE)                                 |
 | [font-awesome](http://fortawesome.github.io/Font-Awesome) | 4.5.0   | [MIT](http://opensource.org/licenses/mit-license.html), [SIL OFL 1.1](http://scripts.sil.org/OFL) |
 
 

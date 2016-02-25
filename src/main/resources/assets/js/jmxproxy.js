@@ -194,7 +194,7 @@ var endpointHostClass = function(prefix, host) {
                 dataSource: dataSource,
                 folderSelect: false,
             })
-            .on('opened.fu.tree', function(e, node) {
+            .on('disclosedFolder.fu.tree', function(e, node) {
                 $('.tree-item').tooltip({
                     container: 'body'
                 });
