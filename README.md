@@ -342,7 +342,7 @@ Libraries
 | Name                                                      | Version | License                                                                                           |
 |-----------------------------------------------------------|---------|---------------------------------------------------------------------------------------------------|
 | [dropwizard](http://dropwizard.io)                        | 0.9.2   | [Apache 2.0](https://github.com/dropwizard/dropwizard/blob/master/LICENSE)                        |
-| [jquery](http://jquery.com)                               | 1.11.3  | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt)                                   |
+| [jquery](http://jquery.com)                               | 1.12.1  | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt)                                   |
 | [underscore](http://underscorejs.org)                     | 1.8.3   | [MIT](https://github.com/jashkenas/underscore/blob/master/LICENSE)                                |
 | [flot](http://www.flotcharts.org)                         | 0.8.3   | [MIT](https://github.com/flot/flot/blob/master/LICENSE.txt)                                       |
 | [flot.tooltip](https://github.com/krzysu/flot.tooltip)    | 0.8.5   | [MIT](https://github.com/krzysu/flot.tooltip/blob/master/README.md)                               |
