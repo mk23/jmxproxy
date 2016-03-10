@@ -368,18 +368,10 @@ var endpointHostClass = function(prefix, host) {
                                 container: 'body',
                             })
                             .click(function() {
-                                $('#attrib-name').text($(this).data('attrib-name'));
-                                if ($('#attrib-data').data('fu.repeater')) {
-                                    $('#attrib-data')
-                                    .repeater('clear')
-                                    .removeData('fu.repeater');
-                                }
-                                $('#attrib-data').repeater({
-                                    dataSource: attrDataSource,
-                                    dataTarget: $(this).data('attrib-data'),
-                                    list_columnRendered: attrColBuilder,
-                                });
-                                $('#attrib-modal').modal();
+                                $('#attrib-modal')
+                                .data('attrib-name', $(this).data('attrib-name'))
+                                .data('attrib-data', $(this).data('attrib-data'))
+                                .modal();
                             })
                             .addClass('btn btn-xs btn-info')
                             .text($.type(val))
@@ -477,7 +469,7 @@ var endpointHostClass = function(prefix, host) {
                         })
                     }
                 } else if (_.isObject(data)) {
-                    var cols = [{
+                    cols = [{
                         label: 'Name',
                         property: 'key',
                         sortable: true,
@@ -550,6 +542,21 @@ var endpointHostClass = function(prefix, host) {
             .data('target', bean)
             .click(function() {
                 buildBeanData($(this).data('target'));
+            });
+
+            $('#attrib-modal')
+            .on('hidden.bs.modal', function() {
+                $('#attrib-data')
+                .repeater('clear')
+                .removeData('fu.repeater');
+            })
+            .on('shown.bs.modal', function() {
+                $('#attrib-name').text($(this).data('attrib-name'));
+                $('#attrib-data').repeater({
+                    dataSource: attrDataSource,
+                    dataTarget: $(this).data('attrib-data'),
+                    list_columnRendered: attrColBuilder,
+                });
             });
         });
     };
