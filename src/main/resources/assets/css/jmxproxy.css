@@ -48,3 +48,13 @@ div.tooltip-inner {
 div.popover-content {
     word-wrap: break-word;
 }
+
+#mbean-title,
+#attrib-name {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+#mbean-reset {
+    cursor: pointer;
+}

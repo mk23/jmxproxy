@@ -393,11 +393,9 @@
                             <div id="mbeans-data" class="repeater hidden">
                                 <div class="repeater-header">
                                     <div class="repeater-header-left">
-                                        <div class="repeater-title btn-group">
-                                            <button id="mbean-reset" class="btn btn-default" type="button" title="Refresh" data-toggle="tooltip" data-placement="bottom">
-                                                <span class="glyphicon glyphicon-refresh"></span>
-                                            </button>
-                                            <button id="mbean-title" class="btn btn-default disabled" type="button"></button>
+                                        <div class="repeater-title">
+                                            <span id="mbean-title" class="text-primary"></span>
+                                            <span id="mbean-reset" class="glyphicon glyphicon-refresh" title="Refresh" data-toggle="tooltip" data-placement="bottom"></span>
                                         </div>
                                     </div>
                                     <div class="repeater-header-right">
@@ -475,8 +473,8 @@
                     <div class="modal-body">
                         <div id="attrib-data" class="repeater">
                             <div class="repeater-header">
-                                <div class="releater-header-left">
-                                    <h4 id="attrib-name" class="repeater-title">&nbsp;</h4>
+                                <div class="repeater-header-left">
+                                    <span id="attrib-name" class="repeater-title text-primary"></span>
                                 </div>
                                 <div class="repeater-header-right">
                                     <div class="repeater-search">
@@ -489,9 +487,6 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <a class="btn btn-danger" title="Close" data-dismiss="modal" data-toggle="tooltip" data-placement="bottom">
-                                        <i class="fa fa-times"></i>
-                                    </a>
                                 </div>
                             </div>
                             <div class="repeater-viewport">

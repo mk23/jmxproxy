@@ -782,6 +782,7 @@ var endpointHostClass = function(prefix, host) {
             });
         }
     };
+
     var checkHost = function() {
         $('#welcome-banner, #endpoint-select').addClass('hidden');
         $('#endpoint-navbar, #endpoint-loader').removeClass('hidden');
@@ -831,6 +832,8 @@ $(document).ready(function() {
             } else {
                 $('#endpoint-tabs li.active').next().find('a').tab('show');
             }
+        } else if (e.which == 27) { // escape
+            $('#attrib-modal').modal('hide');
         }
     });
 
