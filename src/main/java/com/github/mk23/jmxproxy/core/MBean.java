@@ -86,6 +86,19 @@ public class MBean implements JsonSerializable {
     }
 
     /**
+     * <p>Tester for attribute name.</p>
+     *
+     * Checks for requested {@link Attribute} name in the map store.
+     *
+     * @param attribute name of the {@link Attribute} to look up in the map store.
+     *
+     * @return true if the {@link Attribute} exists in the map store, false otherwise.
+     */
+    public final boolean hasAttribute(final String attribute) {
+        return attributes.containsKey(attribute);
+    }
+
+    /**
      * <p>Getter for attribute names.</p>
      *
      * Extracts and returns the unique {@link Set} of all currently stored {@link Attribute} names.

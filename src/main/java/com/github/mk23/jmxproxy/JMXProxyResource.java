@@ -480,7 +480,7 @@ public class JMXProxyResource {
         }
 
         MBean mbean = host.getMBean(mbeanName);
-        if (mbean == null) {
+        if (mbean == null || !mbean.hasAttribute(attribute)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
