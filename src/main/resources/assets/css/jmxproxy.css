@@ -24,6 +24,10 @@
     left: 50%;
 }
 
+.graph-tooltip {
+    position: absolute;
+}
+
 div.overview-graph {
     width: 100%;
     height: 225px;

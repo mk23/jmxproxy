@@ -102,10 +102,6 @@ var endpointHostClass = function(prefix, host) {
                         show: true,
                     },
                 },
-                tooltip: true,
-                tooltipOpts: {
-                    content: '%s: %y',
-                },
                 xaxis: {
                     mode: 'time',
                     timezone: 'browser',
@@ -905,6 +901,9 @@ $(document).ready(function() {
 
     $('[data-toggle="tooltip"]').tooltip();
 
+    $('.focused-graph').on('plothover', showGraphTooltip);
+    $('.overview-graph').on('plothover', showGraphTooltip);
+
     $.getJSON(prefix+'/jmxproxy/config', function(data) {
         jmxproxyConf = data;
 
@@ -1000,5 +999,32 @@ function displayError(text) {
         alertTimeout = setTimeout(function() {
             $('#endpoint-alert').removeClass('in');
         }, 5000);
+    }
+}
+
+function showGraphTooltip(e, p, i) {
+    var $tip = $('.graph-tooltip');
+
+    if (i) {
+        if (i.pageX != $tip.data('pageX') || i.pageY != $tip.data('pageY') || !$tip.data('shown') || !$tip.data('bs.tooltip')) {
+            $tip
+            .css({
+                'top':  i.pageY,
+                'left': i.pageX,
+            })
+            .tooltip({
+                title: _.isFunction(i.series.yaxis.tickFormatter) ? i.series.yaxis.tickFormatter(i.datapoint[1]) : i.datapoint[1],
+                placement: 'top',
+            })
+            .tooltip('fixTitle')
+            .tooltip('show')
+            .data('pageX', i.pageX)
+            .data('pageY', i.pageY)
+            .data('shown', true);
+        }
+    } else {
+        $tip
+        .tooltip('destroy')
+        .data('shown', false)
     }
 }
