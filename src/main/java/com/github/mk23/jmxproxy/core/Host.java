@@ -139,11 +139,7 @@ public class Host implements JsonSerializable {
 
         jgen.writeStartObject();
         for (Map.Entry<String, MBean> mbeanEntry : mbeans.entrySet()) {
-            if (bound < 0) {
-                jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue());
-            } else {
-                jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue().setLimit(bound));
-            }
+            jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue().setLimit(bound));
         }
         jgen.writeEndObject();
     }
