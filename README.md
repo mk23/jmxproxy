@@ -184,14 +184,19 @@ For JMX agents that require authentication, JMXProxy allows clients to submit cr
 
 1. Get the list of mbeans available on a target JVM with form-urlencoded credentials
 
-        $ curl -s -d'username=ro&password=public' 'http://localhost:8080/jmxproxy/localhost:1123?full=true'
+        $ curl -s -d'username=ro&password=public' 'http://localhost:8080/jmxproxy/localhost:1123'
         ["java.lang:type=OperatingSystem", ...
 
 2. Get the list of mbeans available on a target JVM with JSON credentials
 
-        $ curl -s -d'{"username":"ro","password":"public"}' -H'Content-Type: application/json' 'http://localhost:8080/jmxproxy/localhost:1123?full=true'
+        $ curl -s -d'{"username":"ro","password":"public"}' -H'Content-Type: application/json' 'http://localhost:8080/jmxproxy/localhost:1123'
         ["java.lang:type=OperatingSystem", ...
 
+JMXProxy service has the following miscelleneous APIs for convinience and UI building:
+
+1. Get the current service configuration:
+        $ curl -s 'http://localhost:8080/jmxproxy/config'
+        {"clean_interval":60000,"cache_duration":20000,"access_duration":1800000,"history_size":20,"allowed_endpoints":[]}
 
 Limitations
 -----------
