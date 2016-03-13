@@ -177,6 +177,40 @@ public class JMXProxyResourceTest {
         resources.client().target("/" + validHost).request().post(Entity.form(invalidAuth), List.class);
     }
 
+    /* Cache tests */
+    @Test
+    public void checkEmptyCache() throws Exception {
+        List result = resources.client().target("/").request().get(List.class);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void checkValidEntry() throws Exception {
+        List result;
+
+        result = requestWithAuth("/" + validHost, List.class);
+        assertTrue(result.contains(validMBean));
+
+        result = resources.client().target("/").request().get(List.class);
+        assertTrue(result.contains(validHost));
+    }
+
+    @Test
+    public void checkDeleleValidHost() throws Exception {
+        List result;
+
+        result = requestWithAuth("/" + validHost, List.class);
+        assertTrue(result.contains(validMBean));
+
+        result = resources.client().target("/").request().get(List.class);
+        assertTrue(result.contains(validHost));
+
+        assertTrue(resources.client().target("/" + validHost).request().delete(Boolean.class));
+
+        result = resources.client().target("/").request().get(List.class);
+        assertTrue(result.isEmpty());
+    }
+
     @Test(expected=NotFoundException.class)
     public void checkDeleleInvalidHost() throws Exception {
         resources.client().target("/" + invalidHost).request().delete(Boolean.class);

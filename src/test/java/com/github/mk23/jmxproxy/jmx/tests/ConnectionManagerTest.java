@@ -1,8 +1,8 @@
 package com.github.mk23.jmxproxy.jmx.tests;
 
 import com.github.mk23.jmxproxy.conf.AppConfig;
-import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 import com.github.mk23.jmxproxy.jmx.ConnectionCredentials;
+import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
 import io.dropwizard.util.Duration;
 
