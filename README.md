@@ -194,7 +194,18 @@ For JMX agents that require authentication, JMXProxy allows clients to submit cr
 
 JMXProxy service has the following miscelleneous APIs for convinience and UI building:
 
-1. Get the current service configuration:
+1. Get the list of currently cached endpoints:
+
+        $ curl -s 'http://localhost:8080/jmxproxy'
+        ["localhost:1123"]
+
+2. Delete the requested endpoint to purge its history:
+
+        $ curl -s -XDELETE 'http://localhost:8080/jmxproxy/localhost:1123'
+        true
+
+3. Get the current service configuration:
+
         $ curl -s 'http://localhost:8080/jmxproxy/config'
         {"clean_interval":60000,"cache_duration":20000,"access_duration":1800000,"history_size":20,"allowed_endpoints":[]}
 
