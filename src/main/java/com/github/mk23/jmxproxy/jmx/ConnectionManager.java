@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -70,6 +71,39 @@ public class ConnectionManager implements Managed {
      */
     public final AppConfig getConfiguration() {
         return config;
+    }
+
+    /**
+     * <p>Getter for hosts.</p>
+     *
+     * Fetches the {@link Set} of {@link ConnectionWorker} name {@link String}s.
+     *
+     * @return {@link Set} of {@link ConnectionWorker} name {@link String}s.
+     */
+    public final synchronized Set<String> getHosts() {
+        return hosts.keySet();
+    }
+
+    /**
+     * <p>Deleter for host.</p>
+     *
+     * Attempts to remove the specified host from the {@link ConnectionWorker} map store.
+     *
+     * @param host endpoint host:port {@link String}.
+     *
+     * @return true if the key is found in the map store.
+     *
+     * @throws WebApplicationException if key is not found in the map store.
+     */
+    public final synchronized boolean delHost(final String host) throws WebApplicationException {
+        if (hosts.containsKey(host)) {
+            LOG.debug("purging " + host);
+            hosts.remove(host).shutdown();
+        } else {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+
+        return true;
     }
 
     /**

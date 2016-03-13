@@ -10,6 +10,7 @@ import io.dropwizard.jersey.params.BooleanParam;
 import javax.validation.Valid;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -74,6 +75,43 @@ public class JMXProxyResource {
     @Path("config")
     public final Response getConfiguration() {
         return Response.ok(manager.getConfiguration()).build();
+    }
+
+    /**
+     * <p>Anonymous GET handler for <code>/</code>.</p>
+     *
+     * Accepts HTTP GET requests.  Responds with a list of cached endpoints
+     * available on the {@link ConnectionManager}.
+     *
+     * @return List of cached endpoints, marshalled into an API Response.
+     */
+    @GET
+    public final Response getCachedEndpoints() {
+        LOG.debug("fetching cached endpoints list");
+        return Response.ok(manager.getHosts()).build();
+    }
+
+    /**
+     * <p>Anonymous DELETE handler for <code>/&lt;host:port&gt;</code>.</p>
+     *
+     * Accepts HTTP DELETE requests.  Attemps to remove the specified endpoint
+     * and returns operation success status as a boolean.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     *
+     * @return boolean true mapped into an API Response.
+     */
+    @DELETE
+    @Path("{host}:{port:\\d+}")
+    public final Response delCachedEndpoint(
+        @PathParam("host") final String host,
+        @PathParam("port") final int port
+    ) {
+        LOG.debug(String.format("removing %s:%d", host, port));
+        return Response.ok(manager.delHost(host + ":" + port)).build();
     }
 
     /**
