@@ -11,54 +11,19 @@
         <link href="img/favicon.ico" rel="icon">
     </head>
     <body class="fuelux">
-        <div id="endpoint-select" class="nav navbar-default" role="navigation">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <form id="endpoint-insert" class="navbar-form navbar-default hidden" autocomplete="off">
-                        <div class="form-group">
-                            <input id="endpoint-input" class="form-control" type="text" placeholder="hostname:port" pattern="^(?:[a-zA-Z][a-zA-Z0-9\.\-]+[a-zA-Z0-9]|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+$" required>
-                        </div>
-                    </form>
-                    <ul id="endpoint-choice" class="nav navbar-default hidden">
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" href="#" data-toggle="dropdown">select endpoint <span class="caret"></span></a>
-                            <ul id="endpoint-list" class="dropdown-menu" role="menu"></ul>
-                        <li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div id="endpoint-navbar" class="nav navbar-inverse hidden" role="navigation">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <div class="navbar-brand"><i class="fa fa-coffee"></i> <span id="navbar-label"></span></div>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul id="endpoint-tabs" class="nav navbar-nav" role="tablist">
-                        <li><a href="#overview" data-toggle="tab" role="tab"><i class="fa fa-dashboard"></i> Overview </a></li>
-                        <li><a href="#memory" data-toggle="tab" role="tab"><i class="fa fa-link"></i> Memory</a></li>
-                        <li><a href="#threads" data-toggle="tab" role="tab"><i class="fa fa-tasks"></i> Threads</a></li>
-                        <li><a href="#classes" data-toggle="tab" role="tab"><i class="fa fa-cubes"></i> Classes</a></li>
-                        <li><a href="#summary" data-toggle="tab" role="tab"><i class="fa fa-info-circle"></i> Summary</a></li>
-                        <li><a href="#mbeans" data-toggle="tab" role="tab"><i class="fa fa-list-ul"></i> MBeans</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div id="endpoint-alert" class="alert alert-danger alert-block fade" role="alert">
-            <button type="button" class="close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <i class="fa fa-warning"></i>
-            <span id="endpoint-error"></span>
-        </div>
-
         <div id="welcome-banner" class="banner-container">
             <div class="text-info">
                 <h1><i class="fa fa-coffee"></i> JMXProxy</h1>
                 <hr>
-                <h3>&#X2196; please select an endpoint</h3>
+                <h3>please {action} an endpoint</h3>
+                <div id="endpoint-combo" class="col-lg-2 col-lg-offset-5 input-group input-append dropdown combobox">
+                    <input class="form-control" type="text" placeholder="hostname:port" pattern="^(?:[a-zA-Z][a-zA-Z0-9\.\-]+[a-zA-Z0-9]|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+$" required>
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -93,6 +58,32 @@
 
         <div id="endpoint-loader" class="loader-wrapper hidden">
             <div class="loader" data-initialize="loader"></div>
+        </div>
+
+        <div id="endpoint-navbar" class="nav navbar-inverse navbar-fixed-top hidden" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <div class="navbar-brand"><i class="fa fa-coffee"></i> <span id="navbar-label"></span></div>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul id="endpoint-tabs" class="nav navbar-nav" role="tablist">
+                        <li><a href="#overview" data-toggle="tab" role="tab"><i class="fa fa-dashboard"></i> Overview </a></li>
+                        <li><a href="#memory" data-toggle="tab" role="tab"><i class="fa fa-link"></i> Memory</a></li>
+                        <li><a href="#threads" data-toggle="tab" role="tab"><i class="fa fa-tasks"></i> Threads</a></li>
+                        <li><a href="#classes" data-toggle="tab" role="tab"><i class="fa fa-cubes"></i> Classes</a></li>
+                        <li><a href="#summary" data-toggle="tab" role="tab"><i class="fa fa-info-circle"></i> Summary</a></li>
+                        <li><a href="#mbeans" data-toggle="tab" role="tab"><i class="fa fa-list-ul"></i> MBeans</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="endpoint-alert" class="alert alert-danger alert-block fade" role="alert">
+            <button type="button" class="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <i class="fa fa-warning"></i>
+            <span id="endpoint-error"></span>
         </div>
 
         <div class="tab-content">

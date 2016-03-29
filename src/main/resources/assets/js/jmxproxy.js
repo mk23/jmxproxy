@@ -833,8 +833,33 @@ $(document).ready(function() {
         }
     });
 
+    $('#endpoint-combo')
+    .on('changed.fu.combobox', function(e, data) {
+        if ($(this).data('trashing')) {
+            $('input', this)
+            .val('')
+            .focus();
 
-    $('#endpoint-input')
+            elem = $(this).find('li[data-value="'+data.text+'"]');
+            if (_.contains(jmxproxyConf.allowed_endpoints, data.text)) {
+                elem.find('span').remove();
+            } else {
+                elem.remove();
+            }
+
+            if ($('#endpoint-combo ul li').length == 0) {
+                $('#endpoint-combo button').prop('disabled', true);
+            }
+        } else if (!$(this).data('changing')) {
+            console.log($(this).data('changing'));
+            endpointHost = endpointHostClass(prefix, data.text);
+            $('#endpoint-combo').data('changing', false);
+        }
+    })
+    .data('trashing', false)
+    .data('changing', false);
+
+    $('#endpoint-combo input')
     .keypress(function(e) {
         if (e.keyCode == 13 && this.validity.valid) {
             endpointHost = endpointHostClass(prefix, $(this).val());
@@ -844,6 +869,12 @@ $(document).ready(function() {
         $(this).parent()
         .toggleClass('has-error', !this.validity.valid)
         .toggleClass('has-success', this.validity.valid);
+
+        $('#endpoint-combo').data('changing', $(this).val() != '');
+    })
+    .blur(function(e) {
+        console.log('hi');
+        $('#endpoint-combo').data('changing', false);
     });
 
     $('#endpoint-creds').submit(function() {
@@ -906,33 +937,73 @@ $(document).ready(function() {
 
     $.getJSON(prefix+'/jmxproxy/config', function(data) {
         jmxproxyConf = data;
+        bannerAction = $('#welcome-banner h3').text();
 
-        if (data.allowed_endpoints.length > 0) {
-            $.each(data.allowed_endpoints, function(key, val) {
-                $('#endpoint-list')
+        $.getJSON(prefix+'/jmxproxy', function(data) {
+            _.each(_.union(jmxproxyConf.allowed_endpoints, data), function(item) {
+                if (_.contains(data, item)) {
+                    trash = $('<span/>')
+                    .data('value', item)
+                    .addClass('glyphicon glyphicon-trash text-muted pull-right')
+                    .mouseover(function() {
+                        $('#endpoint-combo').data('trashing', true);
+                        $(this).toggleClass('text-muted text-danger');
+                    })
+                    .mouseout(function() {
+                        $('#endpoint-combo').data('trashing', false);
+                        $(this).toggleClass('text-muted text-danger');
+                    })
+                    .click(function() {
+                        $.ajax(prefix+'/jmxproxy/'+$(this).data('value'), {
+                            method: 'DELETE',
+                            success: function() {
+                                $('#endpoint-combo')
+                                .data('trashing', false);
+                            },
+                        })
+                    });
+                } else {
+                    trash = '';
+                }
+
+                $('#endpoint-combo ul')
                 .append(
                     $('<li/>')
+                    .attr('data-value', item)
                     .append(
                         $('<a/>')
                         .attr('href', '#')
-                        .click(function() {
-                            endpointHost = endpointHostClass(prefix, $(this).text());
-                        })
-                        .text(val)
+                        .append(item)
+                        .append(trash)
                     )
                 );
             });
 
-            $('#welcome-banner h3').text($('#welcome-banner h3').text().replace('enter', 'select'));
-            $('#endpoint-choice').toggleClass('hidden');
-        } else {
-            $('#welcome-banner h3').text($('#welcome-banner h3').text().replace('select', 'enter'));
-            $('#endpoint-insert').toggleClass('hidden');
-            $('#endpoint-insert input').focus();
-        }
+            if ($('#endpoint-combo ul li').length > 0) {
+                $('#endpoint-combo').combobox('enable');
+            } else {
+                $('#endpoint-combo button').prop('disabled', true);
+            }
+
+            if (jmxproxyConf.allowed_endpoints.length > 0) {
+                $('#endpoint-combo input').prop('disabled', true);
+                $('#welcome-banner h3').text(bannerAction.replace('{action}', 'select'));
+            } else {
+                $('#endpoint-combo input').focus();
+                if (data.length > 0) {
+                    $('#welcome-banner h3').text(bannerAction.replace('{action}', 'select or enter'));
+                } else {
+                    $('#welcome-banner h3').text(bannerAction.replace('{action}', 'enter'));
+                }
+            }
+        })
+        .fail(function() {
+            displayError('Malformed cached endpoint list received from server.');
+        });
+
     })
     .fail(function() {
-        displayError('Malformed configuration data recieved from the server.')
+        displayError('Malformed configuration data received from the server.');
     });
 });
 

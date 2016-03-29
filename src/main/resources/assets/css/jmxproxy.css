@@ -53,6 +53,7 @@ div.popover-content {
     word-wrap: break-word;
 }
 
+#endpoint-combo,
 #mbean-title,
 #attrib-name {
     font-weight: bold;
