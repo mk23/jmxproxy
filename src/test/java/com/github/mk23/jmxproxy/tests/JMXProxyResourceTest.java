@@ -29,6 +29,7 @@ import javax.ws.rs.core.Form;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeNotNull;
@@ -51,6 +52,8 @@ public class JMXProxyResourceTest {
 
     private ConnectionManager manager;
     private ResourceTestRule  resources;
+
+    @Rule public TestName name = new TestName();
 
     public JMXProxyResourceTest() throws Exception {
         if (passwdFile != null) {
@@ -75,6 +78,11 @@ public class JMXProxyResourceTest {
         resources = ResourceTestRule.builder().addResource(new JMXProxyResource(manager)).build();
 
         return resources;
+    }
+
+    @Before
+    public void printTestName() {
+        System.out.println(" -> " + name.getMethodName());
     }
 
     /* Whitelist tests */

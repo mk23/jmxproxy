@@ -19,7 +19,10 @@ import javax.management.ObjectName;
 
 import javax.ws.rs.WebApplicationException;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -42,6 +45,8 @@ public class ConnectionManagerTest {
     private final ConnectionCredentials validAuth;
     private final ConnectionCredentials invalidAuth = new ConnectionCredentials(UUID.randomUUID().toString(), UUID.randomUUID().toString());
 
+    @Rule public TestName name = new TestName();
+
     public interface ConnectionManagerTestJMXMBean {
     }
 
@@ -62,6 +67,11 @@ public class ConnectionManagerTest {
             );
         } catch (javax.management.InstanceAlreadyExistsException e) {
         }
+    }
+
+    @Before
+    public void printTestName() {
+        System.out.println(" -> " + name.getMethodName());
     }
 
     /* Auth tests */

@@ -5,7 +5,10 @@ import com.github.mk23.jmxproxy.core.History;
 
 import java.util.ArrayList;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -13,12 +16,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class HistoryTest {
+    @Rule public TestName name = new TestName();
+
     private Object[] getAttributeValues(Attribute[] attributes) {
         ArrayList<Object> al = new ArrayList<Object>(attributes.length);
         for (Attribute a : attributes) {
             al.add(a.getAttributeValue());
         }
         return al.toArray(new Object[al.size()]);
+    }
+
+    @Before
+    public void printTestName() {
+        System.out.println(" -> " + name.getMethodName());
     }
 
     @Test

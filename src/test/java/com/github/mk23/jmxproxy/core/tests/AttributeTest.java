@@ -21,7 +21,10 @@ import java.util.List;
 
 import javax.management.ObjectName;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;;
 
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 
@@ -38,6 +41,8 @@ public class AttributeTest {
 
     private final ConnectionManager manager = new ConnectionManager(new AppConfig());
     private final ConnectionCredentials validAuth;
+
+    @Rule public TestName name = new TestName();
 
     public interface AttributeTestJMXMBean {
         Object getNullValue();
@@ -144,6 +149,11 @@ public class AttributeTest {
 
     private String jsonFixture(String filename) throws IOException {
         return om.writeValueAsString(om.readValue(fixture(filename), JsonNode.class));
+    }
+
+    @Before
+    public void printTestName() {
+        System.out.println(" -> " + name.getMethodName());
     }
 
     /* Attribute tests */

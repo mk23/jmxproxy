@@ -12,7 +12,10 @@ import java.io.IOException;
 
 import java.util.Arrays;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -22,12 +25,19 @@ import static io.dropwizard.testing.FixtureHelpers.fixture;
 public class AppConfigTest {
     private final ObjectMapper om = new ObjectMapper();
 
+    @Rule public TestName name = new TestName();
+
     private String asJson(Object object) throws JsonProcessingException {
         return om.writeValueAsString(object);
     }
 
     private String jsonFixture(String filename) throws IOException {
         return om.writeValueAsString(om.readValue(fixture(filename), JsonNode.class));
+    }
+
+    @Before
+    public void printTestName() {
+        System.out.println(" -> " + name.getMethodName());
     }
 
     /* Configuration tests */
