@@ -110,7 +110,7 @@ public class ConnectionManager implements Managed {
      * <p>Anonymous getter for host.</p>
      *
      * Fetches the specified {@link Host} with anonymous (null) credentials.
-     * Equivalent to calling: <br/>
+     * Equivalent to calling: <br>
      *
      * <code>return getHost(host, null);</code>
      *
