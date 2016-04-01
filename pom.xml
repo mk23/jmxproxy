@@ -259,7 +259,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>anonymous</id>
+            <id>anonymous-test</id>
             <goals>
               <goal>test</goal>
             </goals>
@@ -267,6 +267,7 @@
               <forkCount>1</forkCount>
               <reuseForks>false</reuseForks>
               <argLine>
+                -Dlogback.configurationFile=src/test/resources/logback.xml
                 -Dcom.sun.management.jmxremote.ssl=false
                 -Dcom.sun.management.jmxremote.authenticate=false
                 -Dcom.sun.management.jmxremote.port=${jmxproxy.test.port}
@@ -274,7 +275,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>authenticated</id>
+            <id>authenticated-test</id>
             <goals>
               <goal>test</goal>
             </goals>
@@ -282,6 +283,7 @@
               <forkCount>1</forkCount>
               <reuseForks>false</reuseForks>
               <argLine>
+                -Dlogback.configurationFile=src/test/resources/logback.xml
                 -Dcom.sun.management.jmxremote.ssl=false
                 -Dcom.sun.management.jmxremote.access.file=scripts/server/access.txt
                 -Dcom.sun.management.jmxremote.password.file=scripts/server/passwd.txt
@@ -403,7 +405,7 @@
         <version>3.6</version>
         <configuration>
           <linkXRef>false</linkXRef>
-	  <skipEmptyReport>false</skipEmptyReport>
+          <skipEmptyReport>false</skipEmptyReport>
         </configuration>
         <reportSets>
           <reportSet>
