@@ -183,7 +183,9 @@ public class ConnectionWorker {
                             } catch (javax.management.MBeanException e) {
                                 LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
                             } catch (javax.management.RuntimeMBeanException e) {
-                                LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                if (!(e.getCause() instanceof UnsupportedOperationException)) {
+                                    LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                }
                             }
                         }
                     }
