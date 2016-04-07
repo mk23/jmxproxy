@@ -1,3 +1,137 @@
+jmxproxy (3.3.0) stable; urgency=medium
+
+  * Tagging 3.3.0
+  * [0b42623] Issue #103: Document authenticated agent losing history
+    when using the web ui. (Max Kalika)
+  * [3f70258] Issue #96: Rework UI landing page with a combobox of
+    cached endpoints and no nav bar. (Max Kalika)
+  * [4ad35eb] Issue #93: Fix tooltips on mbean tree. (Max Kalika)
+  * [5b6f3f2] Issue #96: Document endpoint management API. (Max Kalika)
+  * [a0bfbf9] Issue #96: Add tests for endpoint management API. (Max
+    Kalika)
+  * [82a83a6] Issue #96: Add endpoint management (get, delete) support
+    in the backend API. (Max Kalika)
+  * [55a6e9d] Issue #99: Uncoditionally set history limit when fetching
+    full host. (Max Kalika)
+  * [0e541fd] Issue #98: Invalid attribute requests should return 404.
+    (Max Kalika)
+  * [43079ad] Issue #97: Add http resource tests. (Max Kalika)
+  * [259b669] Issue #95: Document /config REst API call. (Max Kalika)
+  * [ed857be] Issue #94: Create custom bootstrap-styled tooltips for
+    graphs instead of using jquery.flot.tooltip.js plugin. (Max Kalika)
+  * [0817dd4] Issue #92: Clean up attribute view title, refresh icon,
+    and close functionality. (Max Kalika)
+  * [395c1df] Issue #91: Postpone rendering attribute value table on
+    modal until it's parent div is visible to prevent sort column sizing
+    artifacts. (Max Kalika)
+  * [6083ab3] Issue #69: Upgrade fuelux to 3.13.0. (Max Kalika)
+  * [7a1f30d] Issue #83: Upgrade bootstrap to 3.3.6. (Max Kalika)
+  * [ebba4b7] Issue #70: Upgrade font-awesome to 4.5.0. (Max Kalika)
+  * [1db2328] Issue #90: Upgrade jquery to 1.12.1. (Max Kalika)
+  * [374be3c] Issue #75: Clean up and standardize javadocs. (Max Kalika)
+  * [f4ef53d] Issue #75: Add package-info.java files for all packages.
+    (Max Kalika)
+  * [8c1312b] Issue #75: Run pom.xml through tidy:pom and always show
+    PMD/CPD reports. (Max Kalika)
+  * [6bce83b] Issue #75: Make jmx/ConnectionManager.java checkstyle
+    clean. (Max Kalika)
+  * [2cbc2bf] Issue #75: Make jmx/ConnectionWorker.java checkstyle
+    clean. (Max Kalika)
+  * [f0fe4bf] Issue #75: Make jmx/ConnectionCredentials.java checkstyle
+    clean. (Max Kalika)
+  * [da86978] Issue #75: Make core/Host.java checkstyle clean. (Max
+    Kalika)
+  * [8a5ce5f] Issue #88: Fix PMD warnings. (Max Kalika)
+  * [333d986] Issue #75: Make core/MBean.java checkstyle clean. (Max
+    Kalika)
+  * [14c19e0] Issue #75: Make core/History.java checkstyle clean. (Max
+    Kalika)
+  * [45553e5] Issue #75: Make core/Attribute.java checkstyle clean. (Max
+    Kalika)
+  * [2479fbb] Issue #75: Make JMXProxyResource.java checkstyle clean.
+    Also touch JMXProxyApplication.java for included checkstyle.xml
+    update. (Max Kalika)
+  * [f569db7] Issue #89: Upgrade dropwizard to 0.9.2. (Max Kalika)
+  * [d46f617] Issue #75: Make JMXProxyHealthCheck.java checkstyle clean.
+    (Max Kalika)
+  * [9d66f72] Issue #88: Add pmd reporting plugin and fix build
+    warnings. (Max Kalika)
+  * [510f21e] Issue #75: Checkstyle: ignore @see javadoc line lengths,
+    ignore hidden fields for setters/getters and constructors, allow
+    setters to return its class. (Max Kalika)
+  * [e2b7589] Issue #85: Fix web ui graph refresh period based on new
+    config api that returns milliseconds for durations. (Max Kalika)
+  * [4adc2a1] Issue #85: Add test for application config. (Max Kalika)
+  * [3c9c09b] Issue #85: Marshal Duration config fields as milliseconds
+    for easier use in javascript. (Max Kalika)
+  * [7f8faab] Issue #87: Update tests for refactored configuration
+    classes. (Max Kalika)
+  * [7ae2038] Issue #87: Refactor configuration into separate package
+    and classes. (Max Kalika)
+  * [bbcd58a] Issue #86: Fix travis builds with authenticated agent
+    tests. (Max Kalika)
+  * [3d480be] Issue #75: Make JMXProxyApplication.java checkstyle clean.
+    (Max Kalika)
+  * [ef627ec] Issue #68: Upgrade dropwizard to 0.9.1 and fix resulting
+    depedency convergence errors. (Max Kalika)
+  * [44f527d] Issue #75: Add custom checkstyle config to increase line
+    lengths and ignore logger var for javadoc. (Max Kalika)
+  * [2aacfe0] Issue #84: Add authentication tests for ConnectionManager.
+    (Max Kalika)
+  * [23ae762] Issue #84: Run two test suites with anonymous and
+    authenticated agents. (Max Kalika)
+  * [ac16a0b] Issue #84: Don't blindly catch all exceptions in
+    ConnectionWorker to allow ConnectionManager to detect agents
+    requiring authentication. (Max Kalika)
+  * [63ec77c] Issue #82: More plugin updates. (Max Kalika)
+  * [ae81c91] Issue #82: Update to latest plugin versions. (Max Kalika)
+  * [52726fa] Issue #82: Add explicit versions for clean, deploy,
+    install, and resources plugins. (Max Kalika)
+  * [c4194ba] Issue #81: Update license year. (Max Kalika)
+  * [90cd4e8] Issue #76: Add versions report. (Max Kalika)
+  * [e848ffe] Issue #76: Remove jxr report. (Max Kalika)
+  * [398bf14] Issue #76: Disable javadocs for test classes. (Max Kalika)
+  * [9f5d019] Issue #76: Constant look and feel for most reports. (Max
+    Kalika)
+  * [50528da] Fixed time units in example of config.xml in README.md
+    (Asaf Mesika)
+  * [78d9b2f] Issue #78: Reduce removed mbean test time to 3 second
+    cache duration and 5 second wait. (Max Kalika)
+  * [9d7586b] Issue #77: Convert clean_interval config to Duration type.
+    (Max Kalika)
+  * [950fe83] Issue #77: Convert access_duration config to Duration
+    type. (Max Kalika)
+  * [adcc9c3] Issue #77: Convert clean_interval config to Duration type.
+    (Max Kalika)
+  * [5b83127] Issue #74: Publish maven site on every successful travis
+    build. (Max Kalika)
+  * [92e5889] Issue #74: Skip initial redundant maven install step in
+    travis builds. (Max Kalika)
+  * [5de69de] Issue #74: Only master branch changes should trigger
+    travis builds. (Max Kalika)
+  * [c49838b] Issue #74: Cache maven artifacts to speed up travis
+    builds. (Max Kalika)
+  * [2a60d8d] Issue #74: Build doesn't need sudo, disable to speed up
+    travis builds. (Max Kalika)
+  * [e7cc24f] Issue #76: Build site in the packaging phase. (Max Kalika)
+  * [919861f] Issue #76: Skip dependency locations report. (Max Kalika)
+  * [6fe143c] Issue #76: Update dev id and url. (Max Kalika)
+  * [53b7732] Issue #67: Fix stash merge detritus. (Max Kalika)
+  * [5733e9c] Issue #72: Add project reports to site output. (Max
+    Kalika)
+  * [2407fca] Issue #67: Add mbean removal test. (Max Kalika)
+  * [4518e9e] Issue #67: Use Set.removeAll() to determine stale mbeans.
+    (Max Kalika)
+  * [94abcb1] Issue #67: Rename Host.removeMBeam() to
+    Host.removeMBean(). (Max Kalika)
+  * [adabf13] Issue #71: Allow application configuration to return
+    itself for setter chaining. (Max Kalika)
+  * [32df4da] Issue #73: Update license year. (Max Kalika)
+  * [3819d0d] Whitespace and import order. (Max Kalika)
+  * [583caae] Detect and remove outdated Mbeans. (shoonoise)
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Thu, 07 Apr 2016 10:22:18 -0700
+
 jmxproxy (3.2.0) stable; urgency=medium
 
   * Tagging 3.2.0
