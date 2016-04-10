@@ -19,7 +19,7 @@ public class ConnectionCredentialsTest {
     }
 
     @Test
-    public void compareEquals() throws Exception {
+    public void checkAuthenticatedEquals() throws Exception {
         final ConnectionCredentials auth1 = new ConnectionCredentials(new String("user"), new String("pass"));
         final ConnectionCredentials auth2 = new ConnectionCredentials(new String("user"), new String("pass"));
 
@@ -27,7 +27,7 @@ public class ConnectionCredentialsTest {
     }
 
     @Test
-    public void compareNotEquals() throws Exception {
+    public void checkAuthenticatedNotEquals() throws Exception {
         final ConnectionCredentials auth1 = new ConnectionCredentials(new String("user"), new String("pass"));
         final ConnectionCredentials auth2 = new ConnectionCredentials(new String("pass"), new String("user"));
 
@@ -35,9 +35,46 @@ public class ConnectionCredentialsTest {
     }
 
     @Test
-    public void compareNotEqualsNull() throws Exception {
+    public void checkAuthenticatedNotEqualsNull() throws Exception {
         final ConnectionCredentials auth = new ConnectionCredentials(new String("user"), new String("pass"));
 
         assertFalse(auth.equals(null));
+    }
+
+    @Test
+    public void checkAuthenticatedEnabled() throws Exception {
+        final ConnectionCredentials auth = new ConnectionCredentials(new String("user"), new String("pass"));
+
+        assertTrue(auth.isEnabled());
+    }
+
+    @Test
+    public void checkAnonymousEquals() throws Exception {
+        final ConnectionCredentials auth1 = new ConnectionCredentials();
+        final ConnectionCredentials auth2 = new ConnectionCredentials();
+
+        assertTrue(auth1.equals(auth2));
+    }
+
+    @Test
+    public void checkAnonymousNotEquals() throws Exception {
+        final ConnectionCredentials auth1 = new ConnectionCredentials();
+        final ConnectionCredentials auth2 = new ConnectionCredentials(new String("user"), new String("pass"));
+
+        assertFalse(auth1.equals(auth2));
+    }
+
+    @Test
+    public void checkAnonymousNotEqualsNull() throws Exception {
+        final ConnectionCredentials auth = new ConnectionCredentials();
+
+        assertTrue(auth.equals(null));
+    }
+
+    @Test
+    public void checkAnonymousEnabled() throws Exception {
+        final ConnectionCredentials auth = new ConnectionCredentials();
+
+        assertFalse(auth.isEnabled());
     }
 }
