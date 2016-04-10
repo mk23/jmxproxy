@@ -35,22 +35,23 @@
   </prerequisites>
 
   <scm>
-    <connection>scm:git:git://github.com/mk23/jmxproxy.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/mk23/jmxproxy.git</developerConnection>
-    <url>https://github.com/mk23/jmxproxy</url>
+    <connection>scm:git:git://github.com/${github.repo.name}.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/${github.repo.name}.git</developerConnection>
+    <url>https://github.com/${github.repo.name}</url>
   </scm>
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/mk23/jmxproxy/issues</url>
+    <url>https://github.com/${github.repo.name}/issues</url>
   </issueManagement>
   <ciManagement>
     <system>Travis CI</system>
-    <url>https://travis-ci.org/mk23/jmxproxy</url>
+    <url>https://travis-ci.org/${github.repo.name}</url>
   </ciManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jmxproxy.test.port>11123</jmxproxy.test.port>
+    <github.repo.name>mk23/${project.artifactId}</github.repo.name>
   </properties>
 
   <dependencies>

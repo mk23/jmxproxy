@@ -15,7 +15,8 @@
     <menu name="Documentation" ref="reports"/>
     <breadcrumbs>
       <item name="" position="left" href="${project.ciManagement.url}" img="${project.ciManagement.url}.png"/>
-	    <item name="&#9660; .jar" position="left" href="${project.scm.url}/releases/download/${project.artifactId}.${project.version}/${project.artifactId}-${project.version}.jar"/>
+      <item name="" position="left" href="https://coveralls.io/r/${github.repo.name}" img="https://coveralls.io/repos/${github.repo.name}/badge.png"/>
+      <item name="&#9660; .jar" position="left" href="${project.scm.url}/releases/download/${project.artifactId}.${project.version}/${project.artifactId}-${project.version}.jar"/>
       <item name="&#9660; .tgz" position="left" href="${project.scm.url}/tarball/${project.artifactId}.${project.version}"/>
     </breadcrumbs>
   </body>
@@ -42,7 +43,7 @@
       <breadcrumbDivider>|</breadcrumbDivider>
 
       <gitHub>
-        <projectId>mk23/jmxproxy</projectId>
+        <projectId>${github.repo.name}</projectId>
         <ribbonOrientation>right</ribbonOrientation>
         <ribbonColor>red</ribbonColor>
       </gitHub>
