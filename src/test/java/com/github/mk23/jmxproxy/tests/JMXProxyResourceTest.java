@@ -26,6 +26,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -83,6 +84,11 @@ public class JMXProxyResourceTest {
     @Before
     public void printTestName() {
         System.out.println(" -> " + name.getMethodName());
+    }
+
+    @After
+    public void shutdownManager() {
+        manager.stop();
     }
 
     /* Whitelist tests */
@@ -222,6 +228,25 @@ public class JMXProxyResourceTest {
     @Test(expected=NotFoundException.class)
     public void checkDeleleInvalidHost() throws Exception {
         resources.client().target("/" + invalidHost).request().delete(Boolean.class);
+    }
+
+    @Test
+    public void checkHostExpiration() throws Exception {
+        manager.getConfiguration()
+            .setCacheDuration(Duration.seconds(30))
+            .setCleanInterval(Duration.seconds(3))
+            .setAccessDuration(Duration.seconds(2));
+        manager.start();
+
+        List result;
+
+        result = requestWithAuth("/" + validHost, List.class);
+        assertTrue(result.contains(validMBean));
+
+        java.lang.Thread.sleep(Duration.seconds(5).toMilliseconds());
+
+        result = resources.client().target("/").request().get(List.class);
+        assertTrue(result.isEmpty());
     }
 
 
