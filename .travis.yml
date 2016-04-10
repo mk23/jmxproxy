@@ -7,6 +7,7 @@ install:
 script:
   - 'mvn clean package'
 after_success:
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && mvn coveralls:report'
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site init'
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site config user.name "$(curl -s https://api.github.com/user?access_token=${GH_OAUTH2} | jq .name)"'
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site config user.email "$(curl -s https://api.github.com/user?access_token=${GH_OAUTH2} | jq .email)"'
