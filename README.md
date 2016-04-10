@@ -212,7 +212,6 @@ JMXProxy service has the following miscelleneous APIs for convinience and UI bui
 Limitations
 -----------
 
-* Agents with authentication enabled, have their history purged when connecting from the Web UI.
 * SSL agent connections are currently not supported.  Remote JVM must be started with `-Dcom.sun.management.jmxremote.ssl=false`.
 
 

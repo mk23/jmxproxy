@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -44,16 +45,21 @@ import org.slf4j.LoggerFactory;
 public class ConnectionWorker {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionWorker.class);
 
-    private Host host = null;
-    private ConnectionCredentials auth = null;
+    private Host host;
+    private ConnectionCredentials authCreds;
 
-    private int historySize;
+    private boolean authValid;
+    private IOException connError;
 
-    private JMXServiceURL url;
+    private final Object fetchLock;
+    private final int historySize;
+    private final long cacheDuration;
+
+    private final JMXServiceURL url;
 
     private long accessTime;
 
-    private ScheduledExecutorService fetch;
+    private ScheduledExecutorService pollerSvc;
 
     /**
      * <p>Default constructor.</p>
@@ -63,33 +69,22 @@ public class ConnectionWorker {
      * connecting and fetching JMX objects.
      *
      * @param hostName host:port {@link String} JMX agent target.
-     * @param auth optional {@link ConnectionCredentials} for the provided JMX agent or null if none.
      * @param cacheDuration period in milliseconds for how often to connect to the JMX agent.
      * @param historySize number of {@link com.github.mk23.jmxproxy.core.Attribute}s to keep per
      *     {@link MBean} {@link History}.
      *
-     * @throws MalformedURLException if hostName isn't a valid host:port {@link String}.
+     * @throws MalformedURLException if the specified host is not a valid host:port {@link String}.
      */
     public ConnectionWorker(
         final String hostName,
-        final ConnectionCredentials auth,
         final long cacheDuration,
         final int historySize
     ) throws MalformedURLException {
-        this.auth = auth;
         this.historySize = historySize;
+        this.cacheDuration = cacheDuration;
 
+        fetchLock = new Object();
         url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + "/jmxrmi");
-        fetch = Executors.newSingleThreadScheduledExecutor();
-
-        fetch.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                fetchJMXValues();
-            }
-        }, cacheDuration, cacheDuration, TimeUnit.MILLISECONDS);
-
-        fetchJMXValues();
     }
 
     /**
@@ -97,24 +92,52 @@ public class ConnectionWorker {
      *
      * Fetches the tracked {@link Host} object and resets the request access time.
      *
+     * @param testCreds optional {@link ConnectionCredentials} for the provided JMX agent or null if none.
+     *
      * @return {@link Host} as populated by the most recent fetch operation.
+     *
+     * @throws IOException if the specified host is unreachable.
+     * @throws SecurityException if the specified credentials to the host are incorrect.
      */
-    public final synchronized Host getHost() {
-        accessTime = System.currentTimeMillis();
-        return host;
-    }
+    public final Host getHost(final ConnectionCredentials testCreds) throws IOException, SecurityException {
+        if (host == null) {
+            final CountDownLatch ready = new CountDownLatch(1);
 
-    /**
-     * <p>Verifies tracked credentials.</p>
-     *
-     * Checks if the tracked {@link ConnectionCredentials} have changed since worker instantiation.
-     *
-     * @param peer new request {@link ConnectionCredentials} to compare against.
-     *
-     * @return true if {@link ConnectionCredentials} are the same between requests, false otherwise.
-     */
-    public final boolean checkCredentials(final ConnectionCredentials peer) {
-        return auth == peer || auth != null && auth.equals(peer) || peer != null && peer.equals(auth);
+            shutdown();
+
+            host = new Host();
+            authCreds = (testCreds != null) ? testCreds : new ConnectionCredentials();
+
+            pollerSvc = Executors.newSingleThreadScheduledExecutor();
+            pollerSvc.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        fetchJMXValues();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    ready.countDown();
+                }
+            }, 0, cacheDuration, TimeUnit.MILLISECONDS);
+
+            try {
+                ready.await();
+            } catch (InterruptedException e) {
+                LOG.error("unable to finish first run", e);
+            }
+        }
+
+        if (connError != null) {
+            throw connError;
+        } else if (!authCreds.equals(testCreds) && authValid || !authValid) {
+            throw new SecurityException();
+        } else {
+            synchronized (fetchLock) {
+                accessTime = System.currentTimeMillis();
+                return host;
+            }
+        }
     }
 
     /**
@@ -132,81 +155,89 @@ public class ConnectionWorker {
     }
 
     /**
-     * <p>Shuts down the scheduled fetcher.</p>
+     * <p>Stops the scheduled fetcher.</p>
      *
      * Signals the {@link ScheduledExecutorService} to shutdown for process termination cleanup.
      */
     public final void shutdown() {
-        if (!fetch.isShutdown()) {
-            fetch.shutdown();
+        if (pollerSvc != null && !pollerSvc.isShutdown()) {
+            pollerSvc.shutdown();
         }
     }
 
-    private synchronized void fetchJMXValues() throws SecurityException {
+    private void fetchJMXValues() {
         JMXConnector connection = null;
         MBeanServerConnection server = null;
 
         Map<String, Object> environment = new HashMap<String, Object>();
-        if (auth != null) {
-            environment.put(JMXConnector.CREDENTIALS, new String[]{auth.getUsername(), auth.getPassword()});
+        if (authCreds != null) {
+            environment.put(JMXConnector.CREDENTIALS, new String[]{authCreds.getUsername(), authCreds.getPassword()});
         }
 
         try {
             LOG.debug("connecting to mbean server " + url);
 
-            connection = JMXConnectorFactory.connect(url, environment);
-            server = connection.getMBeanServerConnection();
+            synchronized (fetchLock) {
+                connection = JMXConnectorFactory.connect(url, environment);
+                server = connection.getMBeanServerConnection();
 
-            if (host == null) {
-                host = new Host();
-            }
+                authValid = true;
+                connError = null;
 
-            Set<String> freshMBeans = new HashSet<String>();
+                Set<String> freshMBeans = new HashSet<String>();
 
-            for (ObjectName mbeanName : server.queryNames(null, null)) {
-                LOG.debug("discovered mbean " + mbeanName);
-                freshMBeans.add(mbeanName.toString());
+                for (ObjectName mbeanName : server.queryNames(null, null)) {
+                    LOG.debug("discovered mbean " + mbeanName);
+                    freshMBeans.add(mbeanName.toString());
 
-                MBean mbean = host.addMBean(mbeanName.toString());
-                try {
-                    for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {
-                        if (attributeObject.isReadable()) {
-                            try {
-                                History history = mbean.addHistory(attributeObject.getName(), historySize);
-                                history.addAttributeValue(server.getAttribute(mbeanName, attributeObject.getName()));
-                            } catch (java.lang.NullPointerException e) {
-                                LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                            } catch (java.rmi.UnmarshalException e) {
-                                LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                            } catch (javax.management.AttributeNotFoundException e) {
-                                LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                            } catch (javax.management.MBeanException e) {
-                                LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                            } catch (javax.management.RuntimeMBeanException e) {
-                                if (!(e.getCause() instanceof UnsupportedOperationException)) {
+                    MBean mbean = host.addMBean(mbeanName.toString());
+                    try {
+                        for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {
+                            if (attributeObject.isReadable()) {
+                                try {
+                                    Object attribute = server.getAttribute(mbeanName, attributeObject.getName());
+
+                                    History history = mbean.addHistory(attributeObject.getName(), historySize);
+                                    history.addAttributeValue(attribute);
+                                } catch (java.lang.NullPointerException e) {
                                     LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                } catch (java.rmi.UnmarshalException e) {
+                                    LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                } catch (javax.management.AttributeNotFoundException e) {
+                                    LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                } catch (javax.management.MBeanException e) {
+                                    LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                } catch (javax.management.RuntimeMBeanException e) {
+                                    if (!(e.getCause() instanceof UnsupportedOperationException)) {
+                                        LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
+                                    }
                                 }
                             }
                         }
+                    } catch (javax.management.InstanceNotFoundException e) {
+                        LOG.error("failed to get mbean info for " + mbeanName, e);
+                    } catch (javax.management.IntrospectionException e) {
+                        LOG.error("failed to get mbean info for " + mbeanName, e);
+                    } catch (javax.management.ReflectionException e) {
+                        LOG.error("failed to get mbean info for " + mbeanName, e);
                     }
-                } catch (javax.management.InstanceNotFoundException e) {
-                    LOG.error("failed to get mbean info for " + mbeanName, e);
-                } catch (javax.management.IntrospectionException e) {
-                    LOG.error("failed to get mbean info for " + mbeanName, e);
-                } catch (javax.management.ReflectionException e) {
-                    LOG.error("failed to get mbean info for " + mbeanName, e);
                 }
-            }
 
-            Set<String> staleMBeans = new HashSet<String>(host.getMBeans());
-            staleMBeans.removeAll(freshMBeans);
-            for (String mbeanName : staleMBeans) {
-                host.removeMBean(mbeanName);
-                LOG.debug("removed stale mbean " + mbeanName);
+                Set<String> staleMBeans = new HashSet<String>(host.getMBeans());
+                staleMBeans.removeAll(freshMBeans);
+                for (String mbeanName : staleMBeans) {
+                    host.removeMBean(mbeanName);
+                    LOG.debug("removed stale mbean " + mbeanName);
+                }
             }
         } catch (IOException e) {
             host = null;
+            connError = e;
             LOG.error("communication failure with " + url, e);
+        } catch (SecurityException e) {
+            host = null;
+            authValid = false;
+            LOG.error("invalid credentials for " + url, e);
         } finally {
             if (connection != null) {
                 try {

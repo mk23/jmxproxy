@@ -80,8 +80,10 @@ public class ConnectionManager implements Managed {
      *
      * @return {@link Set} of {@link ConnectionWorker} name {@link String}s.
      */
-    public final synchronized Set<String> getHosts() {
-        return hosts.keySet();
+    public final Set<String> getHosts() {
+        synchronized (hosts) {
+            return hosts.keySet();
+        }
     }
 
     /**
@@ -95,15 +97,17 @@ public class ConnectionManager implements Managed {
      *
      * @throws WebApplicationException if key is not found in the map store.
      */
-    public final synchronized boolean delHost(final String host) throws WebApplicationException {
-        if (hosts.containsKey(host)) {
-            LOG.debug("purging " + host);
-            hosts.remove(host).shutdown();
-        } else {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
+    public final boolean delHost(final String host) throws WebApplicationException {
+        synchronized (hosts) {
+            if (hosts.containsKey(host)) {
+                LOG.debug("purging " + host);
+                hosts.remove(host).shutdown();
 
-        return true;
+                return true;
+            } else {
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            }
+        }
     }
 
     /**
@@ -157,29 +161,21 @@ public class ConnectionManager implements Managed {
 
         try {
             synchronized (hosts) {
-                if (hosts.containsKey(host) && !hosts.get(host).checkCredentials(auth)) {
-                    LOG.info("resetting credentials for " + host);
-                    hosts.remove(host).shutdown();
-                }
-
                 if (!hosts.containsKey(host)) {
                     LOG.info("creating new worker for " + host);
-                    ConnectionWorker worker = new ConnectionWorker(
+                    hosts.put(host, new ConnectionWorker(
                         host,
-                        auth,
                         config.getCacheDuration().toMilliseconds(),
                         config.getHistorySize()
-                    );
+                    ));
 
-                    hosts.put(host, worker);
                 }
+                return hosts.get(host).getHost(auth);
             }
-
-            return hosts.get(host).getHost();
-        } catch (SecurityException e) {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         } catch (MalformedURLException e) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        } catch (SecurityException e) {
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         } catch (Exception e) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }

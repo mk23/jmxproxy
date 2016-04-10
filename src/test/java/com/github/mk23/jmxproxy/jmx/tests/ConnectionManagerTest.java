@@ -112,7 +112,7 @@ public class ConnectionManagerTest {
         assertNotNull(manager.getHost(validHost, validAuth));
     }
 
-    @Test
+    @Test(expected=WebApplicationException.class)
     public void checkInvalidHost() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
