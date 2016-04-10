@@ -24,6 +24,21 @@ public class ConnectionCredentials {
 
     private final String combined;
 
+    private final boolean enabled;
+
+    /**
+     * <p>Default disabled constructor.</p>
+     *
+     * Creates a disabled credential object used for anonymous agent access.
+     */
+    public ConnectionCredentials() {
+        username = null;
+        password = null;
+        combined = null;
+
+        enabled = false;
+    }
+
     /**
      * <p>Default constructor.</p>
      *
@@ -37,9 +52,19 @@ public class ConnectionCredentials {
         @JsonProperty("username") final String username,
         @JsonProperty("password") final String password
     ) {
-        this.username = username;
-        this.password = password;
-        this.combined = username + "\0" + password;
+        if (username == null || password == null) {
+            this.username = null;
+            this.password = null;
+            this.combined = null;
+
+            this.enabled = false;
+        } else {
+            this.username = username;
+            this.password = password;
+            this.combined = username + "\0" + password;
+
+            this.enabled = true;
+        }
     }
 
     /**
@@ -64,20 +89,36 @@ public class ConnectionCredentials {
         return password;
     }
 
+    /**
+     * <p>Getter for enabled.</p>
+     *
+     * Fetches enabled status for this credential object.
+     *
+     * @return enabled boolean.
+     */
+    public final boolean isEnabled() {
+        return enabled;
+    }
+
     /** {@inheritDoc} */
     @Override
-    public final boolean equals(final Object peer) {
-        if (peer == null || !(peer instanceof ConnectionCredentials)) {
+    public final boolean equals(final Object obj) {
+        if (obj != null && !(obj instanceof ConnectionCredentials)) {
             return false;
         }
 
-        ConnectionCredentials auth = (ConnectionCredentials) peer;
-        return username.equals(auth.getUsername()) && password.equals(auth.getPassword());
+        ConnectionCredentials peer = (obj != null) ? (ConnectionCredentials) obj : new ConnectionCredentials();
+
+        if (!enabled) {
+            return !peer.isEnabled();
+        }
+
+        return username.equals(peer.getUsername()) && password.equals(peer.getPassword());
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return combined.hashCode();
+        return combined != null ? combined.hashCode() : 0;
     }
 }
