@@ -1,5 +1,7 @@
 package com.github.mk23.jmxproxy.core;
 
+import com.github.mk23.jmxproxy.util.History;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializable;
@@ -8,7 +10,9 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 import java.io.IOException;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +30,7 @@ import java.util.Set;
  * @version 3.2.0
  */
 public class MBean implements JsonSerializable {
-    private final Map<String, History> attributes;
+    private final Map<String, History<Attribute>> attributes;
     private final ThreadLocal<Integer> limit = new ThreadLocal<Integer>() {
         @Override
         protected Integer initialValue() {
@@ -40,27 +44,30 @@ public class MBean implements JsonSerializable {
      * Creates a map of {@link Attribute} name to {@link History} of associated values.
      */
     public MBean() {
-        attributes = new HashMap<String, History>();
+        attributes = new HashMap<String, History<Attribute>>();
     }
 
     /**
      * <p>Inserts a new Attribute name to History association.</p>
      *
-     * Creates a new {@link Attribute} value {@link History} object and inserts into
-     * the map store associating it to the specified attribute name.
+     * Optionally creates a new {@link History} object and inserts into the map store associating
+     * it to the specified attribute name. Appends the specified {@link Attribute} value to the
+     * {@link History}.
      *
      * @param attributeName name of the {@link Attribute} used as the map key.
-     * @param size number of items to preserve in the associated {@link History}.
-     *
-     * @return the newly created empty {@link History} object.
+     * @param attributeObject value of the {@link Attribute} added to history.
+     * @param historySize number of items to preserve in the associated {@link History}.
      */
-    public final History addHistory(final String attributeName, final int size) {
+    public final void addAttribute(
+        final String attributeName,
+        final Object attributeObject,
+        final int historySize
+    ) {
         if (!attributes.containsKey(attributeName)) {
-            History history = new History(size);
-            attributes.put(attributeName, history);
+            attributes.put(attributeName, new History<Attribute>(historySize));
         }
 
-        return attributes.get(attributeName);
+        attributes.get(attributeName).add(new Attribute(attributeObject));
     }
 
     /**
@@ -120,12 +127,11 @@ public class MBean implements JsonSerializable {
      * @return latest {@link Attribute} object from {@link History} if found, null otherwise.
      */
     public final Attribute getAttribute(final String attribute) {
-        History history = attributes.get(attribute);
-        if (history == null) {
-            return null;
+        if (hasAttribute(attribute)) {
+            return attributes.get(attribute).getLast();
         }
 
-        return history.getAttribute();
+        return null;
     }
 
     /**
@@ -137,15 +143,14 @@ public class MBean implements JsonSerializable {
      * @param attribute name of the {@link Attribute} to look up in the map store.
      * @param bound size of the resulting array or full history if this exceeds capacity or less than 1.
      *
-     * @return array of the latest {@link Attribute} objects from {@link History} if found, empty otherwise.
+     * @return {@link List} of the latest {@link Attribute} objects from {@link History} if found, empty otherwise.
      */
-    public final Attribute[] getAttributes(final String attribute, final int bound) {
-        History history = attributes.get(attribute);
-        if (history == null) {
-            return new Attribute[0];
+    public final List<Attribute> getAttributes(final String attribute, final int bound) {
+        if (hasAttribute(attribute)) {
+            return attributes.get(attribute).get(bound);
         }
 
-        return history.getAttributes(bound);
+        return Collections.emptyList();
     }
 
     /** {@inheritDoc} */
@@ -171,11 +176,11 @@ public class MBean implements JsonSerializable {
         int bound = limit.get();
 
         jgen.writeStartObject();
-        for (Map.Entry<String, History> attributeEntry : attributes.entrySet()) {
+        for (Map.Entry<String, History<Attribute>> attributeEntry : attributes.entrySet()) {
             if (bound < 0) {
-                jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getAttribute());
+                jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getLast());
             } else {
-                jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getAttributes(bound));
+                jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().get(bound));
             }
         }
         jgen.writeEndObject();

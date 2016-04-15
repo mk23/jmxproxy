@@ -74,9 +74,9 @@ public class Host implements JsonSerializable {
     /**
      * <p>Sets the thread local history request limit.</p>
      *
-     * Set the thread local limit for all {@link History} when serializing to JSON.
-     * Because this method returns its object, requesting serialization can be done
-     * with a single statement.
+     * Set the thread local limit for all {@link com.github.mk23.jmxproxy.util.History} when
+     * serializing to JSON. Because this method returns its object, requesting serialization
+     * can be done * with a single statement.
      *
      * <p>For example:</p>
      *
@@ -84,7 +84,8 @@ public class Host implements JsonSerializable {
      *
      * @see <a href="http://docs.oracle.com/javaee/7/api/javax/ws/rs/core/Response.html">javax.ws.rs.core.Response</a>
      *
-     * @param bound the number of items to retreive from {@link History} for this thread.
+     * @param bound the number of items to retreive from {@link com.github.mk23.jmxproxy.util.History}
+     *     for this thread.
      *
      * @return this host object for chaining calls.
      */

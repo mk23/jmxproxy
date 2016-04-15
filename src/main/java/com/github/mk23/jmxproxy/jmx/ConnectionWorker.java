@@ -1,6 +1,5 @@
 package com.github.mk23.jmxproxy.jmx;
 
-import com.github.mk23.jmxproxy.core.History;
 import com.github.mk23.jmxproxy.core.Host;
 import com.github.mk23.jmxproxy.core.MBean;
 
@@ -36,7 +35,8 @@ import org.slf4j.LoggerFactory;
  * to a JMX endpoint.  At every execution, discovers and fetches all remote registered mbeans
  * and populates the local {@link Host} object with assicated {@link MBean}s and their
  * {@link com.github.mk23.jmxproxy.core.Attribute}.  Also maintains the {@link Host} access
- * time to allow reaping of unaccessed workers.
+ * time to allow reaping of
+ * unaccessed workers.
  *
  * @since   2015-05-11
  * @author  mk23
@@ -70,8 +70,8 @@ public class ConnectionWorker {
      *
      * @param hostName host:port {@link String} JMX agent target.
      * @param cacheDuration period in milliseconds for how often to connect to the JMX agent.
-     * @param historySize number of {@link com.github.mk23.jmxproxy.core.Attribute}s to keep per
-     *     {@link MBean} {@link History}.
+     * @param historySize number of {@link com.github.mk23.jmxproxy.core.Attribute}s to keep
+     *     per {@link MBean} {@link com.github.mk23.jmxproxy.util.History}.
      *
      * @throws MalformedURLException if the specified host is not a valid host:port {@link String}.
      */
@@ -197,8 +197,7 @@ public class ConnectionWorker {
                                 try {
                                     Object attribute = server.getAttribute(mbeanName, attributeObject.getName());
 
-                                    History history = mbean.addHistory(attributeObject.getName(), historySize);
-                                    history.addAttributeValue(attribute);
+                                    mbean.addAttribute(attributeObject.getName(), attribute, historySize);
                                 } catch (java.lang.NullPointerException e) {
                                     LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
                                 } catch (java.rmi.UnmarshalException e) {
