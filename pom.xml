@@ -101,7 +101,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.16</version>
+      <version>1.7.19</version>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
