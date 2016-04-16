@@ -476,10 +476,6 @@ public class JMXProxyResource {
         final ConnectionCredentials auth
     ) {
         Host host = manager.getHost(hostName + ":" + port, auth);
-        if (host == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
         return Response.ok(full ? host.setLimit(limit) : host.getMBeans()).build();
     }
 
@@ -491,12 +487,7 @@ public class JMXProxyResource {
         final int limit,
         final ConnectionCredentials auth
     ) {
-        Host host = manager.getHost(hostName + ":" + port, auth);
-        if (host == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        MBean mbean = host.getMBean(mbeanName);
+        MBean mbean = manager.getHost(hostName + ":" + port, auth).getMBean(mbeanName);
         if (mbean == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -512,12 +503,7 @@ public class JMXProxyResource {
         final int limit,
         final ConnectionCredentials auth
     ) {
-        Host host = manager.getHost(hostName + ":" + port, auth);
-        if (host == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        MBean mbean = host.getMBean(mbeanName);
+        MBean mbean = manager.getHost(hostName + ":" + port, auth).getMBean(mbeanName);
         if (mbean == null || !mbean.hasAttribute(attribute)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }

@@ -5,6 +5,10 @@ import com.github.mk23.jmxproxy.conf.AppConfig;
 import com.github.mk23.jmxproxy.jmx.ConnectionCredentials;
 import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.dropwizard.testing.FixtureHelpers;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import io.dropwizard.util.Duration;
 
@@ -91,6 +95,22 @@ public class JMXProxyResourceTest {
         manager.stop();
     }
 
+    /* Config tests */
+    @Test
+    public void checkValidConfig() throws Exception {
+        manager.getConfiguration()
+            .setCleanInterval(Duration.milliseconds(12))
+            .setCacheDuration(Duration.seconds(23))
+            .setAccessDuration(Duration.seconds(404276))
+            .setHistorySize(11)
+            .setAllowedEndpoints(Arrays.asList("localhost:1100", "remotehost:2211"));
+
+        ObjectMapper om = new ObjectMapper();
+        String expected = om.writeValueAsString(om.readValue(FixtureHelpers.fixture("fixtures/web_config.json"), JsonNode.class));
+        String acquired = resources.client().target("/config").request().get(String.class);
+        assertTrue(expected.equals(acquired));
+    }
+
     /* Whitelist tests */
     @Test
     public void checkValidHostNoWhitelist() throws Exception {
@@ -115,15 +135,29 @@ public class JMXProxyResourceTest {
 
     /* Auth tests */
     @Test
-    public void checkValidAuthJson() throws Exception {
+    public void checkValidAuthJsonHost() throws Exception {
         assumeNotNull(passwdFile);
 
         List result = resources.client().target("/" + validHost).request().post(Entity.json(validAuth), List.class);
         assertTrue(result.contains(validMBean));
     }
+    @Test
+    public void checkValidAuthJsonMBean() throws Exception {
+        assumeNotNull(passwdFile);
+
+        List result = resources.client().target("/" + validHost + "/" + validMBean).request().post(Entity.json(validAuth), List.class);
+        assertTrue(result.contains(validAttribute));
+    }
+    @Test
+    public void checkValidAuthJsonAttribute() throws Exception {
+        assumeNotNull(passwdFile);
+
+        int result = resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.json(validAuth), Integer.class);
+        assertTrue(result == validValue);
+    }
 
     @Test
-    public void checkValidAuthForm() throws Exception {
+    public void checkValidAuthFormHost() throws Exception {
         assumeNotNull(passwdFile);
 
         Form creds = new Form()
@@ -131,6 +165,26 @@ public class JMXProxyResourceTest {
             .param("password", validAuth.getPassword());
         List result = resources.client().target("/" + validHost).request().post(Entity.form(creds), List.class);
         assertTrue(result.contains(validMBean));
+    }
+    @Test
+    public void checkValidAuthFormMBean() throws Exception {
+        assumeNotNull(passwdFile);
+
+        Form creds = new Form()
+            .param("username", validAuth.getUsername())
+            .param("password", validAuth.getPassword());
+        List result = resources.client().target("/" + validHost + "/" + validMBean).request().post(Entity.form(creds), List.class);
+        assertTrue(result.contains(validAttribute));
+    }
+    @Test
+    public void checkValidAuthFormAttribute() throws Exception {
+        assumeNotNull(passwdFile);
+
+        Form creds = new Form()
+            .param("username", validAuth.getUsername())
+            .param("password", validAuth.getPassword());
+        int result = resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.form(creds), Integer.class);
+        assertTrue(result == validValue);
     }
 
     @Test(expected=NotAuthorizedException.class)
@@ -141,7 +195,7 @@ public class JMXProxyResourceTest {
     }
 
     @Test(expected=NotAuthorizedException.class)
-    public void checkInvalidAuthJson() {
+    public void checkInvalidAuthJsonHost() {
         assumeNotNull(passwdFile);
 
         final ConnectionCredentials invalidAuth = new ConnectionCredentials(
@@ -150,23 +204,67 @@ public class JMXProxyResourceTest {
         );
         resources.client().target("/" + validHost).request().post(Entity.json(invalidAuth), List.class);
     }
+    @Test(expected=NotAuthorizedException.class)
+    public void checkInvalidAuthJsonMBean() {
+        assumeNotNull(passwdFile);
+
+        final ConnectionCredentials invalidAuth = new ConnectionCredentials(
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString()
+        );
+        resources.client().target("/" + validHost + "/" + validMBean).request().post(Entity.json(invalidAuth), List.class);
+    }
+    @Test(expected=NotAuthorizedException.class)
+    public void checkInvalidAuthJsonAttribute() {
+        assumeNotNull(passwdFile);
+
+        final ConnectionCredentials invalidAuth = new ConnectionCredentials(
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString()
+        );
+        resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.json(invalidAuth), Integer.class);
+    }
 
     @Test(expected=ClientErrorException.class)
-    public void checkInvalidAuthJsonNull() {
+    public void checkInvalidAuthJsonNullHost() {
         assumeNotNull(passwdFile);
 
         resources.client().target("/" + validHost).request().post(Entity.json(null), List.class);
     }
+    @Test(expected=ClientErrorException.class)
+    public void checkInvalidAuthJsonNullMBean() {
+        assumeNotNull(passwdFile);
+
+        resources.client().target("/" + validHost + "/" + validMBean).request().post(Entity.json(null), List.class);
+    }
+    @Test(expected=ClientErrorException.class)
+    public void checkInvalidAuthJsonNullAttribute() {
+        assumeNotNull(passwdFile);
+
+        resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.json(null), Integer.class);
+    }
 
     @Test(expected=ClientErrorException.class)
-    public void checkInvalidAuthJsonEmpty() {
+    public void checkInvalidAuthJsonEmptyHost() {
         assumeNotNull(passwdFile);
 
         resources.client().target("/" + validHost).request().post(Entity.json(new HashMap()), List.class);
     }
+    @Test(expected=ClientErrorException.class)
+    public void checkInvalidAuthJsonEmptyMBean() {
+        assumeNotNull(passwdFile);
+
+        resources.client().target("/" + validHost + "/" + validMBean).request().post(Entity.json(new HashMap()), List.class);
+    }
+    @Test(expected=ClientErrorException.class)
+    public void checkInvalidAuthJsonEmptyAttribute() {
+        assumeNotNull(passwdFile);
+
+        resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.json(new HashMap()), Integer.class);
+    }
 
     @Test(expected=NotAuthorizedException.class)
-    public void checkInvalidAuthForm() {
+    public void checkInvalidAuthFormHost() {
         assumeNotNull(passwdFile);
 
         Form invalidAuth = new Form()
@@ -174,21 +272,67 @@ public class JMXProxyResourceTest {
             .param("password", UUID.randomUUID().toString());
         resources.client().target("/" + validHost).request().post(Entity.form(invalidAuth), List.class);
     }
+    @Test(expected=NotAuthorizedException.class)
+    public void checkInvalidAuthFormMBean() {
+        assumeNotNull(passwdFile);
+
+        Form invalidAuth = new Form()
+            .param("username", UUID.randomUUID().toString())
+            .param("password", UUID.randomUUID().toString());
+        resources.client().target("/" + validHost + "/" + validMBean).request().post(Entity.form(invalidAuth), List.class);
+    }
+    @Test(expected=NotAuthorizedException.class)
+    public void checkInvalidAuthFormAttribute() {
+        assumeNotNull(passwdFile);
+
+        Form invalidAuth = new Form()
+            .param("username", UUID.randomUUID().toString())
+            .param("password", UUID.randomUUID().toString());
+        resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.form(invalidAuth), Integer.class);
+    }
 
     @Test(expected=NotAuthorizedException.class)
-    public void checkInvalidAuthFormNull() {
+    public void checkInvalidAuthFormNullHost() {
         assumeNotNull(passwdFile);
 
         Form invalidAuth = null;
         resources.client().target("/" + validHost).request().post(Entity.form(invalidAuth), List.class);
     }
+    @Test(expected=NotAuthorizedException.class)
+    public void checkInvalidAuthFormNullMBean() {
+        assumeNotNull(passwdFile);
+
+        Form invalidAuth = null;
+        resources.client().target("/" + validHost + "/" + validMBean).request().post(Entity.form(invalidAuth), List.class);
+    }
+    @Test(expected=NotAuthorizedException.class)
+    public void checkInvalidAuthFormNullAttribute() {
+        assumeNotNull(passwdFile);
+
+        Form invalidAuth = null;
+        resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.form(invalidAuth), Integer.class);
+    }
 
     @Test(expected=NotAuthorizedException.class)
-    public void checkInvalidAuthFormEmpty() {
+    public void checkInvalidAuthFormEmptyHost() {
         assumeNotNull(passwdFile);
 
         Form invalidAuth = new Form();
         resources.client().target("/" + validHost).request().post(Entity.form(invalidAuth), List.class);
+    }
+    @Test(expected=NotAuthorizedException.class)
+    public void checkInvalidAuthFormEmptyMBean() {
+        assumeNotNull(passwdFile);
+
+        Form invalidAuth = new Form();
+        resources.client().target("/" + validHost + "/" + validMBean).request().post(Entity.form(invalidAuth), List.class);
+    }
+    @Test(expected=NotAuthorizedException.class)
+    public void checkInvalidAuthFormEmptyAttribute() {
+        assumeNotNull(passwdFile);
+
+        Form invalidAuth = new Form();
+        resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.form(invalidAuth), Integer.class);
     }
 
     /* Cache tests */
@@ -324,6 +468,11 @@ public class JMXProxyResourceTest {
         requestWithAuth("/" + validHost + "/" + invalidMBean, List.class);
     }
 
+    @Test(expected=NotFoundException.class)
+    public void checkValidMBeanInvalidHost() throws Exception {
+        requestWithAuth("/" + invalidHost + "/" + validMBean, List.class);
+    }
+
     @Test
     public void checkValidMBeanFullTrue() throws Exception {
         Map result = requestWithAuth("/" + validHost + "/" + validMBean + "?full=true", Map.class);
@@ -412,6 +561,16 @@ public class JMXProxyResourceTest {
     @Test(expected=NotFoundException.class)
     public void checkInvalidAttribute() throws Exception {
         requestWithAuth("/" + validHost + "/" + validMBean + "/" + invalidAttribute, String.class);
+    }
+
+    @Test(expected=NotFoundException.class)
+    public void checkValidAttributeInvalidHost() throws Exception {
+        requestWithAuth("/" + invalidHost + "/" + validMBean + "/" + validAttribute, String.class);
+    }
+
+    @Test(expected=NotFoundException.class)
+    public void checkValidAttributeInvalidMBean() throws Exception {
+        requestWithAuth("/" + validHost + "/" + invalidMBean + "/" + validAttribute, String.class);
     }
 
     @Test(expected=NotFoundException.class)
