@@ -1,3 +1,36 @@
+jmxproxy (3.3.1) stable; urgency=medium
+
+  * Tagging 3.3.1
+  * [93c8060] Issue #111: Fully test JMXProxyResource. (Max Kalika)
+  * [df7b4c7] Issue #110: Upgrade font-awesome to 4.6.1. (Max Kalika)
+  * [fef073e] Issue #105: Upgrade jquery to 1.12.3. (Max Kalika)
+  * [ea41292] Issue #109: Refactor History object into a generic. (Max
+    Kalika)
+  * [3d0a692] Issue #106: Update slf4j to 1.7.19. (Max Kalika)
+  * [706b188] Issue #108: Add jacoco report to generated site. (Max
+    Kalika)
+  * [c401558] Issue #107: Add code coverage badge to docs and site. (Max
+    Kalika)
+  * [799526a] Issue #107: Report code coverage to coveralls on
+    successful travis-ci builds. (Max Kalika)
+  * [47acdea] Issue #107: Add code coverage agent and report for test
+    runs. (Max Kalika)
+  * [1842dfb] Issue #103: Refactor worker and manager to consolidate
+    checkCredentials and getHost and prevent losing history on invalid
+    credentials. (Max Kalika)
+  * [55e4175] Issue #103: Add anonymous credentials tests. (Max Kalika)
+  * [fe0b3b2] Issue #103: Create anonymous support for
+    ConnectionCredentials. (Max Kalika)
+  * [36434d1] Issue #102: Add host expiration test case. (Max Kalika)
+  * [9c5b5ac] Issue #101: Display test cases as they execute. (Max
+    Kalika)
+  * [306943b] Issue #101: Turn off logs during testing. (Max Kalika)
+  * [497a331] Issue #100: Silence UnsupportedOperationException errors
+    on MBean discovery. (Max Kalika)
+  * [db777ee] Issue #104: Fix build under jdk8. (Max Kalika)
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Wed, 20 Apr 2016 14:21:31 -0700
+
 jmxproxy (3.3.0) stable; urgency=medium
 
   * Tagging 3.3.0
