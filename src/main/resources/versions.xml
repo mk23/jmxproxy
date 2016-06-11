@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset comparisonMethod="maven" xmlns="http://mojo.codehaus.org/versions-maven-plugin/rule/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mojo.codehaus.org/versions-maven-plugin/rule/2.0.0 http://mojo.codehaus.org/versions-maven-plugin/xsd/rule-2.0.0.xsd">
+  <rules>
+    <rule groupId="io.dropwizard" comparisonMethod="maven">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*-rc\d+</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.apache.maven.plugins" artifactId="maven-antrun-plugin">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.apache.maven.plugins" artifactId="maven-assembly-plugin">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.apache.maven.plugins" artifactId="maven-dependency-plugin">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.apache.maven.plugins" artifactId="maven-release-plugin">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+  </rules>
+</ruleset>
