@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="${project.name}" xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+<project name="${this.name}" xmlns="http://maven.apache.org/DECORATION/1.7.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.7.0 http://maven.apache.org/xsd/decoration-1.7.0.xsd">
 
   <bannerLeft>
-    <name>${project.name}</name>
+    <name>${this.name}</name>
   </bannerLeft>
 
   <googleAnalyticsAccountId>67784002</googleAnalyticsAccountId>
@@ -14,17 +14,17 @@
   <body>
     <menu name="Documentation" ref="reports"/>
     <breadcrumbs>
-      <item name="" position="left" href="${project.ciManagement.url}" img="${project.ciManagement.url}.png"/>
-      <item name="" position="left" href="https://coveralls.io/r/${github.repo.name}" img="https://coveralls.io/repos/${github.repo.name}/badge.png"/>
-      <item name="&#9660; .jar" position="left" href="${project.scm.url}/releases/download/${project.artifactId}.${project.version}/${project.artifactId}-${project.version}.jar"/>
-      <item name="&#9660; .tgz" position="left" href="${project.scm.url}/tarball/${project.artifactId}.${project.version}"/>
+      <item name="" position="left" href="${this.ciManagement.url}" img="${this.ciManagement.url}.png"/>
+      <item name="" position="left" href="https://coveralls.io/r/${this.github.repo.name}" img="https://coveralls.io/repos/${this.github.repo.name}/badge.png"/>
+      <item name="&#9660; .jar" position="left" href="${this.scm.url}/releases/download/${this.artifactId}.${this.version}/${this.artifactId}-${this.version}.jar"/>
+      <item name="&#9660; .tgz" position="left" href="${this.scm.url}/tarball/${this.artifactId}.${this.version}"/>
     </breadcrumbs>
   </body>
 
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-fluido-skin</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
   </skin>
 
   <custom>
@@ -43,7 +43,7 @@
       <breadcrumbDivider>|</breadcrumbDivider>
 
       <gitHub>
-        <projectId>${github.repo.name}</projectId>
+        <projectId>${this.github.repo.name}</projectId>
         <ribbonOrientation>right</ribbonOrientation>
         <ribbonColor>red</ribbonColor>
       </gitHub>
