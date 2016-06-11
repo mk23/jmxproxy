@@ -130,7 +130,9 @@ public class ConnectionWorker {
 
         if (connError != null) {
             throw connError;
-        } else if (!authCreds.equals(testCreds) && authValid || !authValid) {
+        } else if (!authCreds.equals(testCreds) && authValid) {
+            throw new SecurityException();
+        } else if (!authValid) {
             throw new SecurityException();
         } else {
             synchronized (fetchLock) {
