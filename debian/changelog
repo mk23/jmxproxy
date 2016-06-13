@@ -1,3 +1,24 @@
+jmxproxy (3.3.2) stable; urgency=medium
+
+  * Tagging 3.3.2
+  * [da5bf30] Issue #113: More backend plugin and dependency upgrades.
+    (Max Kalika)
+  * [73e4e2b] Issue #119: avoid forked phase executions during build.
+    (Max Kalika)
+  * [534176e] Issue #118: Add application tests. (Max Kalika)
+  * [40a5ae1] Issue #113: Upgrade backend plugins and dependencies to
+    latest versions and fix site.xml compatibility breakages. (Max
+    Kalika)
+  * [3ce46dd] Issue #114: Ignore dw release candidates and maven
+    management plugins in version reports. (Max Kalika)
+  * [b136378] Issue #115: Move js/css minification to compile phase.
+    (Max Kalika)
+  * [538062b] Issue #112: Fix findbugs report. (Max Kalika)
+  * [e4c5dad] Issue #117: Upgrade fontawesome to 4.6.3. (Max Kalika)
+  * [95a07d9] Issue #116: Upgrade jquery to 1.12.4. (Max Kalika)
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Mon, 13 Jun 2016 13:14:48 -0700
+
 jmxproxy (3.3.1) stable; urgency=medium
 
   * Tagging 3.3.1
