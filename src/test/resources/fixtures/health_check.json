@@ -1,0 +1,8 @@
+{
+    "deadlocks": {
+        "healthy": true
+    },
+    "manager": {
+        "healthy": true
+    }
+}

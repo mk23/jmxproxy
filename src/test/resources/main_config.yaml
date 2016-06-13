@@ -1,0 +1,15 @@
+jmxproxy:
+  access_duration: '5m'
+  allowed_endpoints:
+    - 'localhost:1100'
+    - 'remotehost:2211'
+  cache_duration: '150s'
+  clean_interval: '3m'
+  history_size: 11
+
+logging:
+  level: OFF
+
+server:
+  requestLog:
+    appenders: []
