@@ -435,9 +435,9 @@ public class JMXProxyResourceTest {
     @Test
     public void checkHostExpiration() throws Exception {
         manager.getConfiguration()
-            .setCacheDuration(Duration.seconds(30))
-            .setCleanInterval(Duration.seconds(3))
-            .setAccessDuration(Duration.seconds(2));
+            .setCleanInterval(Duration.seconds(2))
+            .setAccessDuration(Duration.seconds(5))
+            .setCacheDuration(Duration.seconds(30));
         manager.start();
 
         List result;
@@ -445,7 +445,12 @@ public class JMXProxyResourceTest {
         result = requestWithAuth("/" + validHost, List.class);
         assertTrue(result.contains(validMBean));
 
-        java.lang.Thread.sleep(Duration.seconds(5).toMilliseconds());
+        java.lang.Thread.sleep(Duration.seconds(3).toMilliseconds());
+
+        result = requestWithAuth("/" + validHost, List.class);
+        assertTrue(result.contains(validMBean));
+
+        java.lang.Thread.sleep(Duration.seconds(8).toMilliseconds());
 
         result = resources.client().target("/").request().get(List.class);
         assertTrue(result.isEmpty());
