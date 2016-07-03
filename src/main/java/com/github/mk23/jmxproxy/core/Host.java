@@ -123,7 +123,7 @@ public class Host implements JsonSerializable {
         final JsonGenerator jgen,
         final SerializerProvider sp
     ) throws IOException, JsonProcessingException {
-        buildJson(jgen);
+        serializeWithType(jgen, sp, null);
     }
 
     /** {@inheritDoc} */

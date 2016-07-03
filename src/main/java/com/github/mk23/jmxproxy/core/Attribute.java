@@ -71,21 +71,13 @@ public class Attribute implements JsonSerializable {
         this.attributeValue = attributeValue;
     }
 
-    /** <p>Getter for attributeValue.</p>
-     *
-     * @return JMX Attribute value object.
-     */
-    public final Object getAttributeValue() {
-        return attributeValue;
-    }
-
     /** {@inheritDoc} */
     @Override
     public final void serialize(
         final JsonGenerator jgen,
         final SerializerProvider sp
     ) throws IOException, JsonProcessingException {
-        buildJson(jgen, attributeValue);
+        serializeWithType(jgen, sp, null);
     }
 
     /** {@inheritDoc} */
