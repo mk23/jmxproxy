@@ -1,5 +1,5 @@
 jmxproxy:
-  access_duration: '5m'
+  access_duration: 300000
   allowed_endpoints:
     - 'localhost:1100'
     - 'remotehost:2211'

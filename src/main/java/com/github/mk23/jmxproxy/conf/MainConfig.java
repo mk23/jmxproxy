@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 /**
  * <p>Main top-level configuration.</p>
@@ -23,9 +22,8 @@ public class MainConfig extends Configuration {
      * Application service config.
      */
     @Valid
-    @NotNull
     @JsonProperty("jmxproxy")
-    private AppConfig appConfig;
+    private AppConfig appConfig = new AppConfig();
 
     /**
      * <p>Getter for appConfig.</p>
