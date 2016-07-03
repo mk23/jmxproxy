@@ -37,6 +37,8 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import static org.junit.Assume.assumeNotNull;
 
 public class JMXProxyResourceTest {
@@ -185,6 +187,62 @@ public class JMXProxyResourceTest {
             .param("password", validAuth.getPassword());
         int result = resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.form(creds), Integer.class);
         assertTrue(result == validValue);
+    }
+
+    @Test
+    public void checkCycledAuthJsonAttributePreserveHistory() throws Exception {
+        assumeNotNull(passwdFile);
+
+        manager.getConfiguration()
+            .setHistorySize(5)
+            .setCacheDuration(Duration.seconds(3));
+
+        final ConnectionCredentials invalidAuth = new ConnectionCredentials(
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString()
+        );
+
+        int latest = resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.json(validAuth), Integer.class);
+        assertTrue(latest == validValue);
+
+        try {
+            resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.json(invalidAuth), Integer.class);
+            fail("failed to throw expected NotAuthorizedException");
+        } catch(NotAuthorizedException e) {
+            // successfully caught
+        }
+
+        java.lang.Thread.sleep(Duration.seconds(5).toMilliseconds());
+
+        List result = resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute + "?limit=2").request().post(Entity.json(validAuth), List.class);
+        assertTrue(result.size() == 2);
+    }
+    @Test
+    public void checkCycledAuthFormAttributePreserveHistory() throws Exception {
+        assumeNotNull(passwdFile);
+
+        manager.getConfiguration()
+            .setHistorySize(5)
+            .setCacheDuration(Duration.seconds(3));
+
+        Form invalidAuth = new Form()
+            .param("username", UUID.randomUUID().toString())
+            .param("password", UUID.randomUUID().toString());
+
+        int latest = resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.json(validAuth), Integer.class);
+        assertTrue(latest == validValue);
+
+        try {
+            resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute).request().post(Entity.form(invalidAuth), Integer.class);
+            fail("failed to throw expected NotAuthorizedException");
+        } catch(NotAuthorizedException e) {
+            // successfully caught
+        }
+
+        java.lang.Thread.sleep(Duration.seconds(5).toMilliseconds());
+
+        List result = resources.client().target("/" + validHost + "/" + validMBean + "/" + validAttribute + "?limit=2").request().post(Entity.json(validAuth), List.class);
+        assertTrue(result.size() == 2);
     }
 
     @Test(expected=NotAuthorizedException.class)
