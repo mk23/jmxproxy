@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
  *
  * Configures application from {@link MainConfig}, initializes, and starts the service.
  *
- * @see <a href="http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-core/apidocs/io/dropwizard/Application.html">io.dropwizard.Application</a>
- * @see <a href="http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-core/apidocs/io/dropwizard/setup/Bootstrap.html">io.dropwizard.setup.Bootstrap</a>
- * @see <a href="http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-core/apidocs/io/dropwizard/setup/Environment.html">io.dropwizard.setup.Environment</a>
+ * @see <a href="http://dropwizard.github.io/dropwizard/0.9.3/dropwizard-core/apidocs/io/dropwizard/Application.html">io.dropwizard.Application</a>
+ * @see <a href="http://dropwizard.github.io/dropwizard/0.9.3/dropwizard-core/apidocs/io/dropwizard/setup/Bootstrap.html">io.dropwizard.setup.Bootstrap</a>
+ * @see <a href="http://dropwizard.github.io/dropwizard/0.9.3/dropwizard-core/apidocs/io/dropwizard/setup/Environment.html">io.dropwizard.setup.Environment</a>
  *
  * @since   2015-05-11
  * @author  mk23

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * handles requests for data retreival.  Controls purging unaccessed endpoints as well as
  * their runtime state.
  *
- * @see <a href="http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-lifecycle/apidocs/io/dropwizard/lifecycle/Managed.html">io.dropwizard.lifecycle.Managed</a>
+ * @see <a href="http://dropwizard.github.io/dropwizard/0.9.3/dropwizard-lifecycle/apidocs/io/dropwizard/lifecycle/Managed.html">io.dropwizard.lifecycle.Managed</a>
  *
  * @since   2015-05-11
  * @author  mk23
