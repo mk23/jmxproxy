@@ -60,9 +60,12 @@ public class AttributeTest {
         List<List<String>> getListListStringValue();
         String getSingleJsonStringValue();
         String getMultiJsonStringValue();
+        void setWriteOnlyBooleanValue(boolean value);
     }
 
     public class AttributeTestJMX implements AttributeTestJMXMBean {
+        private boolean value;
+
         public Object getNullValue() {
             return null;
         }
@@ -124,6 +127,10 @@ public class AttributeTest {
 
         public String getMultiJsonStringValue() {
             return "null true 1 1.23 \"val\" {\"key1\": [\"val1\", [1, 2]], \"key2\": \"val2\"} [1, 1.23]";
+        }
+
+        public void setWriteOnlyBooleanValue(boolean value) {
+            this.value = value;
         }
     }
 
