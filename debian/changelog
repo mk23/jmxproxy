@@ -1,3 +1,22 @@
+jmxproxy (3.3.3) stable; urgency=medium
+
+  * Tagging 3.3.3
+  * [9b5e16d] Issue #126: Call through interface methods to
+    serializeWithType() in core classes. (Max Kalika)
+  * [21e0f4d] Issue #125: Allow app to run with default (no) config.
+    Add Duration deserializer, remove not null restriction, update test.
+    (Max Kalika)
+  * [68bf7bc] Issue #124: Extend expiration test to ensure cleaner
+    thread fires when appropriate. (Max Kalika)
+  * [6908944] Issue #123: Cycle good-bad-good auth in resource test to
+    ensure history is preserved. (Max Kalika)
+  * [f96272a] Issue #122: Test MBeans with unreadable attribute. (Max
+    Kalika)
+  * [9218afd] Issue #121: Upgrade dropwizard to 0.9.3. (Max Kalika)
+  * [6e2d273] Issue #120: Fix debian package dependencies. (Max Kalika)
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Tue, 05 Jul 2016 10:04:56 -0700
+
 jmxproxy (3.3.2) stable; urgency=medium
 
   * Tagging 3.3.2
