@@ -6,7 +6,7 @@
 # dh-make output file, you may use that output file without restriction.
 # This special exception was added by Craig Small in version 0.37 of dh-make.
 
-VERSION=$(shell dpkg-parsechangelog | grep ^Version: | cut -d' ' -f2)
+VERSION=$(shell xpath -q -e '/project/version/text()' pom.xml)
 M2_REPO=$(CURDIR)/.m2
 
 export MAVEN_OPTS=-Dmaven.repo.local=$(M2_REPO)
