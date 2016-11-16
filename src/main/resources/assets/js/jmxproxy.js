@@ -755,27 +755,48 @@ var endpointHostClass = function(prefix, host) {
         checkHost();
     };
 
+    var setupAuth = function(jqXHR) {
+        if (jqXHR.status == 401) {
+            $('#endpoint-auth').modal();
+            $('#endpoint-creds .input-group:nth(0)')
+            .find('input')
+                .remove()
+                .end()
+            .append(
+                $('<input/>')
+                .addClass('form-control')
+                .attr({
+                    id: 'endpoint-user',
+                    type: 'text',
+                    placeholder: 'username',
+                })
+            );
+            $('#endpoint-creds .input-group:nth(1)')
+            .find('input')
+                .remove()
+                .end()
+            .append(
+                $('<input/>')
+                .addClass('form-control')
+                .attr({
+                    id: 'endpoint-pass',
+                    type: 'password',
+                    placeholder: 'password',
+                })
+            );
+            $('#endpoint-user').focus();
+        } else if (jqXHR.status == 404) {
+            displayError('Selected endpoint is unavailable.');
+        }
+    };
+
     var fetchData = function(item, callback) {
         if (creds != null) {
             $.post(prefix+'/jmxproxy/'+host+item, creds, callback)
-            .fail(function(jqXHR) {
-                if (jqXHR.status == 401) {
-                    $('#endpoint-auth').modal();
-                    $('#endpoint-user').focus();
-                } else if (jqXHR.status == 404) {
-                    displayError('Selected endpoint is unavailable.');
-                }
-            });
+            .fail(setupAuth);
         } else {
             $.getJSON(prefix+'/jmxproxy/'+host+item, callback)
-            .fail(function(jqXHR) {
-                if (jqXHR.status == 401) {
-                    $('#endpoint-auth').modal();
-                    $('#endpoint-user').focus();
-                } else if (jqXHR.status == 404) {
-                    displayError('Selected endpoint is unavailable.');
-                }
-            });
+            .fail(setupAuth);
         }
     };
 
@@ -851,7 +872,6 @@ $(document).ready(function() {
                 $('#endpoint-combo button').prop('disabled', true);
             }
         } else if (!$(this).data('changing')) {
-            console.log($(this).data('changing'));
             endpointHost = endpointHostClass(prefix, data.text);
             $('#endpoint-combo').data('changing', false);
         }
@@ -873,7 +893,6 @@ $(document).ready(function() {
         $('#endpoint-combo').data('changing', $(this).val() != '');
     })
     .blur(function(e) {
-        console.log('hi');
         $('#endpoint-combo').data('changing', false);
     });
 
