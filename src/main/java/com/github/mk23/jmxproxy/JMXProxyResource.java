@@ -8,6 +8,7 @@ import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 import io.dropwizard.jersey.params.BooleanParam;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -223,7 +224,7 @@ public class JMXProxyResource {
         @PathParam("mbean") final String mbean,
         @PathParam("attribute") final String attribute,
         @QueryParam("limit") @DefaultValue("-1") final int limit,
-        @Valid final ConnectionCredentials auth
+        @Valid @NotNull final ConnectionCredentials auth
     ) {
         LOG.debug(String.format("fetching %s@%s:%d/%s/%s", auth.getUsername(), host, port, mbean, attribute));
         return getJMXHost(host, port, mbean, attribute, limit, auth);
@@ -347,7 +348,7 @@ public class JMXProxyResource {
         @PathParam("mbean") final String mbean,
         @QueryParam("limit") @DefaultValue("-1") final int limit,
         @QueryParam("full") @DefaultValue("false") final BooleanParam full,
-        @Valid final ConnectionCredentials auth
+        @Valid @NotNull final ConnectionCredentials auth
     ) {
         LOG.debug(String.format("fetching %s@%s:%d/%s (full:%s)", auth.getUsername(), host, port, mbean, full.get()));
         return getJMXHost(host, port, mbean, full.get(), limit, auth);
@@ -462,7 +463,7 @@ public class JMXProxyResource {
         @PathParam("port") final int port,
         @QueryParam("limit") @DefaultValue("-1") final int limit,
         @QueryParam("full") @DefaultValue("false") final BooleanParam full,
-        @Valid final ConnectionCredentials auth
+        @Valid @NotNull final ConnectionCredentials auth
     ) {
         LOG.debug(String.format("fetching %s@%s:%d (full:%s)", auth.getUsername(), host, port, full.get()));
         return getJMXHost(host, port, full.get(), limit, auth);
