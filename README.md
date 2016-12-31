@@ -1,4 +1,4 @@
-JMXPROXY [![Build Status](https://travis-ci.org/mk23/jmxproxy.png)](https://travis-ci.org/mk23/jmxproxy) [![Coverage Status](https://coveralls.io/repos/github/mk23/jmxproxy/badge.svg?branch=master)](https://coveralls.io/github/mk23/jmxproxy?branch=master)
+JMXPROXY [![Build Status](https://travis-ci.org/mk23/jmxproxy.png)](https://travis-ci.org/mk23/jmxproxy) [![Coverage Status](https://coveralls.io/repos/github/mk23/jmxproxy/badge.svg?branch=master)](https://coveralls.io/github/mk23/jmxproxy?branch=master) [![Downloads](https://img.shields.io/github/downloads/mk23/jmxproxy/total.svg)](https://img.shields.io/github/downloads/mk23/jmxproxy/total.svg) [![Release](https://img.shields.io/github/release/mk23/jmxproxy.svg)](https://img.shields.io/github/release/mk23/jmxproxy.svg) [![License](https://img.shields.io/github/license/mk23/jmxproxy.svg)](https://img.shields.io/github/license/mk23/jmxproxy.svg)
 ========
 
 JMXProxy exposes all available MBean attributes on a given JVM via simple HTTP request.  The results are in easily-parsable JSON format.  The server component is built using [Dropwizard](http://dropwizard.io/).
