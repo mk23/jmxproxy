@@ -64,7 +64,7 @@ public class JMXProxyApplicationTest {
             .request()
             .get(String.class);
 
-        assertFalse(acquired.contains("\n"));
+        assertFalse(acquired.contains("var endpointHost;"));
     }
 
     @Test

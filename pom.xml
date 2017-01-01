@@ -179,6 +179,8 @@
               <jsSourceExcludes>
                 <jsSourceExclude>**/*.min.js</jsSourceExclude>
               </jsSourceExcludes>
+	      <jsEngine>CLOSURE</jsEngine>
+	      <closureLanguage>ECMASCRIPT5</closureLanguage>
               <nosuffix>true</nosuffix>
               <skipMerge>true</skipMerge>
               <webappSourceDir>${basedir}/src/main/resources/assets</webappSourceDir>
