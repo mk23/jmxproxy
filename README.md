@@ -358,7 +358,7 @@ Libraries
 | Name                                                      | Version | License                                                                                           |
 |-----------------------------------------------------------|---------|---------------------------------------------------------------------------------------------------|
 | [dropwizard](http://dropwizard.io)                        | 1.0.5   | [Apache 2.0](https://github.com/dropwizard/dropwizard/blob/master/LICENSE)                        |
-| [jquery](http://jquery.com)                               | 1.12.4  | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt)                                   |
+| [jquery](http://jquery.com)                               | 3.1.1   | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt)                                   |
 | [underscore](http://underscorejs.org)                     | 1.8.3   | [MIT](https://github.com/jashkenas/underscore/blob/master/LICENSE)                                |
 | [flot](http://www.flotcharts.org)                         | 0.8.3   | [MIT](https://github.com/flot/flot/blob/master/LICENSE.txt)                                       |
 | [bootstrap](http://getbootstrap.com)                      | 3.3.7   | [MIT](https://github.com/twbs/bootstrap/blob/master/LICENSE)                                      |
