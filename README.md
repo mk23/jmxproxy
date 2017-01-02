@@ -362,7 +362,7 @@ Libraries
 | [underscore](http://underscorejs.org)                     | 1.8.3   | [MIT](https://github.com/jashkenas/underscore/blob/master/LICENSE)                                |
 | [flot](http://www.flotcharts.org)                         | 0.8.3   | [MIT](https://github.com/flot/flot/blob/master/LICENSE.txt)                                       |
 | [bootstrap](http://getbootstrap.com)                      | 3.3.7   | [MIT](https://github.com/twbs/bootstrap/blob/master/LICENSE)                                      |
-| [fuelux](http://getfuelux.com)                            | 3.13.0  | [BSD3](https://github.com/ExactTarget/fuelux/blob/master/LICENSE)                                 |
+| [fuelux](http://getfuelux.com)                            | 3.15.10 | [BSD3](https://github.com/ExactTarget/fuelux/blob/master/LICENSE)                                 |
 | [font-awesome](http://fortawesome.github.io/Font-Awesome) | 4.7.0   | [MIT](http://opensource.org/licenses/mit-license.html), [SIL OFL 1.1](http://scripts.sil.org/OFL) |
 
 

@@ -441,7 +441,7 @@ var endpointHostClass = function(prefix, host) {
                 list = [];
                 cols = [];
 
-                data = this.dataTarget;
+                data = $('#attrib-modal').data('attrib-data');
                 if (_.isArray(data)) {
                     if (data.length && _.isObject(data[0])) {
                         cols = _.map(data[0], function(v, k) {
@@ -542,15 +542,16 @@ var endpointHostClass = function(prefix, host) {
 
             $('#attrib-modal')
             .on('hidden.bs.modal', function() {
+                $('#attrib-name').text('');
                 $('#attrib-data')
                 .repeater('clear')
                 .removeData('fu.repeater');
             })
             .on('shown.bs.modal', function() {
                 $('#attrib-name').text($(this).data('attrib-name'));
-                $('#attrib-data').repeater({
+                $('#attrib-data')
+                    .repeater({
                     dataSource: attrDataSource,
-                    dataTarget: $(this).data('attrib-data'),
                     list_columnRendered: attrColBuilder,
                 });
             });
