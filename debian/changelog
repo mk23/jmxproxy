@@ -1,3 +1,28 @@
+jmxproxy (3.3.5) stable; urgency=medium
+
+  * Tagging 3.3.5
+  * [bf9cef8] Issue #140: Add release travis-ci release automation: on
+    new tag, update github release with changelog and upload compiled
+    .jar artifact. (Max Kalika)
+  * [6db586c] Issue #131: Upgrade fuelux to 3.15.10.  Remove workaround
+    from #93. (Max Kalika)
+  * [2cb2274] Issue #139: Select unused random ports for
+    JMXProxyApplicationTest. (Max Kalika)
+  * [a782660] Issue #138: Use closure compiler for js minification. (Max
+    Kalika)
+  * [9d8282a] Issue #137: Upgrade jquery to 3.1.1. (Max Kalika)
+  * [537df0d] Issue #130: Upgrade bootstrap to 3.3.7. (Max Kalika)
+  * [c1693ff] Issue #136: Upgrade font-awesome to 4.70 and fix missing
+    .woff2 file. (Max Kalika)
+  * [a3ead06] Issue #135: Force travis build to use java 8. (Max Kalika)
+  * [4fc41c4] Issue #129: Upgrade dropwizard to 1.0.5. (Max Kalika)
+  * [f6ada51] Issue #134: Add more license, downloads, and version
+    badges. (Max Kalika)
+  * [c0706a5] Issue #133: Create auth fields in js when needed. (Max
+    Kalika)
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Mon, 02 Jan 2017 15:33:24 -0800
+
 jmxproxy (3.3.4) stable; urgency=medium
 
   * Tagging 3.3.4
