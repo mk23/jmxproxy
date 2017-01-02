@@ -16,10 +16,15 @@ after_success:
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site add .'
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site commit -m "Deploy site from https://travis-ci.org/${TRAVIS_REPO_SLUG}/builds/${TRAVIS_BUILD_ID}"'
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site push --force --quiet "https://${GH_OAUTH2}@github.com/${TRAVIS_REPO_SLUG}.git" master:gh-pages'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" -a -n "${TRAVIS_TAG}" ] && git log --no-merges --format="  * [%h] %s\\r\\n" "$(git tag | grep -B1 ^${TRAVIS_TAG}$ | head -n1)..${TRAVIS_TAG}^" | paste -s --delimiters="" > __txt'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" -a -n "${TRAVIS_TAG}" ] && printf ''{"tag_name":"%s","name":"JMXProxy %s","body":"%s"}'' "${TRAVIS_TAG}" "${TRAVIS_TAG#*.}" "$(< __txt)" > __req'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" -a -n "${TRAVIS_TAG}" ] && curl -s https://api.github.com/repos/${TRAVIS_REPO_SLUG}/releases?access_token=${GH_OAUTH2} -XPOST --data-binary @__req > __res'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" -a -n "${TRAVIS_TAG}" ] && curl -s "$(jq -r .upload_url __res | sed "s/{.*}//")?name=${TRAVIS_TAG/./-}.jar&access_token=${GH_OAUTH2}" -XPOST --data-binary @target/${TRAVIS_TAG/./-}.jar -H "Content-Type: application/zip" > __obj'
 
 branches:
   only:
     - master
+    - /jmxproxy\..+/
 
 cache:
   directories:
