@@ -2,6 +2,7 @@
     "clean_interval": 12,
     "cache_duration": 23000,
     "access_duration": 404276000,
+    "connect_timeout": 3000,
     "history_size": 11,
     "allowed_endpoints": [
         "localhost:1100",

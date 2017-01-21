@@ -104,6 +104,7 @@ public class JMXProxyResourceTest {
             .setCleanInterval(Duration.milliseconds(12))
             .setCacheDuration(Duration.seconds(23))
             .setAccessDuration(Duration.seconds(404276))
+            .setConnectTimeout(Duration.seconds(3))
             .setHistorySize(11)
             .setAllowedEndpoints(Arrays.asList("localhost:1100", "remotehost:2211"));
 
