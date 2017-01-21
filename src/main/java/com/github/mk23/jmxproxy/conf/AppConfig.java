@@ -34,7 +34,7 @@ import javax.validation.constraints.Min;
  *
  * @since   2016-01-28
  * @author  mk23
- * @version 3.2.1
+ * @version 3.3.6
  */
 @JsonSnakeCase
 public class AppConfig {
@@ -44,9 +44,11 @@ public class AppConfig {
     private static final int DEFAULT_CACHE_DURATION = 5;
     /** Default access duration minutes. */
     private static final int DEFAULT_ACCESS_DURATION = 30;
+    /** Default jmx connect timeout milliseconds. */
+    private static final int DEFAULT_CONNECT_TIMEOUT = 10000;
 
     /**
-     * Configuraiton for how often to run the task that finds and
+     * Configuration for how often to run the task that finds and
      * purges stale endpoints.
      */
     @Valid
@@ -74,6 +76,16 @@ public class AppConfig {
     @JsonDeserialize(using = DurationDeserializer.class)
     @JsonSerialize(using = DurationSerializer.class)
     private Duration accessDuration = Duration.minutes(DEFAULT_ACCESS_DURATION);
+
+    /**
+     * Configuration for how long to wait for a JMX connection to complete
+     * before declaring the endpoint as inaccessible.
+     */
+    @Valid
+    @JsonProperty
+    @JsonDeserialize(using = DurationDeserializer.class)
+    @JsonSerialize(using = DurationSerializer.class)
+    private Duration connectTimeout = Duration.minutes(DEFAULT_CONNECT_TIMEOUT);
 
     /**
      * Configuration for how many fetched attribute values to keep for
@@ -158,6 +170,29 @@ public class AppConfig {
      */
     public final AppConfig setAccessDuration(final Duration accessDuration) {
         this.accessDuration = accessDuration;
+        return this;
+    }
+
+    /**
+     * <p>Getter for connectTimeout.</p>
+     *
+     * Configuration for how long to wait for a JMX connection to complete
+     * before declaring the endpoint as inaccessible.
+     *
+     * @return Configured connect timeout.
+     */
+    public final Duration getConnectTimeout() {
+        return connectTimeout;
+    }
+    /**
+     * <p>Setter for connectTimeout.</p>
+     *
+     * @param connectTimeout time before an abandoning a new JMX connection.
+     *
+     * @return Modified AppConfig for setter chaining.
+     */
+    public final AppConfig setConnectTimeout(final Duration connectTimeout) {
+        this.connectTimeout = connectTimeout;
         return this;
     }
 
