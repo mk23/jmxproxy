@@ -80,6 +80,10 @@ jmxproxy:
     # reconnecting to the agent and pulling new data
     cache_duration: 5m
 
+    # how long to wait on a new JMX connection before
+    # giving up with a not found error to the client
+    connect_timeout: 3s
+
     # white list of allowed endpoints in host:port
     # format for this agent to connect to, defaulting
     # to allowing all when empty or missing
