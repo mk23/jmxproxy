@@ -128,20 +128,14 @@ public class ConnectionManagerTest {
         assertNotNull(manager.getHost(validHost, validAuth));
     }
 
-    @Test
+    @Test(expected=WebApplicationException.class, timeout=2000)
     public void checkInvalidHost() throws Exception {
         AppConfig serviceConfig = new AppConfig();
         serviceConfig.setConnectTimeout(Duration.milliseconds(500));
 
         final ConnectionManager manager = new ConnectionManager(serviceConfig);
-        final long startTime = System.currentTimeMillis();
 
-        try {
-            assertNull(manager.getHost(invalidHost, validAuth));
-        } catch (WebApplicationException e) {
-            final long duration = System.currentTimeMillis() - startTime;
-            assertTrue(duration > 500 && duration < 1500);
-        }
+        manager.getHost(invalidHost, validAuth);
     }
 
     @Test(expected=WebApplicationException.class)

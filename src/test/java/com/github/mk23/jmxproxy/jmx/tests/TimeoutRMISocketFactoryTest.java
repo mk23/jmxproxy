@@ -38,17 +38,11 @@ public class TimeoutRMISocketFactoryTest {
         assertNotNull(sf.createSocket(validHost, serverPort));
     }
 
-    @Test
+    @Test(expected=SocketTimeoutException.class, timeout=2000)
     public void checkClientInvalidHostValidPort() throws Exception {
         final TimeoutRMISocketFactory sf = new TimeoutRMISocketFactory(connectTimeout);
-        final long startTime = System.currentTimeMillis();
 
-        try {
-            assertNull(sf.createSocket(invalidHost, serverPort));
-        } catch (SocketTimeoutException e) {
-            final long duration = System.currentTimeMillis() - startTime;
-            assertTrue(duration > 500 && duration < 1500);
-        }
+        sf.createSocket(invalidHost, serverPort);
     }
 
     @Test(expected=ConnectException.class)
