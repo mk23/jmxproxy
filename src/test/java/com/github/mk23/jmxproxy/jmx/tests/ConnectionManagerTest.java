@@ -33,7 +33,8 @@ public class ConnectionManagerTest {
     private final String passwdFile       = System.getProperty("com.sun.management.jmxremote.password.file");
 
     private final String validHost        = "localhost:" + System.getProperty("com.sun.management.jmxremote.port");
-    private final String invalidHost      = "localhost:0";
+    private final String invalidPort      = "localhost:0";
+    private final String invalidHost      = "10.0.0.0:0";
 
     private final String localMBean       = "ConnectionManagerTest:type=test";
     private final String validMBean       = "java.lang:type=OperatingSystem";
@@ -112,11 +113,27 @@ public class ConnectionManagerTest {
         assertNotNull(manager.getHost(validHost, validAuth));
     }
 
-    @Test(expected=WebApplicationException.class)
+    @Test
     public void checkInvalidHost() throws Exception {
+        AppConfig serviceConfig = new AppConfig();
+        serviceConfig.setConnectTimeout(Duration.milliseconds(500));
+
+        final ConnectionManager manager = new ConnectionManager(serviceConfig);
+        final long startTime = System.currentTimeMillis();
+
+        try {
+            assertNull(manager.getHost(invalidHost, validAuth));
+        } catch (WebApplicationException e) {
+            final long duration = System.currentTimeMillis() - startTime;
+            assertTrue(duration > 500 && duration < 1500);
+        }
+    }
+
+    @Test(expected=WebApplicationException.class)
+    public void checkInvalidPort() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
-        assertNull(manager.getHost(invalidHost, validAuth));
+        assertNull(manager.getHost(invalidPort, validAuth));
     }
 
     @Test
@@ -130,13 +147,13 @@ public class ConnectionManagerTest {
     }
 
     @Test(expected=WebApplicationException.class)
-    public void checkInvalidHostWhitelist() throws Exception {
+    public void checkInvalidPortWhitelist() throws Exception {
         AppConfig serviceConfig = new AppConfig();
         serviceConfig.setAllowedEndpoints(Arrays.asList(new String[] { validHost }));
 
         final ConnectionManager manager = new ConnectionManager(serviceConfig);
 
-        manager.getHost(invalidHost, validAuth);
+        manager.getHost(invalidPort, validAuth);
     }
 
     /* MBean tests */
