@@ -5,9 +5,13 @@ import com.github.mk23.jmxproxy.core.Host;
 
 import io.dropwizard.lifecycle.Managed;
 
+import java.io.IOException;
+
 import java.net.MalformedURLException;
 
 import java.util.HashMap;
+import java.rmi.server.RMISocketFactory;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -57,6 +61,16 @@ public class ConnectionManager implements Managed {
      */
     public ConnectionManager(final AppConfig config) {
         this.config = config;
+
+        int timeout = (int) config.getConnectTimeout().toMilliseconds();
+        try {
+            RMISocketFactory.setSocketFactory(new TimeoutRMISocketFactory(timeout));
+        } catch (IOException e) {
+            LOG.info("socket factory already defined, resetting timeout to " + timeout + "ms");
+
+            TimeoutRMISocketFactory sf = (TimeoutRMISocketFactory) RMISocketFactory.getSocketFactory();
+            sf.setTimeout(timeout);
+        }
 
         hosts = new HashMap<String, ConnectionWorker>();
         purge = Executors.newSingleThreadScheduledExecutor();
