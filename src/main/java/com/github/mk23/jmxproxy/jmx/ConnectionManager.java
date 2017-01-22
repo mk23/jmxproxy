@@ -9,12 +9,12 @@ import java.io.IOException;
 
 import java.net.MalformedURLException;
 
-import java.util.HashMap;
 import java.rmi.server.RMISocketFactory;
 
 import java.util.Map;
 import java.util.Set;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -72,7 +72,7 @@ public class ConnectionManager implements Managed {
             sf.setTimeout(timeout);
         }
 
-        hosts = new HashMap<String, ConnectionWorker>();
+        hosts = new ConcurrentHashMap<String, ConnectionWorker>();
         purge = Executors.newSingleThreadScheduledExecutor();
     }
 
@@ -95,9 +95,7 @@ public class ConnectionManager implements Managed {
      * @return {@link Set} of {@link ConnectionWorker} name {@link String}s.
      */
     public final Set<String> getHosts() {
-        synchronized (hosts) {
-            return hosts.keySet();
-        }
+        return hosts.keySet();
     }
 
     /**
@@ -112,15 +110,14 @@ public class ConnectionManager implements Managed {
      * @throws WebApplicationException if key is not found in the map store.
      */
     public final boolean delHost(final String host) throws WebApplicationException {
-        synchronized (hosts) {
-            if (hosts.containsKey(host)) {
-                LOG.debug("purging " + host);
-                hosts.remove(host).shutdown();
+        ConnectionWorker worker = hosts.remove(host);
+        if (worker != null) {
+            LOG.debug("purging " + host);
+            worker.shutdown();
 
-                return true;
-            } else {
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
+            return true;
+        } else {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }
 
@@ -174,18 +171,15 @@ public class ConnectionManager implements Managed {
         }
 
         try {
-            synchronized (hosts) {
-                if (!hosts.containsKey(host)) {
-                    LOG.info("creating new worker for " + host);
-                    hosts.put(host, new ConnectionWorker(
-                        host,
-                        config.getCacheDuration().toMilliseconds(),
-                        config.getHistorySize()
-                    ));
-
-                }
-                return hosts.get(host).getHost(auth);
+            if (!hosts.containsKey(host)) {
+                LOG.info("creating new worker for " + host);
+                hosts.put(host, new ConnectionWorker(
+                    host,
+                    config.getCacheDuration().toMilliseconds(),
+                    config.getHistorySize()
+                ));
             }
+            return hosts.get(host).getHost(auth);
         } catch (MalformedURLException e) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } catch (SecurityException e) {
@@ -225,12 +219,10 @@ public class ConnectionManager implements Managed {
             @Override
             public void run() {
                 LOG.debug("begin expiring stale hosts");
-                synchronized (hosts) {
-                    for (Map.Entry<String, ConnectionWorker> hostEntry : hosts.entrySet()) {
-                        if (hostEntry.getValue().isExpired(config.getAccessDuration().toMilliseconds())) {
-                            LOG.debug("purging " + hostEntry.getKey());
-                            hosts.remove(hostEntry.getKey()).shutdown();
-                        }
+                for (Map.Entry<String, ConnectionWorker> hostEntry : hosts.entrySet()) {
+                    if (hostEntry.getValue().isExpired(config.getAccessDuration().toMilliseconds())) {
+                        LOG.debug("purging " + hostEntry.getKey());
+                        hosts.remove(hostEntry.getKey()).shutdown();
                     }
                 }
                 LOG.debug("end expiring stale hosts");
@@ -248,11 +240,9 @@ public class ConnectionManager implements Managed {
     public final void stop() {
         LOG.info("stopping jmx connection manager");
         purge.shutdown();
-        synchronized (hosts) {
-            for (Map.Entry<String, ConnectionWorker> hostEntry : hosts.entrySet()) {
-                LOG.debug("purging " + hostEntry.getKey());
-                hosts.remove(hostEntry.getKey()).shutdown();
-            }
+        for (Map.Entry<String, ConnectionWorker> hostEntry : hosts.entrySet()) {
+            LOG.debug("purging " + hostEntry.getKey());
+            hosts.remove(hostEntry.getKey()).shutdown();
         }
         hosts.clear();
         started = false;
