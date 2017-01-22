@@ -28,6 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeNotNull;
+import static org.junit.Assume.assumeTrue;
 
 public class ConnectionManagerTest {
     private final String passwdFile       = System.getProperty("com.sun.management.jmxremote.password.file");
@@ -103,6 +104,20 @@ public class ConnectionManagerTest {
 
         assumeNotNull(passwdFile);
         manager.getHost(validHost, invalidAuth);
+    }
+    @Test
+    public void checkValidHostAnonymousAuthAllowed() throws Exception {
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
+
+        assumeTrue(passwdFile == null);
+        assertNotNull(manager.getHost(validHost));
+    }
+    @Test(expected=WebApplicationException.class)
+    public void checkValidHostAnonymousAuthDisallowed() throws Exception {
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
+
+        assumeNotNull(passwdFile);
+        manager.getHost(validHost);
     }
 
     /* Host tests */
