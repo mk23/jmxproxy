@@ -100,6 +100,8 @@ public class ConnectionWorker {
      * @throws SecurityException if the specified credentials to the host are incorrect.
      */
     public final Host getHost(final ConnectionCredentials testCreds) throws IOException, SecurityException {
+        accessTime = System.currentTimeMillis();
+
         if (host == null) {
             final CountDownLatch ready = new CountDownLatch(1);
 
@@ -136,7 +138,6 @@ public class ConnectionWorker {
             throw new SecurityException();
         } else {
             synchronized (fetchLock) {
-                accessTime = System.currentTimeMillis();
                 return host;
             }
         }
