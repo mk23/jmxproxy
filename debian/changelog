@@ -1,3 +1,39 @@
+jmxproxy (3.3.6) stable; urgency=medium
+
+  * Tagging 3.3.6
+  * [3743105] Issue #146: Upgrade fuelux to 3.15.11. (Max Kalika)
+  * [a1c272e] Issue #144: Update copyright year to 2017. (Max Kalika)
+  * [37c030b] Issue #150: Set the host access timestamp unconditionally.
+    (Max Kalika)
+  * [a66c84a] Issue #149: Use junit's timeout threshold instead of
+    calculating custom asserts.  Bump limit to 2sec. (Max Kalika)
+  * [a903781] Issue #141: Switch ConnectionManager host tracking to use
+    a ConcurrentHashMap instead of HashMap  with custom synchronization.
+    Fixes high traffic / dense deployments performance degredation. (Max
+    Kalika)
+  * [d140c8e] Issue #148: Update com.fasterxml.jackson.core:jackson-
+    annotations to 2.8.6 and org.objenesis:objenesis to 2.5.1. (Max
+    Kalika)
+  * [bfb5f2e] Issue #144: Update copyright year to 2017. (Max Kalika)
+  * [57d27b3] Issue #143: Update maven project info reports plugin to
+    2.9.  Fixes java 8 build exceptions analyzing classes. (Max Kalika)
+  * [21679b4] Issue #145: Upgrade findbugs plugin to 3.0.4. (Max Kalika)
+  * [9f29829] Issue #147: Add tests for ConnectionManager.getHost(String
+    host). (Max Kalika)
+  * [2d13219] Issue #142: Add tests for connection timeouts. (Max
+    Kalika)
+  * [c65510e] Issue #142: Add and use an RMI socket factory class that
+    passes a configurable timeout value to Socket.connect(). (Max
+    Kalika)
+  * [ecd1ccc] Issue #142: Update documentation for the jmx connect
+    timeout setting. (Max Kalika)
+  * [42e3b06] Issue #142: Update tests for the jmx connect timeout
+    setting. (Max Kalika)
+  * [cef22dd] Issue #142: Add configuration for jmx connect timeout.
+    (Max Kalika)
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Fri, 27 Jan 2017 12:25:01 -0800
+
 jmxproxy (3.3.5) stable; urgency=medium
 
   * Tagging 3.3.5
