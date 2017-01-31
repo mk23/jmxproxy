@@ -1,3 +1,11 @@
+jmxproxy (3.3.7) stable; urgency=medium
+
+  * Tagging 3.3.7
+  * [30e0e30] Issue #151: Drop support for java 7 in debian builds. (Max
+    Kalika)
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Mon, 30 Jan 2017 19:20:08 -0800
+
 jmxproxy (3.3.6) stable; urgency=medium
 
   * Tagging 3.3.6
