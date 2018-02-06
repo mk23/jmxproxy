@@ -289,6 +289,7 @@
             <configuration>
               <forkCount>1</forkCount>
               <reuseForks>false</reuseForks>
+              <trimStackTrace>false</trimStackTrace>
               <argLine>
                 -Dlogback.configurationFile=src/test/resources/logback.xml
                 -Dcom.sun.management.jmxremote.ssl=false
@@ -306,6 +307,7 @@
             <configuration>
               <forkCount>1</forkCount>
               <reuseForks>false</reuseForks>
+              <trimStackTrace>false</trimStackTrace>
               <argLine>
                 -Dlogback.configurationFile=src/test/resources/logback.xml
                 -Dcom.sun.management.jmxremote.ssl=false
