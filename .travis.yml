@@ -7,7 +7,7 @@ jdk:
 install:
   - 'chmod 0600 scripts/server/passwd.txt'
 script:
-  - 'mvn clean package'
+  - 'mvn -B clean package'
 after_success:
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && mvn coveralls:report'
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && git -C target/site init'
