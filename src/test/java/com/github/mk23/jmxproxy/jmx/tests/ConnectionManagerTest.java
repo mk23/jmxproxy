@@ -35,7 +35,7 @@ public class ConnectionManagerTest {
 
     private final String validHost        = "localhost:" + System.getProperty("com.sun.management.jmxremote.port");
     private final String invalidPort      = "localhost:0";
-    private final String invalidHost      = "10.0.0.0:0";
+    private final String invalidHost      = "192.0.2.1:0";
 
     private final String localMBean       = "ConnectionManagerTest:type=test";
     private final String validMBean       = "java.lang:type=OperatingSystem";

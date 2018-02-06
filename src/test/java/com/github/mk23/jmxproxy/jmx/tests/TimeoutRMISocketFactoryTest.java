@@ -18,7 +18,7 @@ import static org.junit.Assume.assumeNotNull;
 
 public class TimeoutRMISocketFactoryTest {
     private final String validHost   = "localhost";
-    private final String invalidHost = "10.0.0.0";
+    private final String invalidHost = "192.0.2.1";
 
     private final int serverPort     = Integer.getInteger("com.sun.management.jmxremote.port");
 
