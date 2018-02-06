@@ -201,26 +201,15 @@ public class ConnectionWorker {
                                     Object attribute = server.getAttribute(mbeanName, attributeObject.getName());
 
                                     mbean.addAttribute(attributeObject.getName(), attribute, historySize);
-                                } catch (java.lang.NullPointerException e) {
+                                } catch (java.lang.NullPointerException
+                                        | java.rmi.RemoteException
+                                        | javax.management.JMException
+                                        | javax.management.JMRuntimeException e) {
                                     LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                                } catch (java.rmi.UnmarshalException e) {
-                                    LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                                } catch (javax.management.AttributeNotFoundException e) {
-                                    LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                                } catch (javax.management.MBeanException e) {
-                                    LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                                } catch (javax.management.RuntimeMBeanException e) {
-                                    if (!(e.getCause() instanceof UnsupportedOperationException)) {
-                                        LOG.error("failed to add attribute " + attributeObject.toString() + ": " + e);
-                                    }
                                 }
                             }
                         }
-                    } catch (javax.management.InstanceNotFoundException e) {
-                        LOG.error("failed to get mbean info for " + mbeanName, e);
-                    } catch (javax.management.IntrospectionException e) {
-                        LOG.error("failed to get mbean info for " + mbeanName, e);
-                    } catch (javax.management.ReflectionException e) {
+                    } catch (javax.management.JMException e) {
                         LOG.error("failed to get mbean info for " + mbeanName, e);
                     }
                 }
