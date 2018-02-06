@@ -18,10 +18,10 @@ override_dh_auto_configure:
 	[ -d $(M2_REPO) ] || mkdir $(M2_REPO)
 
 override_dh_auto_build:
-	mvn package
+	mvn -B package
 
 override_dh_link:
 	dh_link usr/lib/jmxproxy-$(VERSION).jar usr/lib/jmxproxy.jar
 
 override_dh_auto_clean:
-	mvn clean
+	mvn -B clean
