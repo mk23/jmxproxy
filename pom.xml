@@ -53,6 +53,7 @@
     <jmxproxy.test.port>11123</jmxproxy.test.port>
     <github.repo.name>mk23/${project.artifactId}</github.repo.name>
     <version.dropwizard>1.2.3</version.dropwizard>
+    <version.jacoco>0.7.8</version.jacoco>
   </properties>
 
   <dependencies>
@@ -275,7 +276,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.7.201606060606</version>
+        <version>${version.jacoco}</version>
         <executions>
           <execution>
             <id>default-prepare-agent</id>
@@ -453,7 +454,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.7.201606060606</version>
+        <version>${version.jacoco}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
