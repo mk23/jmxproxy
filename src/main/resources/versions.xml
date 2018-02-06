@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset comparisonMethod="maven" xmlns="http://mojo.codehaus.org/versions-maven-plugin/rule/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mojo.codehaus.org/versions-maven-plugin/rule/2.0.0 http://mojo.codehaus.org/versions-maven-plugin/xsd/rule-2.0.0.xsd">
   <rules>
+    <rule groupId="com.google.guava" comparisonMethod="maven">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*-(?:rc\d+|android)(?:-.*)?</ignoreVersion>
+      </ignoreVersions>
+    </rule>
     <rule groupId="io.dropwizard" comparisonMethod="maven">
       <ignoreVersions>
         <ignoreVersion type="regex">.*-rc\d+</ignoreVersion>
@@ -24,6 +29,16 @@
     <rule groupId="org.apache.maven.plugins" artifactId="maven-release-plugin">
       <ignoreVersions>
         <ignoreVersion type="regex">.*</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.hibernate" artifactId="hibernate-validator">
+      <ignoreVersions>
+        <ignoreVersion type="regex">6\..*</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.slf4j" comparisonMethod="maven">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*-(?:alpha|beta)\d*</ignoreVersion>
       </ignoreVersions>
     </rule>
   </rules>
