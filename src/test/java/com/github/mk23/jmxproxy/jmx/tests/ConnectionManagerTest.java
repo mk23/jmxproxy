@@ -158,6 +158,19 @@ public class ConnectionManagerTest {
     }
 
     @Test
+    public void checkBrokenHost() throws Exception {
+        AppConfig serviceConfig = new AppConfig();
+        serviceConfig.setConnectTimeout(Duration.milliseconds(500));
+
+        final ConnectionManager manager = new ConnectionManager(serviceConfig);
+
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("HTTP 400 Bad Request");
+
+        manager.getHost("\n", validAuth);
+    }
+
+    @Test
     public void checkInvalidPort() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
