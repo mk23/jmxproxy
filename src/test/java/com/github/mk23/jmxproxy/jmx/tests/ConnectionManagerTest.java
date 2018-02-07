@@ -22,6 +22,8 @@ import javax.ws.rs.WebApplicationException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 
 import static org.junit.Assert.assertNotNull;
@@ -47,6 +49,7 @@ public class ConnectionManagerTest {
     private final ConnectionCredentials validAuth;
     private final ConnectionCredentials invalidAuth = new ConnectionCredentials(UUID.randomUUID().toString(), UUID.randomUUID().toString());
 
+    @Rule public ExpectedException thrown = ExpectedException.none();
     @Rule public TestName name = new TestName();
 
     public interface ConnectionManagerTestJMXMBean {
@@ -84,39 +87,52 @@ public class ConnectionManagerTest {
         assumeNotNull(passwdFile);
         assertNotNull(manager.getHost(validHost, validAuth));
     }
-    @Test(expected=WebApplicationException.class)
+    @Test
     public void checkValidHostNoAuth() throws Exception {
+        assumeNotNull(passwdFile);
+
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
-        assumeNotNull(passwdFile);
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("");
         manager.getHost(validHost);
     }
-    @Test(expected=WebApplicationException.class)
+    @Test
     public void checkValidHostNullAuth() throws Exception {
+        assumeNotNull(passwdFile);
+
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
-        assumeNotNull(passwdFile);
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("HTTP 401 Unauthorized");
         manager.getHost(validHost, null);
     }
-    @Test(expected=WebApplicationException.class)
+    @Test
     public void checkValidHostInvalidAuth() throws Exception {
+        assumeNotNull(passwdFile);
+
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
-        assumeNotNull(passwdFile);
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("HTTP 401 Unauthorized");
         manager.getHost(validHost, invalidAuth);
     }
     @Test
     public void checkValidHostAnonymousAuthAllowed() throws Exception {
+        assumeTrue(passwdFile == null);
+
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
-        assumeTrue(passwdFile == null);
         assertNotNull(manager.getHost(validHost));
     }
-    @Test(expected=WebApplicationException.class)
+    @Test
     public void checkValidHostAnonymousAuthDisallowed() throws Exception {
+        assumeNotNull(passwdFile);
+
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
-        assumeNotNull(passwdFile);
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("HTTP 401 Unauthorized");
         manager.getHost(validHost);
     }
 
@@ -128,19 +144,25 @@ public class ConnectionManagerTest {
         assertNotNull(manager.getHost(validHost, validAuth));
     }
 
-    @Test(expected=WebApplicationException.class, timeout=2000)
-    public void checkInvalidHost() throws Exception {
+    @Test(timeout=2000)
+    public void checkUnknownHost() throws Exception {
         AppConfig serviceConfig = new AppConfig();
         serviceConfig.setConnectTimeout(Duration.milliseconds(500));
 
         final ConnectionManager manager = new ConnectionManager(serviceConfig);
 
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("HTTP 404 Not Found");
+
         manager.getHost(invalidHost, validAuth);
     }
 
-    @Test(expected=WebApplicationException.class)
+    @Test
     public void checkInvalidPort() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
+
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("HTTP 404 Not Found");
 
         assertNull(manager.getHost(invalidPort, validAuth));
     }
@@ -155,12 +177,15 @@ public class ConnectionManagerTest {
         assertNotNull(manager.getHost(validHost, validAuth));
     }
 
-    @Test(expected=WebApplicationException.class)
+    @Test
     public void checkInvalidPortWhitelist() throws Exception {
         AppConfig serviceConfig = new AppConfig();
         serviceConfig.setAllowedEndpoints(Arrays.asList(new String[] { validHost }));
 
         final ConnectionManager manager = new ConnectionManager(serviceConfig);
+
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("HTTP 403 Forbidden");
 
         manager.getHost(invalidPort, validAuth);
     }
