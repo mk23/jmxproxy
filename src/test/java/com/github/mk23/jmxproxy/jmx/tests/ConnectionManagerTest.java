@@ -247,6 +247,13 @@ public class ConnectionManagerTest {
         assertNull(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute(invalidAttribute));
     }
 
+    @Test
+    public void checkValidHostValidMBeanInvalidAttributes() throws Exception {
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
+
+        assertTrue(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttributes(invalidAttribute, 1).isEmpty());
+    }
+
     /* Custom MBean tests */
     @Test
     public void checkValidHostRemovedMBean() throws Exception {
