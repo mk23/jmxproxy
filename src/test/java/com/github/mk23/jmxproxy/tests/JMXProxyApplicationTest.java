@@ -2,37 +2,45 @@ package com.github.mk23.jmxproxy.tests;
 
 import com.github.mk23.jmxproxy.JMXProxyApplication;
 import com.github.mk23.jmxproxy.conf.MainConfig;
+import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.dropwizard.testing.DropwizardTestSupport;
 import io.dropwizard.testing.FixtureHelpers;
 import io.dropwizard.testing.ResourceHelpers;
-import io.dropwizard.testing.junit.DropwizardAppRule;
+
+import java.io.FileNotFoundException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Response;
+
+import org.eclipse.jetty.util.component.LifeCycle;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class JMXProxyApplicationTest {
 
-    private static final String CONFIG = ResourceHelpers.resourceFilePath("main_config.yaml");
+    private static final String CONFIG =
+        ResourceHelpers.resourceFilePath("main_config.yaml");
+    public static final DropwizardTestSupport<MainConfig> SUPPORT =
+        new DropwizardTestSupport<MainConfig>(JMXProxyApplication.class, CONFIG);
+
     private Client client;
 
+    @Rule public ExpectedException thrown = ExpectedException.none();
     @Rule public TestName name = new TestName();
-
-    @ClassRule
-    public static final DropwizardAppRule<MainConfig> RULE =
-        new DropwizardAppRule<MainConfig>(JMXProxyApplication.class, CONFIG);
 
     @Before
     public void printTestName() {
@@ -40,8 +48,18 @@ public class JMXProxyApplicationTest {
     }
 
     @Before
+    public void startApplication() throws Exception {
+        SUPPORT.before();
+    }
+
+    @Before
     public void createClient() throws Exception {
         client = ClientBuilder.newClient();
+    }
+
+    @After
+    public void stopApplication() throws Exception {
+        SUPPORT.after();
     }
 
     @After
@@ -51,40 +69,63 @@ public class JMXProxyApplicationTest {
 
     @Test
     public void checkApplication() throws Exception {
-        String acquired = client.target("http://localhost:" + RULE.getLocalPort())
-            .request()
-            .get(String.class);
+        Response response = client.target("http://localhost:" + SUPPORT.getLocalPort()).request().get();
 
-        assertTrue(acquired.contains("<title>JMXProxy</title>"));
+        assertTrue(response.getStatus() == Response.Status.OK.getStatusCode());
+        assertTrue(response.readEntity(String.class).contains("<title>JMXProxy</title>"));
     }
 
     @Test
     public void checkMinificationJS() throws Exception {
-        String acquired = client.target("http://localhost:" + RULE.getLocalPort() + "/js/jmxproxy.js")
-            .request()
-            .get(String.class);
+        Response response = client.target("http://localhost:" + SUPPORT.getLocalPort() + "/js/jmxproxy.js").request().get();
 
-        assertFalse(acquired.contains("var endpointHost;"));
+        assertTrue(response.getStatus() == Response.Status.OK.getStatusCode());
+        assertFalse(response.readEntity(String.class).contains("var endpointHost;"));
     }
 
     @Test
     public void checkMinificationCSS() throws Exception {
-        String acquired = client.target("http://localhost:" + RULE.getLocalPort() + "/css/jmxproxy.css")
-            .request()
-            .get(String.class);
+        Response response = client.target("http://localhost:" + SUPPORT.getLocalPort() + "/css/jmxproxy.css").request().get();
 
-        assertFalse(acquired.contains("\n"));
+        assertTrue(response.getStatus() == Response.Status.OK.getStatusCode());
+        assertFalse(response.readEntity(String.class).contains("\n"));
     }
 
     @Test
-    public void checkHealthStatus() throws Exception {
-        String acquired = client.target("http://localhost:" + RULE.getAdminPort() + "/healthcheck")
-            .request()
-            .get(String.class);
-
+    public void checkHealthStatusPass() throws Exception {
         ObjectMapper om = new ObjectMapper();
-        String expected = om.writeValueAsString(om.readValue(FixtureHelpers.fixture("fixtures/health_check.json"), JsonNode.class));
+        String expected = om.writeValueAsString(om.readValue(FixtureHelpers.fixture("fixtures/health_check_pass.json"), JsonNode.class));
 
-        assertTrue(expected.equals(acquired));
+        Response response = client.target("http://localhost:" + SUPPORT.getAdminPort() + "/healthcheck").request().get();
+
+        assertTrue(response.getStatus() == Response.Status.OK.getStatusCode());
+        assertTrue(response.readEntity(String.class).equals(expected));
+    }
+
+    @Test
+    public void checkHealthStatusFail() throws Exception {
+        ObjectMapper om = new ObjectMapper();
+        String expected = om.writeValueAsString(om.readValue(FixtureHelpers.fixture("fixtures/health_check_fail.json"), JsonNode.class));
+
+        LifeCycle lc = null;
+        for (LifeCycle object : SUPPORT.getEnvironment().lifecycle().getManagedObjects()) {
+            if (object.toString().startsWith(ConnectionManager.class.getName())) {
+                lc = object;
+                break;
+            }
+        }
+        assertNotNull(lc);
+        lc.stop();
+
+        Response response = client.target("http://localhost:" + SUPPORT.getAdminPort() + "/healthcheck").request().get();
+
+        assertTrue(response.getStatus() == Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        assertTrue(response.readEntity(String.class).equals(expected));
+    }
+
+    @Test
+    public void checkMainValidConfig() throws Exception {
+        JMXProxyApplication.main(new String[] {"server", CONFIG});
+        // success if no exceptions are thrown
     }
 }

@@ -1,0 +1,9 @@
+{
+    "deadlocks": {
+        "healthy": true
+    },
+    "manager": {
+        "healthy": false,
+        "message": "connection manager is not started"
+    }
+}
