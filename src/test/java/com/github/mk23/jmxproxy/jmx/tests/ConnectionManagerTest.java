@@ -4,6 +4,8 @@ import com.github.mk23.jmxproxy.conf.AppConfig;
 import com.github.mk23.jmxproxy.jmx.ConnectionCredentials;
 import com.github.mk23.jmxproxy.jmx.ConnectionManager;
 
+import com.github.mk23.jmxproxy.tests.AuthenticatedTests;
+
 import io.dropwizard.util.Duration;
 
 import java.io.BufferedReader;
@@ -23,14 +25,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.junit.experimental.categories.Category;
+
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeNotNull;
-import static org.junit.Assume.assumeTrue;
 
 public class ConnectionManagerTest {
     private final String passwdFile       = System.getProperty("com.sun.management.jmxremote.password.file");
@@ -81,16 +83,15 @@ public class ConnectionManagerTest {
 
     /* Auth tests */
     @Test
+    @Category(AuthenticatedTests.class)
     public void checkValidHostValidAuth() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
-        assumeNotNull(passwdFile);
         assertNotNull(manager.getHost(validHost, validAuth));
     }
     @Test
+    @Category(AuthenticatedTests.class)
     public void checkValidHostNoAuth() throws Exception {
-        assumeNotNull(passwdFile);
-
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         thrown.expect(WebApplicationException.class);
@@ -98,9 +99,8 @@ public class ConnectionManagerTest {
         manager.getHost(validHost);
     }
     @Test
+    @Category(AuthenticatedTests.class)
     public void checkValidHostNullAuth() throws Exception {
-        assumeNotNull(passwdFile);
-
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         thrown.expect(WebApplicationException.class);
@@ -108,9 +108,8 @@ public class ConnectionManagerTest {
         manager.getHost(validHost, null);
     }
     @Test
+    @Category(AuthenticatedTests.class)
     public void checkValidHostInvalidAuth() throws Exception {
-        assumeNotNull(passwdFile);
-
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         thrown.expect(WebApplicationException.class);
@@ -118,22 +117,29 @@ public class ConnectionManagerTest {
         manager.getHost(validHost, invalidAuth);
     }
     @Test
-    public void checkValidHostAnonymousAuthAllowed() throws Exception {
-        assumeTrue(passwdFile == null);
-
+    @Category(AuthenticatedTests.class)
+    public void checkValidHostValidAuthSwitch() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
-        assertNotNull(manager.getHost(validHost));
+        assertNotNull(manager.getHost(validHost, validAuth));
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("HTTP 401 Unauthorized");
+        manager.getHost(validHost, invalidAuth);
     }
     @Test
+    @Category(AuthenticatedTests.class)
     public void checkValidHostAnonymousAuthDisallowed() throws Exception {
-        assumeNotNull(passwdFile);
-
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         thrown.expect(WebApplicationException.class);
         thrown.expectMessage("HTTP 401 Unauthorized");
         manager.getHost(validHost);
+    }
+    @Test
+    public void checkValidHostAnonymousAuthAllowed() throws Exception {
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
+
+        assertNotNull(manager.getHost(validHost));
     }
 
     /* Host tests */

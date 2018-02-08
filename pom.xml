@@ -304,18 +304,10 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <skipTests>true</skipTests>
-            </configuration>
-          </execution>
-          <execution>
-            <id>anonymous-test</id>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
               <forkCount>1</forkCount>
               <reuseForks>false</reuseForks>
               <trimStackTrace>false</trimStackTrace>
+              <excludedGroups>com.github.mk23.jmxproxy.tests.AuthenticatedTests</excludedGroups>
               <argLine>
                 -Dlogback.configurationFile=src/test/resources/logback.xml
                 -Dcom.sun.management.jmxremote.ssl=false
@@ -334,6 +326,7 @@
               <forkCount>1</forkCount>
               <reuseForks>false</reuseForks>
               <trimStackTrace>false</trimStackTrace>
+              <groups>com.github.mk23.jmxproxy.tests.AuthenticatedTests</groups>
               <argLine>
                 -Dlogback.configurationFile=src/test/resources/logback.xml
                 -Dcom.sun.management.jmxremote.ssl=false
