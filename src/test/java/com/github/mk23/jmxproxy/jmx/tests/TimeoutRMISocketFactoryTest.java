@@ -9,12 +9,11 @@ import java.net.SocketTimeoutException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeNotNull;
 
 public class TimeoutRMISocketFactoryTest {
     private final String validHost   = "localhost";
@@ -24,6 +23,7 @@ public class TimeoutRMISocketFactoryTest {
 
     private final int connectTimeout = 500;
 
+    @Rule public ExpectedException thrown = ExpectedException.none();
     @Rule public TestName name = new TestName();
 
     @Before
@@ -38,17 +38,19 @@ public class TimeoutRMISocketFactoryTest {
         assertNotNull(sf.createSocket(validHost, serverPort));
     }
 
-    @Test(expected=SocketTimeoutException.class, timeout=2000)
+    @Test(timeout=2000)
     public void checkClientInvalidHostValidPort() throws Exception {
         final TimeoutRMISocketFactory sf = new TimeoutRMISocketFactory(connectTimeout);
 
+        thrown.expect(SocketTimeoutException.class);
         sf.createSocket(invalidHost, serverPort);
     }
 
-    @Test(expected=ConnectException.class)
+    @Test
     public void checkClientValidHostInvalidPort() throws Exception {
         final TimeoutRMISocketFactory sf = new TimeoutRMISocketFactory(connectTimeout);
 
+        thrown.expect(ConnectException.class);
         sf.createSocket(validHost, 0);
     }
 
@@ -59,10 +61,11 @@ public class TimeoutRMISocketFactoryTest {
         assertNotNull(sf.createServerSocket(0));
     }
 
-    @Test(expected=BindException.class)
+    @Test
     public void checkServerInvalidPort() throws Exception {
         final TimeoutRMISocketFactory sf = new TimeoutRMISocketFactory(connectTimeout);
 
+        thrown.expect(BindException.class);
         sf.createServerSocket(serverPort);
     }
 }
