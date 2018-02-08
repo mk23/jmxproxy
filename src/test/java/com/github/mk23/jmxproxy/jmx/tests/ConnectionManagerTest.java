@@ -55,9 +55,13 @@ public class ConnectionManagerTest {
     @Rule public TestName name = new TestName();
 
     public interface ConnectionManagerTestJMXMBean {
+        public void setReadOnlyAttribute(int value);
     }
 
     public class ConnectionManagerTestJMX implements ConnectionManagerTestJMXMBean {
+        public void setReadOnlyAttribute(int value) {
+            // ignore
+        }
     }
 
     public ConnectionManagerTest() throws Exception {
@@ -258,6 +262,13 @@ public class ConnectionManagerTest {
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
         assertTrue(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttributes(invalidAttribute, 1).isEmpty());
+    }
+
+    @Test
+    public void checkValidHostValidMBeanReadOnlyAttribute() throws Exception {
+        final ConnectionManager manager = new ConnectionManager(new AppConfig());
+
+        assertTrue(manager.getHost(validHost, validAuth).getMBean(validMBean).getAttribute("ReadOnlyAttribute") == null);
     }
 
     /* Custom MBean tests */
