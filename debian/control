@@ -9,4 +9,5 @@ Package: jmxproxy
 Architecture: all
 Depends: java8-runtime
 Description: JMX to HTTP proxy.
- JMXProxy exposes all available MBean attributes on a given JVM via simple HTTP request.
+ JMXProxy exposes all available MBean attributes on a given JVM via
+ simple HTTP request.
