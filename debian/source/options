@@ -1,2 +1,2 @@
-diff-ignore = '\.(?:m2|git)'
-tar-ignore = '\.(?:m2|git)'
+tar-ignore = '.git'
+tar-ignore = '.m2'
