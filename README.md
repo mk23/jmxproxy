@@ -372,4 +372,4 @@ Libraries
 
 License
 -------
-[MIT](http://mk23.mit-license.org/2011-2017/license.html)
+[MIT](http://mk23.mit-license.org/2011-2018/license.html)
