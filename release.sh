@@ -16,7 +16,7 @@ echo
 	/usr/bin/curl -L -s https://raw.github.com/mk23/sandbox/master/misc/release.py ||
 	echo 'raise Exception("unable to load release.py")'
 ) |
-	exec /usr/bin/env python2.7 - ${COMMIT} --release stable \
+	exec /usr/bin/env python2.7 - ${COMMIT} --release xenial \
 		-e pom.xml '<artifactId>jmxproxy</artifactId>\s+<version>{version}</version>' \
 		-e README.md 'jmxproxy-{version}.jar' \
 		-e README.md 'jmxproxy.{version}.tar.gz' \
