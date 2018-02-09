@@ -1,0 +1,6 @@
+# erroneously detects missing source on javascript file
+source-is-missing src/main/resources/assets/js/jquery.flot.js line length *
+# erroneously detects missing source on javascript file
+source-is-missing src/main/resources/assets/js/jquery.flot.navigate.js line length *
+# erroneously detects missing source on javascript file
+source-is-missing src/main/resources/assets/js/jquery.flot.resize.js line length *
