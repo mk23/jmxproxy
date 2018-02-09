@@ -3,7 +3,7 @@ Section: java
 Priority: extra
 Maintainer: Max Kalika <max.kalika+projects@gmail.com>
 Build-Depends: debhelper (>= 7), java-compiler, java8-sdk, maven, libxml-xpath-perl
-Standards-Version: 3.8.3
+Standards-Version: 3.9.5
 
 Package: jmxproxy
 Architecture: all
