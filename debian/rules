@@ -9,7 +9,7 @@
 VERSION=$(shell xpath -q -e '/project/version/text()' pom.xml)
 M2_REPO=$(CURDIR)/.m2
 
-export MAVEN_OPTS=-Dmaven.repo.local=$(M2_REPO)
+export MAVEN_OPTS=-Duser.home=$(HOME) -Dmaven.repo.local=$(M2_REPO)
 
 %:
 	dh $@
