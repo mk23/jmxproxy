@@ -193,14 +193,14 @@ public class ConnectionWorker {
                     LOG.debug("discovered mbean " + mbeanName);
                     freshMBeans.add(mbeanName.toString());
 
-                    MBean mbean = host.addMBean(mbeanName.toString());
+                    MBean mbean = host.addMBean(mbeanName.toString(), historySize);
                     try {
                         for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {
                             if (attributeObject.isReadable()) {
                                 try {
                                     Object attribute = server.getAttribute(mbeanName, attributeObject.getName());
 
-                                    mbean.addAttribute(attributeObject.getName(), attribute, historySize);
+                                    mbean.addAttribute(attributeObject.getName(), attribute);
                                 } catch (java.lang.NullPointerException
                                         | java.rmi.RemoteException
                                         | javax.management.JMException

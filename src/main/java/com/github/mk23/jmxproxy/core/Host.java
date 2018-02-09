@@ -20,9 +20,9 @@ import java.util.Set;
  *
  * @see <a href="https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializable.html">com.fasterxml.jackson.databind.JsonSerializable</a>
  *
- * @since   2015-05-11
+ * @since   2018-02-08
  * @author  mk23
- * @version 3.2.0
+ * @version 3.4.0
  */
 public class Host implements JsonSerializable {
     private final Map<String, MBean> mbeans;
@@ -45,7 +45,8 @@ public class Host implements JsonSerializable {
      * <p>Inserts a new MBean name to value association.</p>
      *
      * Creates a new {@link MBean} object and inserts into the map store
-     * associating it to the specified mbean name.
+     * associating it to the specified mbean name. Uses default attribute
+     * {@link com.github.mk23.jmxproxy.util.History} size configuration.
      *
      * @param mbeanName name of the {@link MBean} used as the map key.
      *
@@ -54,6 +55,28 @@ public class Host implements JsonSerializable {
     public final MBean addMBean(final String mbeanName) {
         if (!mbeans.containsKey(mbeanName)) {
             MBean mbean = new MBean();
+            mbeans.put(mbeanName, mbean);
+        }
+
+        return mbeans.get(mbeanName);
+    }
+
+    /**
+     * <p>Inserts a new MBean name to value association.</p>
+     *
+     * Creates a new {@link MBean} object and inserts into the map store
+     * associating it to the specified mbean name. Uses custom attribute
+     * {@link com.github.mk23.jmxproxy.util.History} size configuration.
+     *
+     * @param mbeanName name of the {@link MBean} used as the map key.
+     * @param historySize number of items to preserve in the associated
+     * {@link com.github.mk23.jmxproxy.util.History}.
+     *
+     * @return the newly created {@link MBean} object.
+     */
+    public final MBean addMBean(final String mbeanName, final int historySize) {
+        if (!mbeans.containsKey(mbeanName)) {
+            MBean mbean = new MBean(historySize);
             mbeans.put(mbeanName, mbean);
         }
 

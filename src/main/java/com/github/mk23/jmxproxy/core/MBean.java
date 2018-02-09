@@ -25,15 +25,16 @@ import java.util.Set;
  *
  * @see <a href="https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializable.html">com.fasterxml.jackson.databind.JsonSerializable</a>
  *
- * @since   2015-05-11
+ * @since   2018-02-08
  * @author  mk23
- * @version 3.2.0
+ * @version 3.4.0
  */
 public class MBean implements JsonSerializable {
+    private final int historySize;
+
     private final Map<String, History<Attribute>> attributes;
     private final ThreadLocal<Integer> limit = new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
+        @Override protected Integer initialValue() {
             return -1;
         }
     };
@@ -44,6 +45,19 @@ public class MBean implements JsonSerializable {
      * Creates a map of {@link Attribute} name to {@link History} of associated values.
      */
     public MBean() {
+        this.historySize = 1;
+        attributes = new HashMap<String, History<Attribute>>();
+    }
+
+    /**
+     * <p>Default constructor.</p>
+     *
+     * Creates a map of {@link Attribute} name to {@link History} of associated values.
+     *
+     * @param historySize number of items to preserve in the associated {@link History}.
+     */
+    public MBean(final int historySize) {
+        this.historySize = historySize;
         attributes = new HashMap<String, History<Attribute>>();
     }
 
@@ -56,13 +70,8 @@ public class MBean implements JsonSerializable {
      *
      * @param attributeName name of the {@link Attribute} used as the map key.
      * @param attributeObject value of the {@link Attribute} added to history.
-     * @param historySize number of items to preserve in the associated {@link History}.
      */
-    public final void addAttribute(
-        final String attributeName,
-        final Object attributeObject,
-        final int historySize
-    ) {
+    public final void addAttribute(final String attributeName, final Object attributeObject) {
         if (!attributes.containsKey(attributeName)) {
             attributes.put(attributeName, new History<Attribute>(historySize));
         }
