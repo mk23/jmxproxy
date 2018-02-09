@@ -30,7 +30,7 @@ PIDFILE=/var/run/${NAME}.pid
 . /lib/lsb/init-functions
 
 # Exit if the package is not installed
-[ -x "${JAVA_HOME}/bin/java" -a -f "/usr/lib/${NAME}.jar" ] || exit 0
+[ -x "${JAVA_HOME}/bin/java" -a -f "/usr/share/${NAME}/${NAME}.jar" ] || exit 0
 
 # Exit if service is administratively disabled
 [ -n "$ENABLED" -a "$ENABLED" != "0" ] || exit 0
@@ -43,7 +43,7 @@ do_start() {
 	start-stop-daemon --start --quiet --pidfile $PIDFILE --make-pidfile \
 		--background --chuid ${RUN_AS} \
 		--exec ${JAVA_HOME}/bin/java -- \
-			$JAVA_OPTS -jar /usr/lib/${NAME}.jar server $CONF_FILE \
+			$JAVA_OPTS -jar /usr/share/${NAME}/${NAME}.jar server $CONF_FILE \
 		|| return 2
 
 	return 0
