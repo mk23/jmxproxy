@@ -84,11 +84,11 @@ jmxproxy:
     # giving up with a not found error to the client
     connect_timeout: 3s
 
-    # white list of allowed endpoints in host:port
+    # white list of allowed endpoints in host or host:port
     # format for this agent to connect to, defaulting
     # to allowing all when empty or missing
     allowed_endpoints:
-        - 'localhost:1123'
+        - 'localhost'
         - 'host1:1234'
         - 'host1:4321'
         - 'host2:5678'
