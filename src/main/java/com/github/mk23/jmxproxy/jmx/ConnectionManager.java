@@ -166,7 +166,9 @@ public class ConnectionManager implements Managed {
         final String host,
         final ConnectionCredentials auth
     ) throws WebApplicationException {
-        if (!config.getAllowedEndpoints().isEmpty() && !config.getAllowedEndpoints().contains(host)) {
+        if (!config.getAllowedEndpoints().isEmpty()
+            && !config.getAllowedEndpoints().contains(host)
+            && !config.getAllowedEndpoints().contains(host.split(":")[0])) {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
 
