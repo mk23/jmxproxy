@@ -1013,7 +1013,7 @@ $(document).ready(function() {
                 if (_.contains(data, item)) {
                     trash = $('<span/>')
                     .data('value', item)
-                    .addClass('glyphicon glyphicon-trash text-muted pull-right')
+                    .addClass('fas fa-trash-alt text-muted pull-right')
                     .mouseover(function() {
                         $('#endpoint-combo').data('trashing', true);
                         $(this).toggleClass('text-muted text-danger');

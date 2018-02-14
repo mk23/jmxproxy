@@ -6,14 +6,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="css/bootstrap.css" rel="stylesheet" media="screen">
         <link href="css/fuelux.css" rel="stylesheet" media="screen">
-        <link href="css/font-awesome.css" rel="stylesheet" media="screen">
+        <link href="css/fontawesome-all.css" rel="stylesheet" media="screen">
         <link href="css/jmxproxy.css" rel="stylesheet" media="screen">
         <link href="img/favicon.ico" rel="icon">
     </head>
     <body class="fuelux">
         <div id="welcome-banner" class="banner-container">
             <div class="text-info">
-                <h1><i class="fa fa-coffee"></i> JMXProxy</h1>
+                <h1><i class="fas fa-coffee"></i> JMXProxy</h1>
                 <hr>
                 <h3></h3>
                 <div id="endpoint-combo" class="col-lg-2 col-lg-offset-5 input-group input-append dropdown combobox">
@@ -37,16 +37,16 @@
                         <form id="endpoint-creds" class="form-inline" autocomplete="off">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-user"></span>
+                                    <span class="fas fa-user"></span>
                                 </span>
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-lock"></span>
+                                    <span class="fas fa-lock"></span>
                                 </span>
                             </div>
                             <button class="btn btn-default" type="submit">
-                                <span class="glyphicon glyphicon-log-in"></span>
+                                <span class="fas fa-sign-in-alt"></span>
                             </button>
                         </form>
                     </div>
@@ -61,16 +61,16 @@
         <div id="endpoint-navbar" class="nav navbar-inverse navbar-fixed-top hidden" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <div class="navbar-brand"><i class="fa fa-coffee"></i> <span id="navbar-label"></span></div>
+                    <div class="navbar-brand"><i class="fas fa-coffee"></i> <span id="navbar-label"></span></div>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul id="endpoint-tabs" class="nav navbar-nav" role="tablist">
-                        <li><a href="#overview" data-toggle="tab" role="tab"><i class="fa fa-dashboard"></i> Overview</a></li>
-                        <li><a href="#memory" data-toggle="tab" role="tab"><i class="fa fa-link"></i> Memory</a></li>
-                        <li><a href="#threads" data-toggle="tab" role="tab"><i class="fa fa-tasks"></i> Threads</a></li>
-                        <li><a href="#classes" data-toggle="tab" role="tab"><i class="fa fa-cubes"></i> Classes</a></li>
-                        <li><a href="#summary" data-toggle="tab" role="tab"><i class="fa fa-info-circle"></i> Summary</a></li>
-                        <li><a href="#mbeans" data-toggle="tab" role="tab"><i class="fa fa-list-ul"></i> MBeans</a></li>
+                        <li><a href="#overview" data-toggle="tab" role="tab"><i class="fas fa-dashboard"></i> Overview</a></li>
+                        <li><a href="#memory" data-toggle="tab" role="tab"><i class="fas fa-link"></i> Memory</a></li>
+                        <li><a href="#threads" data-toggle="tab" role="tab"><i class="fas fa-tasks"></i> Threads</a></li>
+                        <li><a href="#classes" data-toggle="tab" role="tab"><i class="fas fa-cubes"></i> Classes</a></li>
+                        <li><a href="#summary" data-toggle="tab" role="tab"><i class="fas fa-info-circle"></i> Summary</a></li>
+                        <li><a href="#mbeans" data-toggle="tab" role="tab"><i class="fas fa-list-ul"></i> MBeans</a></li>
                     </ul>
                 </div>
             </div>
@@ -80,7 +80,7 @@
             <button type="button" class="close">
                 <span aria-hidden="true">&times;</span>
             </button>
-            <i class="fa fa-warning"></i>
+            <i class="fas fa-warning"></i>
             <span id="endpoint-error"></span>
         </div>
 
@@ -90,7 +90,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="well">
-                                <h5><i class="fa fa-link"></i> Heap Usage</h5>
+                                <h5><i class="fas fa-link"></i> Heap Usage</h5>
                                 <div id="overview-mem-gr" class="overview-graph"></div>
                                 <ul class="list-inline">
                                     <li><small>Used:</small></li>
@@ -104,7 +104,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="well">
-                                <h5><i class="fa fa-tasks"></i> Running Threads</h5>
+                                <h5><i class="fas fa-tasks"></i> Running Threads</h5>
                                 <div id="overview-thr-gr" class="overview-graph"></div>
                                 <ul class="list-inline">
                                     <li><small>Live:</small></li>
@@ -120,7 +120,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="well">
-                                <h5><i class="fa fa-cubes"></i> Loaded Classes</h5>
+                                <h5><i class="fas fa-cubes"></i> Loaded Classes</h5>
                                 <div id="overview-cls-gr" class="overview-graph"></div>
                                 <ul class="list-inline">
                                     <li><small>Loaded:</small></li>
@@ -134,7 +134,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="well">
-                                <h5><i class="fa fa-cogs"></i> CPU Usage</h5>
+                                <h5><i class="fas fa-cogs"></i> CPU Usage</h5>
                                 <div id="overview-cpu-gr" class="overview-graph"></div>
                                 <ul class="list-inline">
                                     <li><small>Process CPU Usage:</small></li>
@@ -152,7 +152,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="well">
-                                <h4><i class="fa fa-link"></i> <span id="memory-text"></span></h4>
+                                <h4><i class="fas fa-link"></i> <span id="memory-text"></span></h4>
                                 <div id="memory-gr" class="focused-graph"></div>
                             </div>
                         </div>
@@ -198,7 +198,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="well">
-                                <h4><i class="fa fa-tasks"></i> Running Threads</h4>
+                                <h4><i class="fas fa-tasks"></i> Running Threads</h4>
                                 <div id="threads-gr" class="focused-graph"></div>
                             </div>
                         </div>
@@ -210,7 +210,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="well">
-                                <h4><i class="fa fa-cubes"></i> Loaded Classes</h4>
+                                <h4><i class="fas fa-cubes"></i> Loaded Classes</h4>
                                 <div id="classes-gr" class="focused-graph"></div>
                             </div>
                         </div>
@@ -384,7 +384,7 @@
                                     <div class="repeater-header-left">
                                         <div class="repeater-title">
                                             <span id="mbean-title" class="text-primary"></span>
-                                            <span id="mbean-reset" class="glyphicon glyphicon-refresh" title="Refresh" data-toggle="tooltip" data-placement="bottom"></span>
+                                            <span id="mbean-reset" class="fas fa-sync" title="Refresh" data-toggle="tooltip" data-placement="bottom"></span>
                                         </div>
                                     </div>
                                     <div class="repeater-header-right">
@@ -393,7 +393,7 @@
                                                 <input class="form-control" type="search" placeholder="search">
                                                 <span class="input-group-btn">
                                                     <button class="btn btn-default" type="button">
-                                                        <span class="glyphicon glyphicon-search"></span>
+                                                        <span class="fas fa-search"></span>
                                                     </button>
                                                 </span>
                                             </div>
@@ -471,7 +471,7 @@
                                             <input class="form-control" type="search" placeholder="search">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button">
-                                                    <span class="glyphicon glyphicon-search"></span>
+                                                    <span class="fas fa-search"></span>
                                                 </button>
                                             </span>
                                         </div>

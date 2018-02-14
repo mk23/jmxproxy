@@ -359,15 +359,15 @@ JMXProxy comes with an interactive web interface available by pointing a browser
 
 Libraries
 ---------
-| Name                                                      | Version | License                                                                                           |
-|-----------------------------------------------------------|---------|---------------------------------------------------------------------------------------------------|
-| [dropwizard](http://dropwizard.io)                        | 1.2.4   | [Apache 2.0](https://github.com/dropwizard/dropwizard/blob/master/LICENSE)                        |
-| [jquery](http://jquery.com)                               | 3.3.1   | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt)                                   |
-| [underscore](http://underscorejs.org)                     | 1.8.3   | [MIT](https://github.com/jashkenas/underscore/blob/master/LICENSE)                                |
-| [flot](http://www.flotcharts.org)                         | 0.8.3   | [MIT](https://github.com/flot/flot/blob/master/LICENSE.txt)                                       |
-| [bootstrap](http://getbootstrap.com)                      | 3.3.7   | [MIT](https://github.com/twbs/bootstrap/blob/master/LICENSE)                                      |
-| [fuelux](http://getfuelux.com)                            | 3.16.5  | [BSD3](https://github.com/ExactTarget/fuelux/blob/master/LICENSE)                                 |
-| [font-awesome](http://fortawesome.github.io/Font-Awesome) | 4.7.0   | [MIT](http://opensource.org/licenses/mit-license.html), [SIL OFL 1.1](http://scripts.sil.org/OFL) |
+| Name                                   | Version | License                                                                    |
+|----------------------------------------|---------|----------------------------------------------------------------------------|
+| [dropwizard](http://dropwizard.io)     | 1.2.4   | [Apache 2.0](https://github.com/dropwizard/dropwizard/blob/master/LICENSE) |
+| [jquery](http://jquery.com)            | 3.3.1   | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt)            |
+| [underscore](http://underscorejs.org)  | 1.8.3   | [MIT](https://github.com/jashkenas/underscore/blob/master/LICENSE)         |
+| [flot](http://www.flotcharts.org)      | 0.8.3   | [MIT](https://github.com/flot/flot/blob/master/LICENSE.txt)                |
+| [bootstrap](http://getbootstrap.com)   | 3.3.7   | [MIT](https://github.com/twbs/bootstrap/blob/master/LICENSE)               |
+| [fuelux](http://getfuelux.com)         | 3.16.5  | [BSD3](https://github.com/ExactTarget/fuelux/blob/master/LICENSE)          |
+| [fontawesome](https://fontawesome.com) | 5.0.6   | [MIT, SIL OFL 1.1, CC BY 4.0](https://fontawesome.com/license)             |
 
 
 License
