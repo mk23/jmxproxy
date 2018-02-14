@@ -181,6 +181,19 @@ public class ConnectionManagerTest {
     }
 
     @Test
+    public void checkPartialHost() throws Exception {
+        AppConfig serviceConfig = new AppConfig();
+        serviceConfig.setConnectTimeout(Duration.milliseconds(500));
+
+        final ConnectionManager manager = new ConnectionManager(serviceConfig);
+
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("HTTP 404 Not Found");
+
+        manager.getHost(validHost.split(":")[0], validAuth);
+    }
+
+    @Test
     public void checkInvalidPort() throws Exception {
         final ConnectionManager manager = new ConnectionManager(new AppConfig());
 
@@ -191,7 +204,7 @@ public class ConnectionManagerTest {
     }
 
     @Test
-    public void checkValidHostWhitelist() throws Exception {
+    public void checkValidFullHostWhitelist() throws Exception {
         AppConfig serviceConfig = new AppConfig();
         serviceConfig.setAllowedEndpoints(Arrays.asList(new String[] { validHost }));
 
@@ -201,7 +214,17 @@ public class ConnectionManagerTest {
     }
 
     @Test
-    public void checkInvalidPortWhitelist() throws Exception {
+    public void checkValidBareHostWhitelist() throws Exception {
+        AppConfig serviceConfig = new AppConfig();
+        serviceConfig.setAllowedEndpoints(Arrays.asList(new String[] { validHost.split(":")[0] }));
+
+        final ConnectionManager manager = new ConnectionManager(serviceConfig);
+
+        assertNotNull(manager.getHost(validHost, validAuth));
+    }
+
+    @Test
+    public void checkInvalidPortValidFullHostWhitelist() throws Exception {
         AppConfig serviceConfig = new AppConfig();
         serviceConfig.setAllowedEndpoints(Arrays.asList(new String[] { validHost }));
 
@@ -209,6 +232,19 @@ public class ConnectionManagerTest {
 
         thrown.expect(WebApplicationException.class);
         thrown.expectMessage("HTTP 403 Forbidden");
+
+        manager.getHost(invalidPort, validAuth);
+    }
+
+    @Test
+    public void checkInvalidPortValidBareHostWhitelist() throws Exception {
+        AppConfig serviceConfig = new AppConfig();
+        serviceConfig.setAllowedEndpoints(Arrays.asList(new String[] { validHost.split(":")[0] }));
+
+        final ConnectionManager manager = new ConnectionManager(serviceConfig);
+
+        thrown.expect(WebApplicationException.class);
+        thrown.expectMessage("HTTP 404 Not Found");
 
         manager.getHost(invalidPort, validAuth);
     }
