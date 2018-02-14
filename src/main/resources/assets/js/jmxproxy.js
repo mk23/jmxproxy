@@ -825,6 +825,23 @@ var endpointHostClass = function(prefix, host) {
     };
 };
 
+var bannerActionClass = function() {
+    var prefix = 'please ';
+	var suffix = ' an endpoint';
+	var option = {
+		select: 'select',
+		enter:  'enter',
+		selectOrEnter: 'select or enter',
+		selectOrPort:  'enter a port for or select',
+	};
+
+	return _.mapObject(option, function(val, key) {
+		return function() {
+			$('#welcome-banner h3').text(prefix+option[key]+suffix);
+		}
+	})
+};
+
 $(document).ready(function() {
     prefix = window.location.pathname.replace(/\/(?:index\.html)?$/, '');
 
@@ -873,17 +890,49 @@ $(document).ready(function() {
                 $('#endpoint-combo button').prop('disabled', true);
             }
         } else if (!$(this).data('changing')) {
-            endpointHost = endpointHostClass(prefix, data.text);
-            $('#endpoint-combo').data('changing', false);
+            if (data.text.indexOf(':') > -1) {
+                endpointHost = endpointHostClass(prefix, data.text);
+                $('#endpoint-combo').data('changing', false);
+            } else {
+                $('#endpoint-combo input')
+                .prop('disabled', false)
+                .data('fixed', data.text+':')
+                .val(data.text+':')
+                .on('drop', function(e) {
+                    e.preventDefault();
+                })
+                .focus(function(e) {
+                    item = this;
+                    setTimeout(function() { item.selectionStart = item.selectionEnd = $(item).val().length; }, 0);
+                })
+                .focus();
+                bannerAction.selectOrPort();
+            }
         }
     })
     .data('trashing', false)
     .data('changing', false);
 
     $('#endpoint-combo input')
-    .keypress(function(e) {
+    .keydown(function(e) {
+        var fixed = $(this).data('fixed');
+
         if (e.keyCode == 13 && this.validity.valid) {
             endpointHost = endpointHostClass(prefix, $(this).val());
+        } else if (fixed) {
+            if (this.selectionStart < fixed.length) {
+                this.selectionStart = this.selectionEnd = $(this).val().length;
+            }
+
+            if ($(this).val().length == fixed.length && e.keyCode == 8) {
+                return false;
+            }
+
+            if (e.keyCode == 8 || (e.keyCode >= 48 && e.keyCode <= 57)) {
+                return true;
+            }
+
+            return false;
         }
     })
     .keyup(function(e) {
@@ -957,7 +1006,7 @@ $(document).ready(function() {
 
     $.getJSON(prefix+'/jmxproxy/config', function(data) {
         jmxproxyConf = data;
-        bannerAction = $('#welcome-banner h3').text();
+        bannerAction = bannerActionClass();
 
         $.getJSON(prefix+'/jmxproxy', function(data) {
             _.each(_.union(jmxproxyConf.allowed_endpoints, data), function(item) {
@@ -1007,13 +1056,13 @@ $(document).ready(function() {
 
             if (jmxproxyConf.allowed_endpoints.length > 0) {
                 $('#endpoint-combo input').prop('disabled', true);
-                $('#welcome-banner h3').text(bannerAction.replace('{action}', 'select'));
+                bannerAction.select();
             } else {
                 $('#endpoint-combo input').focus();
                 if (data.length > 0) {
-                    $('#welcome-banner h3').text(bannerAction.replace('{action}', 'select or enter'));
+                    bannerAction.selectOrEnter();
                 } else {
-                    $('#welcome-banner h3').text(bannerAction.replace('{action}', 'enter'));
+                    bannerAction.enter();
                 }
             }
         })
