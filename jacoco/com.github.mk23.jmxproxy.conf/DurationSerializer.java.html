@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DurationSerializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy.conf</a> &gt; <span class="el_source">DurationSerializer.java</span></div><h1>DurationSerializer.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy.conf;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+
+import io.dropwizard.util.Duration;
+
+import java.io.IOException;
+
+/**
+ * &lt;p&gt;Custom serializer for configuration Duration fields.&lt;/p&gt;
+ *
+ * Converts &lt;code&gt;io.dropwizard.util.Duration&lt;/code&gt; types to milliseconds
+ * for JSON requests.
+ *
+ * @see &lt;a href=&quot;http://dropwizard.github.io/dropwizard/0.9.3/dropwizard-util/apidocs/io/dropwizard/util/Duration.html&quot;&gt;io.dropwizard.util.Duration&lt;/a&gt;
+ * @see &lt;a href=&quot;https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializer.html&quot;&gt;com.fasterxml.jackson.databind.JsonSerializer&lt;/a&gt;
+ *
+ * @since   2016-01-29
+ * @author  mk23
+ * @version 3.2.1
+ */
+<span class="fc" id="L25">public class DurationSerializer extends JsonSerializer&lt;Duration&gt; {</span>
+    /** {@inheritDoc} */
+    @Override
+    public final void serialize(
+        final Duration duration,
+        final JsonGenerator jgen,
+        final SerializerProvider provider
+    ) throws IOException, JsonProcessingException {
+<span class="fc" id="L33">        jgen.writeNumber(duration.toMilliseconds());</span>
+<span class="fc" id="L34">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

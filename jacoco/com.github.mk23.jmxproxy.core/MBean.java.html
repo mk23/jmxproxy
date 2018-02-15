@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MBean.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy.core</a> &gt; <span class="el_source">MBean.java</span></div><h1>MBean.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy.core;
+
+import com.github.mk23.jmxproxy.util.History;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+
+import java.io.IOException;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * &lt;p&gt;JMX MBean tracker and serializer.&lt;/p&gt;
+ *
+ * Maintains a map of JMX {@link Attribute} names and a {@link History} of
+ * their values.  Implements JsonSerializable interface to convert the
+ * stored map into JSON.
+ *
+ * @see &lt;a href=&quot;https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializable.html&quot;&gt;com.fasterxml.jackson.databind.JsonSerializable&lt;/a&gt;
+ *
+ * @since   2018-02-08
+ * @author  mk23
+ * @version 3.4.0
+ */
+public class MBean implements JsonSerializable {
+    private final int historySize;
+
+    private final Map&lt;String, History&lt;Attribute&gt;&gt; attributes;
+<span class="fc" id="L36">    private final ThreadLocal&lt;Integer&gt; limit = new ThreadLocal&lt;Integer&gt;() {</span>
+        @Override protected Integer initialValue() {
+<span class="fc" id="L38">            return -1;</span>
+        }
+    };
+
+    /**
+     * &lt;p&gt;Default constructor.&lt;/p&gt;
+     *
+     * Creates a map of {@link Attribute} name to {@link History} of associated values.
+     */
+<span class="fc" id="L47">    public MBean() {</span>
+<span class="fc" id="L48">        this.historySize = 1;</span>
+<span class="fc" id="L49">        attributes = new HashMap&lt;String, History&lt;Attribute&gt;&gt;();</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * &lt;p&gt;Default constructor.&lt;/p&gt;
+     *
+     * Creates a map of {@link Attribute} name to {@link History} of associated values.
+     *
+     * @param historySize number of items to preserve in the associated {@link History}.
+     */
+<span class="fc" id="L59">    public MBean(final int historySize) {</span>
+<span class="fc" id="L60">        this.historySize = historySize;</span>
+<span class="fc" id="L61">        attributes = new HashMap&lt;String, History&lt;Attribute&gt;&gt;();</span>
+<span class="fc" id="L62">    }</span>
+
+    /**
+     * &lt;p&gt;Inserts a new Attribute name to History association.&lt;/p&gt;
+     *
+     * Optionally creates a new {@link History} object and inserts into the map store associating
+     * it to the specified attribute name. Appends the specified {@link Attribute} value to the
+     * {@link History}.
+     *
+     * @param attributeName name of the {@link Attribute} used as the map key.
+     * @param attributeObject value of the {@link Attribute} added to history.
+     */
+    public final void addAttribute(final String attributeName, final Object attributeObject) {
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (!attributes.containsKey(attributeName)) {</span>
+<span class="fc" id="L76">            attributes.put(attributeName, new History&lt;Attribute&gt;(historySize));</span>
+        }
+
+<span class="fc" id="L79">        attributes.get(attributeName).add(new Attribute(attributeObject));</span>
+<span class="fc" id="L80">    }</span>
+
+    /**
+     * &lt;p&gt;Sets the thread local history request limit.&lt;/p&gt;
+     *
+     * Set the thread local limit for all {@link History} when serializing to JSON.
+     * Because this method returns its object, requesting serialization can be done
+     * with a single statement.
+     *
+     * &lt;p&gt;For example&lt;/p&gt;
+     *
+     * &lt;code&gt;return Response.ok(mbean.setLimit(5)).build();&lt;/code&gt;
+     *
+     * @see &lt;a href=&quot;http://docs.oracle.com/javaee/7/api/javax/ws/rs/core/Response.html&quot;&gt;javax.ws.rs.core.Response&lt;/a&gt;
+     *
+     * @param bound the number of items to retreive from {@link History} for this thread.
+     *
+     * @return this mbean object for chaining calls.
+     */
+    public final MBean setLimit(final Integer bound) {
+<span class="fc" id="L100">        limit.set(bound);</span>
+<span class="fc" id="L101">        return this;</span>
+    }
+
+    /**
+     * &lt;p&gt;Tester for attribute name.&lt;/p&gt;
+     *
+     * Checks for requested {@link Attribute} name in the map store.
+     *
+     * @param attribute name of the {@link Attribute} to look up in the map store.
+     *
+     * @return true if the {@link Attribute} exists in the map store, false otherwise.
+     */
+    public final boolean hasAttribute(final String attribute) {
+<span class="fc" id="L114">        return attributes.containsKey(attribute);</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for attribute names.&lt;/p&gt;
+     *
+     * Extracts and returns the unique {@link Set} of all currently stored {@link Attribute} names.
+     *
+     * @return {@link Set} of {@link Attribute} name {@link String}s.
+     */
+    public final Set&lt;String&gt; getAttributes() {
+<span class="fc" id="L125">        return attributes.keySet();</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for most recent attribute.&lt;/p&gt;
+     *
+     * Fetches the most recent {@link Attribute} value for the specified name from the
+     * associated {@link History} in the map store.
+     *
+     * @param attribute name of the {@link Attribute} to look up in the map store.
+     *
+     * @return latest {@link Attribute} object from {@link History} if found, null otherwise.
+     */
+    public final Attribute getAttribute(final String attribute) {
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        if (hasAttribute(attribute)) {</span>
+<span class="fc" id="L140">            return attributes.get(attribute).getLast();</span>
+        }
+
+<span class="fc" id="L143">        return null;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for a subset of historical attribute values.&lt;/p&gt;
+     *
+     * Fetches an array, limited by the requested bound, of most recent {@link Attribute} values
+     * for the specified name from the associated {@link History} in the map store.
+     *
+     * @param attribute name of the {@link Attribute} to look up in the map store.
+     * @param bound size of the resulting array or full history if this exceeds capacity or less than 1.
+     *
+     * @return {@link List} of the latest {@link Attribute} objects from {@link History} if found, empty otherwise.
+     */
+    public final List&lt;Attribute&gt; getAttributes(final String attribute, final int bound) {
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (hasAttribute(attribute)) {</span>
+<span class="fc" id="L159">            return attributes.get(attribute).get(bound);</span>
+        }
+
+<span class="fc" id="L162">        return Collections.emptyList();</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void serialize(
+        final JsonGenerator jgen,
+        final SerializerProvider sp
+    ) throws IOException, JsonProcessingException {
+<span class="fc" id="L171">        serializeWithType(jgen, sp, null);</span>
+<span class="fc" id="L172">    }</span>
+
+    /** {@inheritDoc} */
+    @Override
+    public final void serializeWithType(
+        final JsonGenerator jgen,
+        final SerializerProvider sp,
+        final TypeSerializer ts
+    ) throws IOException, JsonProcessingException {
+<span class="fc" id="L181">        buildJson(jgen);</span>
+<span class="fc" id="L182">    }</span>
+
+    private void buildJson(final JsonGenerator jgen) throws IOException, JsonProcessingException {
+<span class="fc" id="L185">        int bound = limit.get();</span>
+
+<span class="fc" id="L187">        jgen.writeStartObject();</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        for (Map.Entry&lt;String, History&lt;Attribute&gt;&gt; attributeEntry : attributes.entrySet()) {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">            if (bound &lt; 0) {</span>
+<span class="fc" id="L190">                jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().getLast());</span>
+            } else {
+<span class="fc" id="L192">                jgen.writeObjectField(attributeEntry.getKey(), attributeEntry.getValue().get(bound));</span>
+            }
+<span class="fc" id="L194">        }</span>
+<span class="fc" id="L195">        jgen.writeEndObject();</span>
+<span class="fc" id="L196">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

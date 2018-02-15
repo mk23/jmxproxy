@@ -1,0 +1,20 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+JMXProxy,com.github.mk23.jmxproxy.util,History,0,121,0,10,0,19,0,10,0,5
+JMXProxy,com.github.mk23.jmxproxy,JMXProxyResource,0,497,0,12,0,39,0,23,0,17
+JMXProxy,com.github.mk23.jmxproxy,JMXProxyApplication,0,62,0,0,0,16,0,6,0,6
+JMXProxy,com.github.mk23.jmxproxy,JMXProxyHealthCheck,0,15,0,2,0,6,0,3,0,2
+JMXProxy,com.github.mk23.jmxproxy.conf,MainConfig,0,15,0,0,0,5,0,3,0,3
+JMXProxy,com.github.mk23.jmxproxy.conf,DurationSerializer,0,8,0,0,0,3,0,2,0,2
+JMXProxy,com.github.mk23.jmxproxy.conf,AppConfig,0,75,0,0,0,29,0,13,0,13
+JMXProxy,com.github.mk23.jmxproxy.conf,DurationDeserializer,0,15,0,2,0,4,0,3,0,2
+JMXProxy,com.github.mk23.jmxproxy.core,Attribute,0,275,0,40,0,70,0,24,0,4
+JMXProxy,com.github.mk23.jmxproxy.core,Host.new ThreadLocal() {...},0,9,0,0,0,2,0,2,0,2
+JMXProxy,com.github.mk23.jmxproxy.core,MBean.new ThreadLocal() {...},0,9,0,0,0,2,0,2,0,2
+JMXProxy,com.github.mk23.jmxproxy.core,Host,0,124,0,6,0,29,0,13,0,10
+JMXProxy,com.github.mk23.jmxproxy.core,MBean,0,159,0,10,0,36,0,16,0,11
+JMXProxy,com.github.mk23.jmxproxy.jmx,ConnectionManager.new Runnable() {...},0,57,0,4,0,9,0,4,0,2
+JMXProxy,com.github.mk23.jmxproxy.jmx,ConnectionWorker,161,393,8,28,7,75,7,17,0,6
+JMXProxy,com.github.mk23.jmxproxy.jmx,ConnectionWorker.new Runnable() {...},3,17,0,0,2,5,0,2,0,2
+JMXProxy,com.github.mk23.jmxproxy.jmx,ConnectionManager,0,281,0,14,0,58,0,17,0,10
+JMXProxy,com.github.mk23.jmxproxy.jmx,ConnectionCredentials,0,116,0,20,0,27,0,17,0,7
+JMXProxy,com.github.mk23.jmxproxy.jmx,TimeoutRMISocketFactory,0,48,0,0,0,11,0,5,0,5

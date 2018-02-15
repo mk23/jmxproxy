@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>History.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy.util</a> &gt; <span class="el_source">History.java</span></div><h1>History.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy.util;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * &lt;p&gt;Fixed size historical attribute value store.&lt;/p&gt;
+ *
+ * Saves an object into a fixed size round robin store.  Allows clients to retreive latest
+ * value, a subset of latest values, or the full stored history of values.  When number
+ * of stored values exceeds the fixed size of the store, the oldest values are overwritten.
+ *
+ * @param &lt;T&gt; type of objects held in this History.
+ *
+ * @since   2015-05-11
+ * @author  mk23
+ * @version 3.3.2
+ */
+public class History&lt;T&gt; {
+    private List&lt;T&gt; objects;
+    private int length;
+    private int pointer;
+    private boolean wrapped;
+
+    /**
+     * &lt;p&gt;Default constructor.&lt;/p&gt;
+     *
+     * Initializes the {@link Object} store {@link List} to the given history size.
+     *
+     * @param length number of {@link Object} values to keep in history.
+     */
+<span class="fc" id="L33">    public History(final int length) {</span>
+<span class="fc" id="L34">        this.length = length;</span>
+
+<span class="fc" id="L36">        pointer = -1;</span>
+<span class="fc" id="L37">        objects = new ArrayList&lt;T&gt;(Collections.nCopies(length, (T) null));</span>
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * &lt;p&gt;Adds a item to the store.&lt;/p&gt;
+     *
+     * Adds a new item to the history store.  If the number of items exceeds the size
+     * of the store, the oldest item is overwritten.
+     *
+     * @param item newest item to add to the store.
+     */
+    public final void add(final T item) {
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        wrapped = ++pointer == length;</span>
+<span class="fc" id="L50">        pointer = pointer % length;</span>
+
+<span class="fc" id="L52">        objects.set(pointer, item);</span>
+<span class="fc" id="L53">    }</span>
+
+    /**
+     * &lt;p&gt;Gets the latest item from the history store.&lt;/p&gt;
+     *
+     * Gets the latest single item from the history store.
+     *
+     * @return Latest item from the history store or null if empty.
+     */
+    public final T getLast() {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        return pointer &lt; 0 ? null : objects.get(pointer % length);</span>
+    }
+
+    /**
+     * &lt;p&gt;Gets the full item history from the store.&lt;/p&gt;
+     *
+     * Gets the full item history from the store as a {@link List}.
+     *
+     * @return {@link List} of the full history.  May be empty if history has no items.
+     */
+    public final List&lt;T&gt; get() {
+<span class="fc" id="L74">        return get(length);</span>
+    }
+
+    /**
+     * &lt;p&gt;Gets a limited item history from the store.&lt;/p&gt;
+     *
+     * Gets a limited history from the store as a {@link List}, based
+     * on requested item count.  If the specified count is less than 0 or greater than
+     * the number of entries, a full history is returned instead.
+     *
+     * @param limit number of items to retreive from the history store.
+     *
+     * @return {@link List} of the requested slice of history.  May be empty if history has no items.
+     */
+    public final List&lt;T&gt; get(final int limit) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (pointer &lt; 0) {</span>
+<span class="fc" id="L90">            return Collections.emptyList();</span>
+        }
+
+<span class="fc" id="L93">        int head = pointer + length * Boolean.compare(wrapped, false);</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        int size = Math.min(limit &gt; 0 ? limit : Integer.MAX_VALUE, Math.min(head + 1, length));</span>
+<span class="fc" id="L95">        List&lt;T&gt; rval = new ArrayList&lt;T&gt;(size);</span>
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (int i = 0; i &lt; size; i++) {</span>
+<span class="fc" id="L98">            rval.add(objects.get((head - i) % length));</span>
+        }
+
+<span class="fc" id="L101">        return rval;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

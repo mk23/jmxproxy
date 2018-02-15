@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConnectionManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy.jmx</a> &gt; <span class="el_source">ConnectionManager.java</span></div><h1>ConnectionManager.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy.jmx;
+
+import com.github.mk23.jmxproxy.conf.AppConfig;
+import com.github.mk23.jmxproxy.core.Host;
+
+import io.dropwizard.lifecycle.Managed;
+
+import java.io.IOException;
+
+import java.net.MalformedURLException;
+
+import java.rmi.server.RMISocketFactory;
+
+import java.util.Map;
+import java.util.Set;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.WebApplicationException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * &lt;p&gt;Main application lifecycle object that manages all JMX Agent Connections.&lt;/p&gt;
+ *
+ * Implements the dropwizard lifecycle Managed interface to create the object responsible
+ * for all application data management.  Creates workers for connecting to JMX endpoints and
+ * handles requests for data retreival.  Controls purging unaccessed endpoints as well as
+ * their runtime state.
+ *
+ * @see &lt;a href=&quot;http://dropwizard.github.io/dropwizard/0.9.3/dropwizard-lifecycle/apidocs/io/dropwizard/lifecycle/Managed.html&quot;&gt;io.dropwizard.lifecycle.Managed&lt;/a&gt;
+ *
+ * @since   2015-05-11
+ * @author  mk23
+ * @version 3.2.0
+ */
+public class ConnectionManager implements Managed {
+<span class="fc" id="L43">    private static final Logger LOG = LoggerFactory.getLogger(ConnectionManager.class);</span>
+
+    private final AppConfig config;
+
+    private final Map&lt;String, ConnectionWorker&gt; hosts;
+    private final ScheduledExecutorService purge;
+
+<span class="fc" id="L50">    private boolean started = false;</span>
+
+    /**
+     * &lt;p&gt;Default constructor.&lt;/p&gt;
+     *
+     * Called by the application initializer.  Creates the map of host:port {@link String}s to
+     * associated {@link ConnectionWorker} instances.  Creates an instance of the unaccessed
+     * endpoints purge thread.  Saves the provided applicaiton configuration for later retreival
+     * request.
+     *
+     * @param config configuration as specified by the administrator at application invocation.
+     */
+<span class="fc" id="L62">    public ConnectionManager(final AppConfig config) {</span>
+<span class="fc" id="L63">        this.config = config;</span>
+
+<span class="fc" id="L65">        int timeout = (int) config.getConnectTimeout().toMilliseconds();</span>
+        try {
+<span class="fc" id="L67">            RMISocketFactory.setSocketFactory(new TimeoutRMISocketFactory(timeout));</span>
+<span class="fc" id="L68">        } catch (IOException e) {</span>
+<span class="fc" id="L69">            LOG.info(&quot;socket factory already defined, resetting timeout to &quot; + timeout + &quot;ms&quot;);</span>
+
+<span class="fc" id="L71">            TimeoutRMISocketFactory sf = (TimeoutRMISocketFactory) RMISocketFactory.getSocketFactory();</span>
+<span class="fc" id="L72">            sf.setTimeout(timeout);</span>
+<span class="fc" id="L73">        }</span>
+
+<span class="fc" id="L75">        hosts = new ConcurrentHashMap&lt;String, ConnectionWorker&gt;();</span>
+<span class="fc" id="L76">        purge = Executors.newSingleThreadScheduledExecutor();</span>
+<span class="fc" id="L77">    }</span>
+
+    /**
+     * &lt;p&gt;Getter for config.&lt;/p&gt;
+     *
+     * Fetches the application run-time configuration object.
+     *
+     * @return application configuration.
+     */
+    public final AppConfig getConfiguration() {
+<span class="fc" id="L87">        return config;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for hosts.&lt;/p&gt;
+     *
+     * Fetches the {@link Set} of {@link ConnectionWorker} name {@link String}s.
+     *
+     * @return {@link Set} of {@link ConnectionWorker} name {@link String}s.
+     */
+    public final Set&lt;String&gt; getHosts() {
+<span class="fc" id="L98">        return hosts.keySet();</span>
+    }
+
+    /**
+     * &lt;p&gt;Deleter for host.&lt;/p&gt;
+     *
+     * Attempts to remove the specified host from the {@link ConnectionWorker} map store.
+     *
+     * @param host endpoint host:port {@link String}.
+     *
+     * @return true if the key is found in the map store.
+     *
+     * @throws WebApplicationException if key is not found in the map store.
+     */
+    public final boolean delHost(final String host) throws WebApplicationException {
+<span class="fc" id="L113">        ConnectionWorker worker = hosts.remove(host);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (worker != null) {</span>
+<span class="fc" id="L115">            LOG.debug(&quot;purging &quot; + host);</span>
+<span class="fc" id="L116">            worker.shutdown();</span>
+
+<span class="fc" id="L118">            return true;</span>
+        } else {
+<span class="fc" id="L120">            throw new WebApplicationException(Response.Status.NOT_FOUND);</span>
+        }
+    }
+
+    /**
+     * &lt;p&gt;Anonymous getter for host.&lt;/p&gt;
+     *
+     * Fetches the specified {@link Host} with anonymous (null) credentials.
+     * Equivalent to calling: &lt;br&gt;
+     *
+     * &lt;code&gt;return getHost(host, null);&lt;/code&gt;
+     *
+     * @param host endpoint host:port {@link String}.
+     *
+     * @return {@link Host} object for the requested endpoint.
+     *
+     * @throws WebApplicationException if unauthorized, forbidden, or invalid endpoint.
+     */
+    public final Host getHost(final String host) throws WebApplicationException {
+<span class="fc" id="L139">        return getHost(host, null);</span>
+    }
+
+    /**
+     * &lt;p&gt;Authenticated getter for host.&lt;/p&gt;
+     *
+     * Fetches the specified {@link Host} with provided credentials.  Validates endpoint
+     * access against a configured whitelist.  Validates provided credentials against
+     * previous requests and if different, a new {@link ConnectionWorker} object is
+     * instanciated and associated with the specified endpoint.  Lastly, if specified
+     * endpoint is not yet in the map store, instanciates a new {@link ConnectionWorker}
+     * and saves it for later retreival.
+     *
+     * @param host endpoint host:port {@link String}.
+     * @param auth endpoint {@link ConnectionCredentials} or null for anonymous access.
+     *
+     * @return {@link Host} object for the requested endpoint.
+     *
+     * @throws WebApplicationException if
+     *     &lt;ul&gt;
+     *         &lt;li&gt;forbidden (not whitelisted)&lt;/li&gt;
+     *         &lt;li&gt;unauthized (incorrect credentials)&lt;/li&gt;
+     *         &lt;li&gt;bad request (malformed host:port)&lt;/li&gt;
+     *         &lt;li&gt;not found (any other exception)&lt;/li&gt;
+     *     &lt;/ul&gt;
+     */
+    public final Host getHost(
+        final String host,
+        final ConnectionCredentials auth
+    ) throws WebApplicationException {
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        if (!config.getAllowedEndpoints().isEmpty()</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">            &amp;&amp; !config.getAllowedEndpoints().contains(host)</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            &amp;&amp; !config.getAllowedEndpoints().contains(host.split(&quot;:&quot;)[0])) {</span>
+<span class="fc" id="L172">            throw new WebApplicationException(Response.Status.FORBIDDEN);</span>
+        }
+
+        try {
+<span class="fc bfc" id="L176" title="All 2 branches covered.">            if (!hosts.containsKey(host)) {</span>
+<span class="fc" id="L177">                LOG.info(&quot;creating new worker for &quot; + host);</span>
+<span class="fc" id="L178">                hosts.put(host, new ConnectionWorker(</span>
+                    host,
+<span class="fc" id="L180">                    config.getCacheDuration().toMilliseconds(),</span>
+<span class="fc" id="L181">                    config.getHistorySize()</span>
+                ));
+            }
+<span class="fc" id="L184">            return hosts.get(host).getHost(auth);</span>
+<span class="fc" id="L185">        } catch (MalformedURLException e) {</span>
+<span class="fc" id="L186">            throw new WebApplicationException(Response.Status.BAD_REQUEST);</span>
+<span class="fc" id="L187">        } catch (SecurityException e) {</span>
+<span class="fc" id="L188">            throw new WebApplicationException(Response.Status.UNAUTHORIZED);</span>
+<span class="fc" id="L189">        } catch (Exception e) {</span>
+<span class="fc" id="L190">            throw new WebApplicationException(Response.Status.NOT_FOUND);</span>
+        }
+    }
+
+    /**
+     * &lt;p&gt;Getter for started.&lt;/p&gt;
+     *
+     * Used by the application health check to verify the manager start() method has been invoked.
+     *
+     * @return true if the manager was started, false otherwise.
+     */
+    public final boolean isStarted() {
+<span class="fc" id="L202">        return started;</span>
+    }
+
+    /**
+     * &lt;p&gt;Handler for application startup.&lt;/p&gt;
+     *
+     * Starts the unaccessed endpoint purge thread at application initialization.
+     */
+    public final void start() {
+<span class="fc" id="L211">        LOG.info(&quot;starting jmx connection manager&quot;);</span>
+
+<span class="fc" id="L213">        LOG.debug(&quot;allowedEndpoints: &quot; + config.getAllowedEndpoints().size());</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">        for (String ae : config.getAllowedEndpoints()) {</span>
+<span class="fc" id="L215">            LOG.debug(&quot;    &quot; + ae);</span>
+<span class="fc" id="L216">        }</span>
+
+<span class="fc" id="L218">        long cleanInterval = config.getCleanInterval().toMilliseconds();</span>
+
+<span class="fc" id="L220">        purge.scheduleAtFixedRate(new Runnable() {</span>
+            @Override
+            public void run() {
+<span class="fc" id="L223">                LOG.debug(&quot;begin expiring stale hosts&quot;);</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">                for (Map.Entry&lt;String, ConnectionWorker&gt; hostEntry : hosts.entrySet()) {</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">                    if (hostEntry.getValue().isExpired(config.getAccessDuration().toMilliseconds())) {</span>
+<span class="fc" id="L226">                        LOG.debug(&quot;purging &quot; + hostEntry.getKey());</span>
+<span class="fc" id="L227">                        hosts.remove(hostEntry.getKey()).shutdown();</span>
+                    }
+<span class="fc" id="L229">                }</span>
+<span class="fc" id="L230">                LOG.debug(&quot;end expiring stale hosts&quot;);</span>
+<span class="fc" id="L231">            }</span>
+        }, cleanInterval, cleanInterval, TimeUnit.MILLISECONDS);
+
+<span class="fc" id="L234">        started = true;</span>
+<span class="fc" id="L235">    }</span>
+
+    /**
+     * &lt;p&gt;Handler for application shutdown.&lt;/p&gt;
+     *
+     * Stops the purge thread and all currently tracked {@link ConnectionWorker} instances.
+     */
+    public final void stop() {
+<span class="fc" id="L243">        LOG.info(&quot;stopping jmx connection manager&quot;);</span>
+<span class="fc" id="L244">        purge.shutdown();</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        for (Map.Entry&lt;String, ConnectionWorker&gt; hostEntry : hosts.entrySet()) {</span>
+<span class="fc" id="L246">            LOG.debug(&quot;purging &quot; + hostEntry.getKey());</span>
+<span class="fc" id="L247">            hosts.remove(hostEntry.getKey()).shutdown();</span>
+<span class="fc" id="L248">        }</span>
+<span class="fc" id="L249">        hosts.clear();</span>
+<span class="fc" id="L250">        started = false;</span>
+<span class="fc" id="L251">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

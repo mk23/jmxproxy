@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Attribute.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy.core</a> &gt; <span class="el_source">Attribute.java</span></div><h1>Attribute.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy.core;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+
+import java.io.IOException;
+
+import java.lang.reflect.Array;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.TabularData;
+
+/**
+ * &lt;p&gt;JMX Attribute tracker and serializer.&lt;/p&gt;
+ *
+ * Saves a JMX Attribute value object. Implements JsonSerializable
+ * interface to convert the stored value into JSON. On serialization,
+ * recursively inspects the value type and marshals it to JSON using
+ * the supplied JsonGenerator. For {@link Array}, {@link Iterable},
+ * {@link TabularData}, builds a JSON array.  For {@link CompositeData},
+ * builds a JSON object. For any other native types or null values, builds
+ * a JSON equivalent.
+ *
+ * &lt;p&gt;Special cases:&lt;/p&gt;
+ *
+ * &lt;ul&gt;
+ *   &lt;li&gt;
+ *   Any {@link String} that contains valid JSON, will also be recursively
+ *   serialized using a dynamic JsonParser.
+ *   &lt;/li&gt;
+ *   &lt;li&gt;
+ *   Any &lt;code&gt;NaN&lt;/code&gt; {@link Double} or {@link Float} value will yield
+ *   a JSON string &lt;code&gt;&quot;NaN&quot;&lt;/code&gt;.
+ *   &lt;/li&gt;
+ *   &lt;li&gt;
+ *   Any &lt;code&gt;infinite&lt;/code&gt; {@link Double} or {@link Float} value will
+ *   yield a JSON string &lt;code&gt;&quot;Infinity&quot;&lt;/code&gt;.
+ *   &lt;/li&gt;
+ * &lt;/ul&gt;
+ *
+ * @see &lt;a href=&quot;http://fasterxml.github.io/jackson-core/javadoc/2.6/com/fasterxml/jackson/core/JsonGenerator.html&quot;&gt;com.fasterxml.jackson.core.JsonGenerator&lt;/a&gt;
+ * @see &lt;a href=&quot;http://fasterxml.github.io/jackson-core/javadoc/2.6/com/fasterxml/jackson/core/JsonParser.html&quot;&gt;com.fasterxml.jackson.core.JsonParser&lt;/a&gt;
+ * @see &lt;a href=&quot;https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializable.html&quot;&gt;com.fasterxml.jackson.databind.JsonSerializable&lt;/a&gt;
+ *
+ * @since   2015-05-11
+ * @author  mk23
+ * @version 3.2.0
+ */
+public class Attribute implements JsonSerializable {
+    private Object attributeValue;
+
+    /**
+     * &lt;p&gt;Default constructor.&lt;/p&gt;
+     *
+     * Saves the JMX Attribute object for later serialization.
+     *
+     * @param attributeValue object for later serialization.
+     */
+<span class="fc" id="L70">    public Attribute(final Object attributeValue) {</span>
+<span class="fc" id="L71">        this.attributeValue = attributeValue;</span>
+<span class="fc" id="L72">    }</span>
+
+    /** {@inheritDoc} */
+    @Override
+    public final void serialize(
+        final JsonGenerator jgen,
+        final SerializerProvider sp
+    ) throws IOException, JsonProcessingException {
+<span class="fc" id="L80">        serializeWithType(jgen, sp, null);</span>
+<span class="fc" id="L81">    }</span>
+
+    /** {@inheritDoc} */
+    @Override
+    public final void serializeWithType(
+        final JsonGenerator jgen,
+        final SerializerProvider sp,
+        final TypeSerializer ts
+    ) throws IOException, JsonProcessingException {
+<span class="fc" id="L90">        buildJson(jgen, attributeValue);</span>
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * &lt;p&gt;JMX Attribute value JSON serializer.&lt;/p&gt;
+     *
+     * Inspects the stored JMX Attribute value type and serializes it to
+     * JSON using the supplied JsonGenerator. Recursively calls itself
+     * if finding JMX collections.  For an {@link Array}, {@link Iterable},
+     * or {@link TabularData}, builds a JSON array.  For {@link CompositeData},
+     * builds a JSON object.  For any other native types or null values, builds
+     * a JSON equivalent.
+     *
+     * &lt;p&gt;Special cases:&lt;/p&gt;
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;
+     *   Any {@link String} that contains valid JSON, will also be recursively
+     *   serialized using a dynamic JsonParser.
+     *   &lt;/li&gt;
+     *   &lt;li&gt;
+     *   Any &lt;code&gt;NaN&lt;/code&gt; {@link Double} or {@link Float} value will yield
+     *   a JSON string &lt;code&gt;&quot;NaN&quot;&lt;/code&gt;.
+     *   &lt;/li&gt;
+     *   &lt;li&gt;
+     *   Any &lt;code&gt;infinite&lt;/code&gt; {@link Double} or {@link Float} value will
+     *   yield a JSON string &lt;code&gt;&quot;Infinity&quot;&lt;/code&gt;.
+     *   &lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @see &lt;a href=&quot;http://fasterxml.github.io/jackson-core/javadoc/2.6/com/fasterxml/jackson/core/JsonGenerator.html&quot;&gt;com.fasterxml.jackson.core.JsonGenerator&lt;/a&gt;
+     * @see &lt;a href=&quot;http://fasterxml.github.io/jackson-core/javadoc/2.6/com/fasterxml/jackson/core/JsonParser.html&quot;&gt;com.fasterxml.jackson.core.JsonParser&lt;/a&gt;
+     *
+     * @param jgen The jersey-supplied JSON generator to use for serialization.
+     * @param objectValue The JMX Attribute value or an element of a collection to serialize.
+     */
+    private void buildJson(
+        final JsonGenerator jgen,
+        final Object objectValue
+    ) throws IOException, JsonProcessingException {
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (objectValue == null) {</span>
+<span class="fc" id="L131">            jgen.writeNull();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        } else if (objectValue instanceof Boolean) {</span>
+<span class="fc" id="L133">            jgen.writeBoolean((Boolean) objectValue);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        } else if (objectValue instanceof JsonNode) {</span>
+<span class="fc" id="L135">            jgen.writeTree((JsonNode) objectValue);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        } else if (objectValue.getClass().isArray()) {</span>
+<span class="fc" id="L137">            jgen.writeStartArray();</span>
+<span class="fc" id="L138">            int length = Array.getLength(objectValue);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">            for (int i = 0; i &lt; length; i++) {</span>
+<span class="fc" id="L140">                buildJson(jgen, Array.get(objectValue, i));</span>
+            }
+<span class="fc" id="L142">            jgen.writeEndArray();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        } else if (objectValue instanceof Iterable) {</span>
+<span class="fc" id="L144">            Iterable data = (Iterable) objectValue;</span>
+<span class="fc" id="L145">            jgen.writeStartArray();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">            for (Object objectEntry : data) {</span>
+<span class="fc" id="L147">                buildJson(jgen, objectEntry);</span>
+<span class="fc" id="L148">            }</span>
+<span class="fc" id="L149">            jgen.writeEndArray();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        } else if (objectValue instanceof TabularData) {</span>
+<span class="fc" id="L151">            TabularData data = (TabularData) objectValue;</span>
+<span class="fc" id="L152">            jgen.writeStartArray();</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">            for (Object objectEntry : data.values()) {</span>
+<span class="fc" id="L154">                buildJson(jgen, objectEntry);</span>
+<span class="fc" id="L155">            }</span>
+<span class="fc" id="L156">            jgen.writeEndArray();</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        } else if (objectValue instanceof CompositeData) {</span>
+<span class="fc" id="L158">            CompositeData data = (CompositeData) objectValue;</span>
+<span class="fc" id="L159">            jgen.writeStartObject();</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">            for (String objectEntry : data.getCompositeType().keySet()) {</span>
+<span class="fc" id="L161">                jgen.writeFieldName(objectEntry);</span>
+<span class="fc" id="L162">                buildJson(jgen, data.get(objectEntry));</span>
+<span class="fc" id="L163">            }</span>
+<span class="fc" id="L164">            jgen.writeEndObject();</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        } else if (objectValue instanceof Number) {</span>
+<span class="fc" id="L166">            Double data = ((Number) objectValue).doubleValue();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">            if (data.isNaN()) {</span>
+<span class="fc" id="L168">                jgen.writeString(&quot;NaN&quot;);</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            } else if (data.isInfinite()) {</span>
+<span class="fc" id="L170">                jgen.writeString(&quot;Infinity&quot;);</span>
+            } else {
+<span class="fc" id="L172">                jgen.writeNumber(((Number) objectValue).toString());</span>
+            }
+<span class="fc" id="L174">        } else {</span>
+            try {
+<span class="fc" id="L176">                String input = objectValue.toString();</span>
+<span class="fc" id="L177">                List&lt;JsonNode&gt; parts = new ArrayList&lt;JsonNode&gt;();</span>
+<span class="fc" id="L178">                ObjectMapper mapper = new ObjectMapper();</span>
+<span class="fc" id="L179">                JsonParser parser = mapper.getFactory().createParser(input);</span>
+
+<span class="fc bfc" id="L181" title="All 2 branches covered.">                for (parser.nextToken(); parser.hasCurrentToken(); parser.nextToken()) {</span>
+<span class="fc" id="L182">                    JsonToken tok = parser.getCurrentToken();</span>
+<span class="fc" id="L183">                    long pos = parser.getTokenLocation().getCharOffset();</span>
+<span class="fc bfc" id="L184" title="All 4 branches covered.">                    if (tok == JsonToken.START_OBJECT || tok == JsonToken.START_ARRAY) {</span>
+<span class="fc" id="L185">                        parser.skipChildren();</span>
+                    }
+<span class="fc" id="L187">                    long end = parser.getTokenLocation().getCharOffset()</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">                             + parser.getTextLength()</span>
+                             + (tok == JsonToken.VALUE_STRING ? 2 : 0);
+<span class="fc" id="L190">                    parts.add(mapper.readTree(input.substring((int) pos, (int) end)));</span>
+                }
+
+<span class="fc bfc" id="L193" title="All 2 branches covered.">                if (parts.isEmpty()) {</span>
+<span class="fc" id="L194">                    jgen.writeString(&quot;&quot;);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">                } else if (parts.size() == 1) {</span>
+<span class="fc" id="L196">                    buildJson(jgen, parts.get(0));</span>
+                } else {
+<span class="fc" id="L198">                    buildJson(jgen, parts);</span>
+                }
+<span class="fc" id="L200">            } catch (JsonParseException e) {</span>
+<span class="fc" id="L201">                jgen.writeString(objectValue.toString());</span>
+<span class="fc" id="L202">            }</span>
+        }
+<span class="fc" id="L204">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JMXProxyApplication.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy</a> &gt; <span class="el_source">JMXProxyApplication.java</span></div><h1>JMXProxyApplication.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy;
+
+import com.github.mk23.jmxproxy.conf.MainConfig;
+import com.github.mk23.jmxproxy.jmx.ConnectionManager;
+
+import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.server.AbstractServerFactory;
+import io.dropwizard.setup.Bootstrap;
+import io.dropwizard.setup.Environment;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * &lt;p&gt;JMXProxy main application.&lt;/p&gt;
+ *
+ * Configures application from {@link MainConfig}, initializes, and starts the service.
+ *
+ * @see &lt;a href=&quot;http://dropwizard.github.io/dropwizard/0.9.3/dropwizard-core/apidocs/io/dropwizard/Application.html&quot;&gt;io.dropwizard.Application&lt;/a&gt;
+ * @see &lt;a href=&quot;http://dropwizard.github.io/dropwizard/0.9.3/dropwizard-core/apidocs/io/dropwizard/setup/Bootstrap.html&quot;&gt;io.dropwizard.setup.Bootstrap&lt;/a&gt;
+ * @see &lt;a href=&quot;http://dropwizard.github.io/dropwizard/0.9.3/dropwizard-core/apidocs/io/dropwizard/setup/Environment.html&quot;&gt;io.dropwizard.setup.Environment&lt;/a&gt;
+ *
+ * @since   2015-05-11
+ * @author  mk23
+ * @version 3.2.0
+ */
+<span class="fc" id="L28">public class JMXProxyApplication extends Application&lt;MainConfig&gt; {</span>
+<span class="fc" id="L29">    private static final Logger LOG = LoggerFactory.getLogger(JMXProxyApplication.class);</span>
+
+    /**
+     * &lt;p&gt;main application entrypoint.&lt;/p&gt;
+     *
+     * Starts main application.
+     *
+     * @param args an array of {@link String} command-line parameters.
+     *
+     * @throws Exception if initialization fails.
+     */
+    public static void main(final String[] args) throws Exception {
+<span class="fc" id="L41">        LOG.info(&quot;starting jmxproxy service&quot;);</span>
+<span class="fc" id="L42">        new JMXProxyApplication().run(args);</span>
+<span class="fc" id="L43">    }</span>
+
+    /** {@inheritDoc} */
+    @Override
+    public final String getName() {
+<span class="fc" id="L48">        return &quot;jmxproxy&quot;;</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void initialize(final Bootstrap&lt;MainConfig&gt; bootstrap) {
+<span class="fc" id="L54">        bootstrap.addBundle(new AssetsBundle(&quot;/assets/&quot;, &quot;/&quot;, &quot;index.html&quot;));</span>
+<span class="fc" id="L55">    }</span>
+
+    /** {@inheritDoc} */
+    @Override
+    public final void run(final MainConfig configuration, final Environment environment) {
+<span class="fc" id="L60">        final ConnectionManager manager = new ConnectionManager(configuration.getAppConfig());</span>
+<span class="fc" id="L61">        final JMXProxyResource resource = new JMXProxyResource(manager);</span>
+<span class="fc" id="L62">        final JMXProxyHealthCheck healthCheck = new JMXProxyHealthCheck(manager);</span>
+
+<span class="fc" id="L64">        ((AbstractServerFactory) configuration.getServerFactory()).setJerseyRootPath(&quot;/jmxproxy/*&quot;);</span>
+
+<span class="fc" id="L66">        environment.lifecycle().manage(manager);</span>
+<span class="fc" id="L67">        environment.jersey().register(resource);</span>
+<span class="fc" id="L68">        environment.healthChecks().register(&quot;manager&quot;, healthCheck);</span>
+<span class="fc" id="L69">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

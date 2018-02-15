@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy.conf</a> &gt; <span class="el_source">AppConfig.java</span></div><h1>AppConfig.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy.conf;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import io.dropwizard.jackson.JsonSnakeCase;
+
+import io.dropwizard.util.Duration;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+
+/**
+ * &lt;p&gt;Application configuration.&lt;/p&gt;
+ *
+ * Maintains application configuration fields. The application initializer
+ * creates and marshals the object from JSON or Yaml config file. Setters
+ * may be chained together for configuration building.
+ *
+ * &lt;p&gt;For example:&lt;/p&gt;
+ *
+ * &lt;code&gt;
+ * AppConfig cfg = new AppConfig()
+ *     .setCleanInterval(Duration.minutes(5))
+ *     .setCacheDuration(Duration.minutes(10))
+ *     .setHistorySize(20);
+ * &lt;/code&gt;
+ *
+ * @see &lt;a href=&quot;http://dropwizard.github.io/dropwizard/0.9.2/dropwizard-util/apidocs/io/dropwizard/util/Duration.html&quot;&gt;io.dropwizard.util.Duration&lt;/a&gt;
+ *
+ * @since   2016-01-28
+ * @author  mk23
+ * @version 3.3.6
+ */
+@JsonSnakeCase
+<span class="fc" id="L40">public class AppConfig {</span>
+    /** Default clean interval minutes. */
+    private static final int DEFAULT_CLEAN_INTERVAL = 1;
+    /** Default cache duration minutes. */
+    private static final int DEFAULT_CACHE_DURATION = 5;
+    /** Default access duration minutes. */
+    private static final int DEFAULT_ACCESS_DURATION = 30;
+    /** Default jmx connect timeout milliseconds. */
+    private static final int DEFAULT_CONNECT_TIMEOUT = 10000;
+
+    /**
+     * Configuration for how often to run the task that finds and
+     * purges stale endpoints.
+     */
+<span class="fc" id="L54">    @Valid</span>
+    @JsonProperty
+    @JsonDeserialize(using = DurationDeserializer.class)
+    @JsonSerialize(using = DurationSerializer.class)
+<span class="fc" id="L58">    private Duration cleanInterval = Duration.minutes(DEFAULT_CLEAN_INTERVAL);</span>
+
+    /**
+     * Configuration for how often to reconnect to cached endpoints
+     * and scrape available attributes.
+     */
+<span class="fc" id="L64">    @Valid</span>
+    @JsonProperty
+    @JsonDeserialize(using = DurationDeserializer.class)
+    @JsonSerialize(using = DurationSerializer.class)
+<span class="fc" id="L68">    private Duration cacheDuration = Duration.minutes(DEFAULT_CACHE_DURATION);</span>
+
+    /**
+     * Configuration for how long an endpoint goes unaccessed before
+     * the purger tasks removes it from the cache.
+     */
+<span class="fc" id="L74">    @Valid</span>
+    @JsonProperty
+    @JsonDeserialize(using = DurationDeserializer.class)
+    @JsonSerialize(using = DurationSerializer.class)
+<span class="fc" id="L78">    private Duration accessDuration = Duration.minutes(DEFAULT_ACCESS_DURATION);</span>
+
+    /**
+     * Configuration for how long to wait for a JMX connection to complete
+     * before declaring the endpoint as inaccessible.
+     */
+<span class="fc" id="L84">    @Valid</span>
+    @JsonProperty
+    @JsonDeserialize(using = DurationDeserializer.class)
+    @JsonSerialize(using = DurationSerializer.class)
+<span class="fc" id="L88">    private Duration connectTimeout = Duration.minutes(DEFAULT_CONNECT_TIMEOUT);</span>
+
+    /**
+     * Configuration for how many fetched attribute values to keep for
+     * each cached endpoint.
+     */
+<span class="fc" id="L94">    @Min(1)</span>
+    @JsonProperty
+    private int historySize = 1;
+
+    /**
+     * Configuration for whitelisted endpoints, allowing all when this
+     * is empty.
+     */
+<span class="fc" id="L102">    @JsonProperty</span>
+    private List&lt;String&gt; allowedEndpoints = new ArrayList&lt;String&gt;();
+
+    /**
+     * &lt;p&gt;Getter for cleanInterval.&lt;/p&gt;
+     *
+     * Configuration for how often to run the task that finds and
+     * purges stale endpoints.
+     *
+     * @return Configured clean interval.
+     */
+    public final Duration getCleanInterval() {
+<span class="fc" id="L114">        return cleanInterval;</span>
+    }
+    /**
+     * &lt;p&gt;Setter for cleanInterval.&lt;/p&gt;
+     *
+     * @param cleanInterval period at which the purger tasks operates.
+     *
+     * @return Modified AppConfig for setter chaining.
+     */
+    public final AppConfig setCleanInterval(final Duration cleanInterval) {
+<span class="fc" id="L124">        this.cleanInterval = cleanInterval;</span>
+<span class="fc" id="L125">        return this;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for cacheDuration.&lt;/p&gt;
+     *
+     * Configuration for how often to reconnect to cached endpoints
+     * and scrape available attributes.
+     *
+     * @return Configured cache duration.
+     */
+    public final Duration getCacheDuration() {
+<span class="fc" id="L137">        return cacheDuration;</span>
+    }
+    /**
+     * &lt;p&gt;Setter for cacheDuration.&lt;/p&gt;
+     *
+     * @param cacheDuration period at which the endpoint cache
+     * refreshes.
+     *
+     * @return Modified AppConfig for setter chaining.
+     */
+    public final AppConfig setCacheDuration(final Duration cacheDuration) {
+<span class="fc" id="L148">        this.cacheDuration = cacheDuration;</span>
+<span class="fc" id="L149">        return this;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for accessDuration.&lt;/p&gt;
+     *
+     * Configuration for how long an endpoint goes unaccessed before
+     * the purger tasks removes it from the cache.
+     *
+     * @return Configured access duration.
+     */
+    public final Duration getAccessDuration() {
+<span class="fc" id="L161">        return accessDuration;</span>
+    }
+    /**
+     * &lt;p&gt;Setter for accessDuration.&lt;/p&gt;
+     *
+     * @param accessDuration time before an enpoint is removed
+     * from the cache.
+     *
+     * @return Modified AppConfig for setter chaining.
+     */
+    public final AppConfig setAccessDuration(final Duration accessDuration) {
+<span class="fc" id="L172">        this.accessDuration = accessDuration;</span>
+<span class="fc" id="L173">        return this;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for connectTimeout.&lt;/p&gt;
+     *
+     * Configuration for how long to wait for a JMX connection to complete
+     * before declaring the endpoint as inaccessible.
+     *
+     * @return Configured connect timeout.
+     */
+    public final Duration getConnectTimeout() {
+<span class="fc" id="L185">        return connectTimeout;</span>
+    }
+    /**
+     * &lt;p&gt;Setter for connectTimeout.&lt;/p&gt;
+     *
+     * @param connectTimeout time before an abandoning a new JMX connection.
+     *
+     * @return Modified AppConfig for setter chaining.
+     */
+    public final AppConfig setConnectTimeout(final Duration connectTimeout) {
+<span class="fc" id="L195">        this.connectTimeout = connectTimeout;</span>
+<span class="fc" id="L196">        return this;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for historySize.&lt;/p&gt;
+     *
+     * Configuration for how many fetched attribute values to keep for
+     * each cached endpoint.
+     *
+     * @return Configured history size.
+     */
+    public final int getHistorySize() {
+<span class="fc" id="L208">        return historySize;</span>
+    }
+    /**
+     * &lt;p&gt;Setter for historySize.&lt;/p&gt;
+     *
+     * @param historySize number of values to keep for all cached
+     * attributes at every requested endpoint.
+     *
+     * @return Modified AppConfig for setter chaining.
+     */
+    public final AppConfig setHistorySize(final int historySize) {
+<span class="fc" id="L219">        this.historySize = historySize;</span>
+<span class="fc" id="L220">        return this;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for allowedEndpoints.&lt;/p&gt;
+     *
+     * Configuration for whitelisted endpoints, allowing all when this
+     * is empty.
+     *
+     * @return Configured {@link List} containing whitelisted endpoints.
+     */
+    public final List&lt;String&gt; getAllowedEndpoints() {
+<span class="fc" id="L232">        return allowedEndpoints;</span>
+    }
+    /**
+     * &lt;p&gt;Setter for allowedEndpoints.&lt;/p&gt;
+     *
+     * @param allowedEndpoints {@link List} containing whitelisted endpoints.
+     *
+     * @return Modified AppConfig for setter chaining.
+     */
+    public final AppConfig setAllowedEndpoints(final List&lt;String&gt; allowedEndpoints) {
+<span class="fc" id="L242">        this.allowedEndpoints = allowedEndpoints;</span>
+<span class="fc" id="L243">        return this;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

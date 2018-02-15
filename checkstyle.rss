@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<rss version="0.91">
+  <channel>
+    <title>JMXProxy - Checkstyle report</title>
+    <link>https://mk23.github.io/jmxproxy</link>
+    <description>JMXProxy - Checkstyle report</description>
+    <language>en-us</language>
+    <copyright>&#169;2011 - 2018</copyright>
+    <item>
+      <title>File: 20,
+             Errors: 0,
+             Warnings: 0,
+             Infos: 0
+      </title>
+            <link>https://mk23.github.io/jmxproxy/checkstyle.html</link>
+      <description>
+        <p>Click <a href="https://mk23.github.io/jmxproxy/checkstyle.html">here</a> for the full Checkstyle report.</p>
+
+        <table summary="Files" boder="1">
+          <thead>
+            <tr>
+              <th>Files</th>
+              <th style="width:30px;"><abbr title="Info">I</abbr></th>
+              <th style="width:30px;"><abbr title="Warning">W</abbr></th>
+              <th style="width:30px;"><abbr title="Error">E</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.conf.AppConfig.java">com/github/mk23/jmxproxy/conf/AppConfig.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.core.Host.java">com/github/mk23/jmxproxy/core/Host.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.jmx.ConnectionWorker.java">com/github/mk23/jmxproxy/jmx/ConnectionWorker.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.util.package-info.java">com/github/mk23/jmxproxy/util/package-info.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.core.package-info.java">com/github/mk23/jmxproxy/core/package-info.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.util.History.java">com/github/mk23/jmxproxy/util/History.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.JMXProxyHealthCheck.java">com/github/mk23/jmxproxy/JMXProxyHealthCheck.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.conf.package-info.java">com/github/mk23/jmxproxy/conf/package-info.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.JMXProxyResource.java">com/github/mk23/jmxproxy/JMXProxyResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.core.MBean.java">com/github/mk23/jmxproxy/core/MBean.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.jmx.ConnectionManager.java">com/github/mk23/jmxproxy/jmx/ConnectionManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.jmx.package-info.java">com/github/mk23/jmxproxy/jmx/package-info.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.conf.DurationDeserializer.java">com/github/mk23/jmxproxy/conf/DurationDeserializer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.core.Attribute.java">com/github/mk23/jmxproxy/core/Attribute.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.JMXProxyApplication.java">com/github/mk23/jmxproxy/JMXProxyApplication.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.jmx.ConnectionCredentials.java">com/github/mk23/jmxproxy/jmx/ConnectionCredentials.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.jmx.TimeoutRMISocketFactory.java">com/github/mk23/jmxproxy/jmx/TimeoutRMISocketFactory.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.conf.DurationSerializer.java">com/github/mk23/jmxproxy/conf/DurationSerializer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.package-info.java">com/github/mk23/jmxproxy/package-info.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://mk23.github.io/jmxproxy/checkstyle.html#com.github.mk23.jmxproxy.conf.MainConfig.java">com/github/mk23/jmxproxy/conf/MainConfig.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+        
+      </description>
+    </item>
+  </channel>
+</rss>
+

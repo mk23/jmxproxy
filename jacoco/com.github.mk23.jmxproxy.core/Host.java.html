@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Host.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy.core</a> &gt; <span class="el_source">Host.java</span></div><h1>Host.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy.core;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+
+import java.io.IOException;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * &lt;p&gt;JMX Host tracker and serializer.&lt;/p&gt;
+ *
+ * Maintains a map of JMX {@link MBean} names and their values. Implements
+ * JsonSerializable interface to convert the stored map into JSON.
+ *
+ * @see &lt;a href=&quot;https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/JsonSerializable.html&quot;&gt;com.fasterxml.jackson.databind.JsonSerializable&lt;/a&gt;
+ *
+ * @since   2018-02-08
+ * @author  mk23
+ * @version 3.4.0
+ */
+public class Host implements JsonSerializable {
+    private final Map&lt;String, MBean&gt; mbeans;
+<span class="fc" id="L29">    private final ThreadLocal&lt;Integer&gt; limit = new ThreadLocal&lt;Integer&gt;() {</span>
+        @Override protected Integer initialValue() {
+<span class="fc" id="L31">            return -1;</span>
+        }
+    };
+
+    /**
+     * &lt;p&gt;Default constructor.&lt;/p&gt;
+     *
+     * Creates a map of {@link MBean} name to associated values.
+     */
+<span class="fc" id="L40">    public Host() {</span>
+<span class="fc" id="L41">        mbeans = new HashMap&lt;String, MBean&gt;();</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * &lt;p&gt;Inserts a new MBean name to value association.&lt;/p&gt;
+     *
+     * Creates a new {@link MBean} object and inserts into the map store
+     * associating it to the specified mbean name. Uses default attribute
+     * {@link com.github.mk23.jmxproxy.util.History} size configuration.
+     *
+     * @param mbeanName name of the {@link MBean} used as the map key.
+     *
+     * @return the newly created {@link MBean} object.
+     */
+    public final MBean addMBean(final String mbeanName) {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (!mbeans.containsKey(mbeanName)) {</span>
+<span class="fc" id="L57">            MBean mbean = new MBean();</span>
+<span class="fc" id="L58">            mbeans.put(mbeanName, mbean);</span>
+        }
+
+<span class="fc" id="L61">        return mbeans.get(mbeanName);</span>
+    }
+
+    /**
+     * &lt;p&gt;Inserts a new MBean name to value association.&lt;/p&gt;
+     *
+     * Creates a new {@link MBean} object and inserts into the map store
+     * associating it to the specified mbean name. Uses custom attribute
+     * {@link com.github.mk23.jmxproxy.util.History} size configuration.
+     *
+     * @param mbeanName name of the {@link MBean} used as the map key.
+     * @param historySize number of items to preserve in the associated
+     * {@link com.github.mk23.jmxproxy.util.History}.
+     *
+     * @return the newly created {@link MBean} object.
+     */
+    public final MBean addMBean(final String mbeanName, final int historySize) {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (!mbeans.containsKey(mbeanName)) {</span>
+<span class="fc" id="L79">            MBean mbean = new MBean(historySize);</span>
+<span class="fc" id="L80">            mbeans.put(mbeanName, mbean);</span>
+        }
+
+<span class="fc" id="L83">        return mbeans.get(mbeanName);</span>
+    }
+
+    /**
+     * &lt;p&gt;Deletes an mbean association.&lt;/p&gt;
+     *
+     * Removes an associated {@link MBean} from the map store for this host.
+     *
+     * @param mbeanName name of the {@link MBean} to remove.
+     */
+    public final void removeMBean(final String mbeanName) {
+<span class="fc" id="L94">        mbeans.remove(mbeanName);</span>
+<span class="fc" id="L95">    }</span>
+
+    /**
+     * &lt;p&gt;Sets the thread local history request limit.&lt;/p&gt;
+     *
+     * Set the thread local limit for all {@link com.github.mk23.jmxproxy.util.History} when
+     * serializing to JSON. Because this method returns its object, requesting serialization
+     * can be done * with a single statement.
+     *
+     * &lt;p&gt;For example:&lt;/p&gt;
+     *
+     * &lt;code&gt;return Response.ok(host.setLimit(5)).build();&lt;/code&gt;
+     *
+     * @see &lt;a href=&quot;http://docs.oracle.com/javaee/7/api/javax/ws/rs/core/Response.html&quot;&gt;javax.ws.rs.core.Response&lt;/a&gt;
+     *
+     * @param bound the number of items to retreive from {@link com.github.mk23.jmxproxy.util.History}
+     *     for this thread.
+     *
+     * @return this host object for chaining calls.
+     */
+    public final Host setLimit(final Integer bound) {
+<span class="fc" id="L116">        limit.set(bound);</span>
+<span class="fc" id="L117">        return this;</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for mbean names.&lt;/p&gt;
+     *
+     * Extracts and returns the unique {@link Set} of all currently stored {@link MBean} names.
+     *
+     * @return {@link Set} of {@link MBean} name {@link String}s.
+     */
+    public final Set&lt;String&gt; getMBeans() {
+<span class="fc" id="L128">        return mbeans.keySet();</span>
+    }
+
+    /**
+     * &lt;p&gt;Getter for specific mbean.&lt;/p&gt;
+     *
+     * Fetches the specified {@link MBean} from the map store.
+     *
+     * @param mbean name of the {@link MBean} to look up in the map store.
+     *
+     * @return {@link MBean} object if found, null otherwise.
+     */
+    public final MBean getMBean(final String mbean) {
+<span class="fc" id="L141">        return mbeans.get(mbean);</span>
+    }
+
+    /** {@inheritDoc} */
+    public final void serialize(
+        final JsonGenerator jgen,
+        final SerializerProvider sp
+    ) throws IOException, JsonProcessingException {
+<span class="fc" id="L149">        serializeWithType(jgen, sp, null);</span>
+<span class="fc" id="L150">    }</span>
+
+    /** {@inheritDoc} */
+    public final void serializeWithType(
+        final JsonGenerator jgen,
+        final SerializerProvider sp,
+        final TypeSerializer ts
+    ) throws IOException, JsonProcessingException {
+<span class="fc" id="L158">        buildJson(jgen);</span>
+<span class="fc" id="L159">    }</span>
+
+    private void buildJson(final JsonGenerator jgen) throws IOException, JsonProcessingException {
+<span class="fc" id="L162">        int bound = limit.get();</span>
+
+<span class="fc" id="L164">        jgen.writeStartObject();</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        for (Map.Entry&lt;String, MBean&gt; mbeanEntry : mbeans.entrySet()) {</span>
+<span class="fc" id="L166">            jgen.writeObjectField(mbeanEntry.getKey(), mbeanEntry.getValue().setLimit(bound));</span>
+<span class="fc" id="L167">        }</span>
+<span class="fc" id="L168">        jgen.writeEndObject();</span>
+<span class="fc" id="L169">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

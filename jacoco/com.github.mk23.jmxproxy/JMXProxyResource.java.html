@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JMXProxyResource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy</a> &gt; <span class="el_source">JMXProxyResource.java</span></div><h1>JMXProxyResource.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy;
+
+import com.github.mk23.jmxproxy.core.Host;
+import com.github.mk23.jmxproxy.core.MBean;
+import com.github.mk23.jmxproxy.jmx.ConnectionCredentials;
+import com.github.mk23.jmxproxy.jmx.ConnectionManager;
+
+import io.dropwizard.jersey.params.BooleanParam;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.POST;
+import javax.ws.rs.QueryParam;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * &lt;p&gt;Service API resource handlers.&lt;/p&gt;
+ *
+ * Provides handler methods for the service resources.  Maintains the
+ * lifecycle {@link ConnectionManager} object for fulfilling requests.
+ * All responses are marshalled to &lt;code&gt;application/json&lt;/code&gt;
+ * content type by Jersey.
+ *
+ * @see &lt;a href=&quot;http://docs.oracle.com/javaee/7/api/javax/ws/rs/core/Response.html&quot;&gt;javax.ws.rs.core.Response&lt;/a&gt;
+ *
+ * @since   2015-05-11
+ * @author  mk23
+ * @version 3.2.0
+ */
+@Path(&quot;/&quot;)
+@Produces(MediaType.APPLICATION_JSON)
+public class JMXProxyResource {
+<span class="fc" id="L47">    private static final Logger LOG = LoggerFactory.getLogger(JMXProxyResource.class);</span>
+
+    /**
+     * Lifecycle {@link ConnectionManager} object that provides
+     * responses from its maintained endpoint cache.
+     */
+    private final ConnectionManager manager;
+
+    /**
+     * &lt;p&gt;Default constructor.&lt;/p&gt;
+     *
+     * Saves the {@link ConnectionManager} object for querying on
+     * API requests.
+     *
+     * @param manager of the endpoint cache.
+     */
+<span class="fc" id="L63">    public JMXProxyResource(final ConnectionManager manager) {</span>
+<span class="fc" id="L64">        this.manager = manager;</span>
+<span class="fc" id="L65">    }</span>
+
+    /**
+     * &lt;p&gt;Anonymous GET handler for &lt;code&gt;/jmxproxy/config&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP GET requests.  Responds with the full runtime configuration
+     * object from the {@link ConnectionManager}.
+     *
+     * @return The runtime configuration object marshalled into an API Response.
+     */
+    @GET
+    @Path(&quot;config&quot;)
+    public final Response getConfiguration() {
+<span class="fc" id="L78">        return Response.ok(manager.getConfiguration()).build();</span>
+    }
+
+    /**
+     * &lt;p&gt;Anonymous GET handler for &lt;code&gt;/&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP GET requests.  Responds with a list of cached endpoints
+     * available on the {@link ConnectionManager}.
+     *
+     * @return List of cached endpoints, marshalled into an API Response.
+     */
+    @GET
+    public final Response getCachedEndpoints() {
+<span class="fc" id="L91">        LOG.debug(&quot;fetching cached endpoints list&quot;);</span>
+<span class="fc" id="L92">        return Response.ok(manager.getHosts()).build();</span>
+    }
+
+    /**
+     * &lt;p&gt;Anonymous DELETE handler for &lt;code&gt;/&amp;lt;host:port&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP DELETE requests.  Attemps to remove the specified endpoint
+     * and returns operation success status as a boolean.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     *
+     * @return boolean true mapped into an API Response.
+     */
+    @DELETE
+    @Path(&quot;{host}:{port:\\d+}&quot;)
+    public final Response delCachedEndpoint(
+        @PathParam(&quot;host&quot;) final String host,
+        @PathParam(&quot;port&quot;) final int port
+    ) {
+<span class="fc" id="L114">        LOG.debug(String.format(&quot;removing %s:%d&quot;, host, port));</span>
+<span class="fc" id="L115">        return Response.ok(manager.delHost(host + &quot;:&quot; + port)).build();</span>
+    }
+
+    /**
+     * &lt;p&gt;Anonymous GET handler for &lt;code&gt;/&amp;lt;host&amp;gt;:&amp;lt;port&amp;gt;/&amp;lt;mbean&amp;gt;/&amp;lt;attribute&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP GET requests.  Responds with a single value or a list of
+     * historical values for the requested attribute.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     * @param mbean name of the mbean on the requested endpoint.
+     *     Specified on the URI path.
+     * @param attribute name of the attribute on the requested mbean
+     *     Specified on the URI path.
+     * @param limit number of historical values to include when fetching the full map.
+     *     If set to -1 (default) will only return latest value.
+     *     Specified as a URI query param.
+     *
+     * @return The requested value, or list of values, marshalled into an API Response.
+     */
+    @GET
+    @Path(&quot;{host}:{port:\\d+}/{mbean}/{attribute}&quot;)
+    public final Response getJMXHostData(
+        @PathParam(&quot;host&quot;) final String host,
+        @PathParam(&quot;port&quot;) final int port,
+        @PathParam(&quot;mbean&quot;) final String mbean,
+        @PathParam(&quot;attribute&quot;) final String attribute,
+        @QueryParam(&quot;limit&quot;) @DefaultValue(&quot;-1&quot;) final int limit
+    ) {
+<span class="fc" id="L147">        LOG.debug(String.format(&quot;fetching %s:%d/%s/%s&quot;, host, port, mbean, attribute));</span>
+<span class="fc" id="L148">        return getJMXHost(host, port, mbean, attribute, limit, null);</span>
+    }
+
+    /**
+     * &lt;p&gt;Authenticated POST handler for &lt;code&gt;/&amp;lt;host&amp;gt;:&amp;lt;port&amp;gt;/&amp;lt;mbean&amp;gt;/&amp;lt;attribute&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP POST requests with data encoded as
+     * &lt;code&gt;application/x-www-form-urlencoded&lt;/code&gt;, containing endpoint
+     * credentials.  Responds with a single value or a list of historical
+     * values for the requested attribute.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     * @param mbean name of the mbean on the requested endpoint.
+     *     Specified on the URI path.
+     * @param attribute name of the attribute on the requested mbean
+     *     Specified on the URI path.
+     * @param limit number of historical values to include when fetching the full map.
+     *     If set to -1 (default) will only return latest value.
+     *     Specified as a URI query param.
+     * @param username authentication username for the requested endpoint.
+     *     Specified as the POST body param.
+     * @param password authentication password for the requested endpoint.
+     *     Specified as the POST body param.
+     *
+     * @return The requested value, or list of values, marshalled into an API Response.
+     */
+    @POST
+    @Path(&quot;{host}:{port:\\d+}/{mbean}/{attribute}&quot;)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public final Response getJMXHostData(
+        @PathParam(&quot;host&quot;) final String host,
+        @PathParam(&quot;port&quot;) final int port,
+        @PathParam(&quot;mbean&quot;) final String mbean,
+        @PathParam(&quot;attribute&quot;) final String attribute,
+        @QueryParam(&quot;limit&quot;) @DefaultValue(&quot;-1&quot;) final int limit,
+        @FormParam(&quot;username&quot;) final String username,
+        @FormParam(&quot;password&quot;) final String password
+    ) {
+<span class="fc" id="L189">        LOG.debug(String.format(&quot;fetching %s@%s:%d/%s/%s&quot;, username, host, port, mbean, attribute));</span>
+<span class="fc" id="L190">        return getJMXHost(host, port, mbean, attribute, limit, new ConnectionCredentials(username, password));</span>
+    }
+
+    /**
+     * &lt;p&gt;Authenticated POST handler for &lt;code&gt;/&amp;lt;host&amp;gt;:&amp;lt;port&amp;gt;/&amp;lt;mbean&amp;gt;/&amp;lt;attribute&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP POST requests with data encoded as
+     * &lt;code&gt;application/json&lt;/code&gt;, containing endpoint credentials.
+     * Responds with a single value or a list of historical values for
+     * the requested attribute.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     * @param mbean name of the mbean on the requested endpoint.
+     *     Specified on the URI path.
+     * @param attribute name of the attribute on the requested mbean
+     *     Specified on the URI path.
+     * @param limit number of historical values to include when fetching the full map.
+     *     If set to -1 (default) will only return latest value.
+     *     Specified as a URI query param.
+     * @param auth credentials for the requested endpoint specified as the POST body
+     *     param as a JSON object (e.g. &lt;code&gt;{&quot;username&quot;: &quot;max&quot;, &quot;password&quot;: &quot;12345&quot;}&lt;/code&gt;)
+     *     and marshaled into {@link ConnectionCredentials}.
+     *
+     * @return The requested value, or list of values, marshalled into an API Response.
+     */
+    @POST
+    @Path(&quot;{host}:{port:\\d+}/{mbean}/{attribute}&quot;)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public final Response getJMXHostData(
+        @PathParam(&quot;host&quot;) final String host,
+        @PathParam(&quot;port&quot;) final int port,
+        @PathParam(&quot;mbean&quot;) final String mbean,
+        @PathParam(&quot;attribute&quot;) final String attribute,
+        @QueryParam(&quot;limit&quot;) @DefaultValue(&quot;-1&quot;) final int limit,
+        @Valid @NotNull final ConnectionCredentials auth
+    ) {
+<span class="fc" id="L229">        LOG.debug(String.format(&quot;fetching %s@%s:%d/%s/%s&quot;, auth.getUsername(), host, port, mbean, attribute));</span>
+<span class="fc" id="L230">        return getJMXHost(host, port, mbean, attribute, limit, auth);</span>
+    }
+
+    /**
+     * &lt;p&gt;Anonymous GET handler for &lt;code&gt;/&amp;lt;host&amp;gt;:&amp;lt;port&amp;gt;/&amp;lt;mbean&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP GET requests.  Responds with a list of attributes
+     * available for the requested mbean or a map of attribute name and
+     * value(s) based on modifier parameters.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     * @param mbean name of the mbean on the requested endpoint.
+     *     Specified on the URI path.
+     * @param limit number of historical values to include when fetching the full map.
+     *     If set to -1 (default) will only return latest value.
+     *     Specified as a URI query param.
+     * @param full boolean controlling whether to return full map of names and values or
+     *     just a list of attribute names.
+     *     Specified as a URI query param.
+     *
+     * @return List of attribute names or map of names and values, marshalled
+     *     into an API Response.
+     */
+    @GET
+    @Path(&quot;{host}:{port:\\d+}/{mbean}&quot;)
+    public final Response getJMXHostData(
+        @PathParam(&quot;host&quot;) final String host,
+        @PathParam(&quot;port&quot;) final int port,
+        @PathParam(&quot;mbean&quot;) final String mbean,
+        @QueryParam(&quot;limit&quot;) @DefaultValue(&quot;-1&quot;) final int limit,
+        @QueryParam(&quot;full&quot;) @DefaultValue(&quot;false&quot;) final BooleanParam full
+    ) {
+<span class="fc" id="L265">        LOG.debug(String.format(&quot;fetching %s:%d/%s (full:%s)&quot;, host, port, mbean, full.get()));</span>
+<span class="fc" id="L266">        return getJMXHost(host, port, mbean, full.get(), limit, null);</span>
+    }
+
+    /**
+     * &lt;p&gt;Authenticated POST handler for &lt;code&gt;/&amp;lt;host&amp;gt;:&amp;lt;port&amp;gt;/&amp;lt;mbean&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP POST requests with data encoded as
+     * &lt;code&gt;application/x-www-form-urlencoded&lt;/code&gt;, containing endpoint
+     * credentials.  Responds with a list of attributes available for the
+     * requested mbean or a map of attribute name and value(s) based on
+     * modifier parameters.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     * @param mbean name of the mbean on the requested endpoint.
+     *     Specified on the URI path.
+     * @param limit number of historical values to include when fetching the full map.
+     *     If set to -1 (default) will only return latest value.
+     *     Specified as a URI query param.
+     * @param full boolean controlling whether to return full map of names and values or
+     *     just a list of attribute names.
+     *     Specified as a URI query param.
+     * @param username authentication username for the requested endpoint.
+     *     Specified as the POST body param.
+     * @param password authentication password for the requested endpoint.
+     *     Specified as the POST body param.
+     *
+     * @return List of attribute names or map of names and values, marshalled
+     *     into an API Response.
+     */
+    @POST
+    @Path(&quot;{host}:{port:\\d+}/{mbean}&quot;)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public final Response getJMXHostData(
+        @PathParam(&quot;host&quot;) final String host,
+        @PathParam(&quot;port&quot;) final int port,
+        @PathParam(&quot;mbean&quot;) final String mbean,
+        @QueryParam(&quot;limit&quot;) @DefaultValue(&quot;-1&quot;) final int limit,
+        @QueryParam(&quot;full&quot;) @DefaultValue(&quot;false&quot;) final BooleanParam full,
+        @FormParam(&quot;username&quot;) final String username,
+        @FormParam(&quot;password&quot;) final String password
+    ) {
+<span class="fc" id="L310">        LOG.debug(String.format(&quot;fetching %s@%s:%d/%s (full:%s)&quot;, username, host, port, mbean, full.get()));</span>
+<span class="fc" id="L311">        return getJMXHost(host, port, mbean, full.get(), limit, new ConnectionCredentials(username, password));</span>
+    }
+
+    /**
+     * &lt;p&gt;Authenticated POST handler for &lt;code&gt;/&amp;lt;host&amp;gt;:&amp;lt;port&amp;gt;/&amp;lt;mbean&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP POST requests with data encoded as
+     * &lt;code&gt;application/json&lt;/code&gt;, containing endpoint credentials.
+     * Responds with a list of attributes available for the requested
+     * mbean or a map of attribute name and value(s) based on modifier
+     * parameters.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     * @param mbean name of the mbean on the requested endpoint.
+     *     Specified on the URI path.
+     * @param limit number of historical values to include when fetching the full map.
+     *     If set to -1 (default) will only return latest value.
+     *     Specified as a URI query param.
+     * @param full boolean controlling whether to return full map of names and values or
+     *     just a list of attribute names.
+     *     Specified as a URI query param.
+     * @param auth credentials for the requested endpoint specified as the POST body
+     *     param as a JSON object (e.g. &lt;code&gt;{&quot;username&quot;: &quot;max&quot;, &quot;password&quot;: &quot;12345&quot;}&lt;/code&gt;)
+     *     and marshaled into {@link ConnectionCredentials}.
+     *
+     * @return List of attribute names or map of names and values, marshalled
+     *     into an API Response.
+     */
+    @POST
+    @Path(&quot;{host}:{port:\\d+}/{mbean}&quot;)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public final Response getJMXHostData(
+        @PathParam(&quot;host&quot;) final String host,
+        @PathParam(&quot;port&quot;) final int port,
+        @PathParam(&quot;mbean&quot;) final String mbean,
+        @QueryParam(&quot;limit&quot;) @DefaultValue(&quot;-1&quot;) final int limit,
+        @QueryParam(&quot;full&quot;) @DefaultValue(&quot;false&quot;) final BooleanParam full,
+        @Valid @NotNull final ConnectionCredentials auth
+    ) {
+<span class="fc" id="L353">        LOG.debug(String.format(&quot;fetching %s@%s:%d/%s (full:%s)&quot;, auth.getUsername(), host, port, mbean, full.get()));</span>
+<span class="fc" id="L354">        return getJMXHost(host, port, mbean, full.get(), limit, auth);</span>
+    }
+
+    /**
+     * &lt;p&gt;Anonymous GET handler for &lt;code&gt;/&amp;lt;host&amp;gt;:&amp;lt;port&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP GET requests.  Responds with a list of mbeans
+     * available on the requested endpoint or a map of means, attributes
+     * and their values or lists of values based on modifier parameters.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     * @param limit number of historical values to include when fetching the full map.
+     *     If set to -1 (default) will only return latest value.
+     *     Specified as a URI query param.
+     * @param full boolean controlling whether to return full map of names and values or
+     *     just a list of attribute names.
+     *     Specified as a URI query param.
+     *
+     * @return List of mbean names or map of names and values, marshalled
+     *     into an API Response.
+     */
+    @GET
+    @Path(&quot;{host}:{port:\\d+}&quot;)
+    public final Response getJMXHostData(
+        @PathParam(&quot;host&quot;) final String host,
+        @PathParam(&quot;port&quot;) final int port,
+        @QueryParam(&quot;limit&quot;) @DefaultValue(&quot;-1&quot;) final int limit,
+        @QueryParam(&quot;full&quot;) @DefaultValue(&quot;false&quot;) final BooleanParam full
+    ) {
+<span class="fc" id="L386">        LOG.debug(String.format(&quot;fetching %s:%d (full:%s)&quot;, host, port, full.get()));</span>
+<span class="fc" id="L387">        return getJMXHost(host, port, full.get(), limit, null);</span>
+    }
+
+    /**
+     * &lt;p&gt;Authenticated POST handler for &lt;code&gt;/&amp;lt;host&amp;gt;:&amp;lt;port&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP POST requests with data encoded as
+     * &lt;code&gt;application/x-www-form-urlencoded&lt;/code&gt;, containing endpoint
+     * credentials.  Responds with a list of mbeans available on the requested
+     * endpoint or a map of means, attributes and their values or lists of
+     * values based on modifier parameters.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     * @param limit number of historical values to include when fetching the full map.
+     *     If set to -1 (default) will only return latest value.
+     *     Specified as a URI query param.
+     * @param full boolean controlling whether to return full map of names and values or
+     *     just a list of attribute names.
+     *     Specified as a URI query param.
+     * @param username authentication username for the requested endpoint.
+     *     Specified as the POST body param.
+     * @param password authentication password for the requested endpoint.
+     *     Specified as the POST body param.
+     *
+     * @return List of mbean names or map of names and values, marshalled
+     *     into an API Response.
+     */
+    @POST
+    @Path(&quot;{host}:{port:\\d+}&quot;)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public final Response getJMXHostData(
+        @PathParam(&quot;host&quot;) final String host,
+        @PathParam(&quot;port&quot;) final int port,
+        @QueryParam(&quot;limit&quot;) @DefaultValue(&quot;-1&quot;) final int limit,
+        @QueryParam(&quot;full&quot;) @DefaultValue(&quot;false&quot;) final BooleanParam full,
+        @FormParam(&quot;username&quot;) final String username,
+        @FormParam(&quot;password&quot;) final String password
+    ) {
+<span class="fc" id="L428">        LOG.debug(String.format(&quot;fetching %s@%s:%d (full:%s)&quot;, username, host, port, full.get()));</span>
+<span class="fc" id="L429">        return getJMXHost(host, port, full.get(), limit, new ConnectionCredentials(username, password));</span>
+    }
+
+    /**
+     * &lt;p&gt;Authenticated POST handler for &lt;code&gt;/&amp;lt;host&amp;gt;:&amp;lt;port&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+     *
+     * Accepts HTTP POST requests with data encoded as
+     * &lt;code&gt;application/json&lt;/code&gt;, containing endpoint credentials.
+     * Responds with a list of mbeans available on the requested endpoint
+     * or a map of means, attributes and their values or lists of values
+     * based on modifier parameters.
+     *
+     * @param host requested endpoint DNS host name or IP address.
+     *     Specified on the URI path.
+     * @param port requested endpoint TCP port.
+     *     Specified on the URI path.
+     * @param limit number of historical values to include when fetching the full map.
+     *     If set to -1 (default) will only return latest value.
+     *     Specified as a URI query param.
+     * @param full boolean controlling whether to return full map of names and values or
+     *     just a list of attribute names.
+     *     Specified as a URI query param.
+     * @param auth credentials for the requested endpoint specified as the POST body
+     *     param as a JSON object (e.g. &lt;code&gt;{&quot;username&quot;: &quot;max&quot;, &quot;password&quot;: &quot;12345&quot;}&lt;/code&gt;)
+     *     and marshaled into {@link ConnectionCredentials}.
+     *
+     * @return List of mbean names or map of names and values, marshalled
+     *     into an API Response.
+     */
+    @POST
+    @Path(&quot;{host}:{port:\\d+}&quot;)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public final Response getJMXHostData(
+        @PathParam(&quot;host&quot;) final String host,
+        @PathParam(&quot;port&quot;) final int port,
+        @QueryParam(&quot;limit&quot;) @DefaultValue(&quot;-1&quot;) final int limit,
+        @QueryParam(&quot;full&quot;) @DefaultValue(&quot;false&quot;) final BooleanParam full,
+        @Valid @NotNull final ConnectionCredentials auth
+    ) {
+<span class="fc" id="L468">        LOG.debug(String.format(&quot;fetching %s@%s:%d (full:%s)&quot;, auth.getUsername(), host, port, full.get()));</span>
+<span class="fc" id="L469">        return getJMXHost(host, port, full.get(), limit, auth);</span>
+    }
+
+    private Response getJMXHost(
+        final String hostName,
+        final int port,
+        final boolean full,
+        final int limit,
+        final ConnectionCredentials auth
+    ) {
+<span class="fc" id="L479">        Host host = manager.getHost(hostName + &quot;:&quot; + port, auth);</span>
+<span class="fc bfc" id="L480" title="All 2 branches covered.">        return Response.ok(full ? host.setLimit(limit) : host.getMBeans()).build();</span>
+    }
+
+    private Response getJMXHost(
+        final String hostName,
+        final int port,
+        final String mbeanName,
+        final boolean full,
+        final int limit,
+        final ConnectionCredentials auth
+    ) {
+<span class="fc" id="L491">        MBean mbean = manager.getHost(hostName + &quot;:&quot; + port, auth).getMBean(mbeanName);</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">        if (mbean == null) {</span>
+<span class="fc" id="L493">            return Response.status(Response.Status.NOT_FOUND).build();</span>
+        }
+
+<span class="fc bfc" id="L496" title="All 2 branches covered.">        return Response.ok(full ? mbean.setLimit(limit) : mbean.getAttributes()).build();</span>
+    }
+
+    private Response getJMXHost(
+        final String hostName,
+        final int port,
+        final String mbeanName,
+        final String attribute,
+        final int limit,
+        final ConnectionCredentials auth
+    ) {
+<span class="fc" id="L507">        MBean mbean = manager.getHost(hostName + &quot;:&quot; + port, auth).getMBean(mbeanName);</span>
+<span class="fc bfc" id="L508" title="All 4 branches covered.">        if (mbean == null || !mbean.hasAttribute(attribute)) {</span>
+<span class="fc" id="L509">            return Response.status(Response.Status.NOT_FOUND).build();</span>
+        }
+
+<span class="fc bfc" id="L512" title="All 2 branches covered.">        if (limit &lt; 0) {</span>
+<span class="fc" id="L513">            return Response.ok(mbean.getAttribute(attribute)).build();</span>
+        } else {
+<span class="fc" id="L515">            return Response.ok(mbean.getAttributes(attribute, limit)).build();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TimeoutRMISocketFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy.jmx</a> &gt; <span class="el_source">TimeoutRMISocketFactory.java</span></div><h1>TimeoutRMISocketFactory.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy.jmx;
+
+import java.io.IOException;
+
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.ServerSocket;
+
+import java.rmi.server.RMISocketFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * &lt;p&gt;Remote Method Invocation socket factory with connection timeout.&lt;/p&gt;
+ *
+ * Extends RMISocketFactory to return a socket that implements a connection timeout,
+ * preventing black-holed backend agents from piling up connections in the server.
+ *
+ * @see &lt;a href=&quot;https://docs.oracle.com/javase/7/docs/api/java/net/Socket.html&quot;&gt;java.net.Socket&lt;/a&gt;
+ * @see &lt;a href=&quot;https://docs.oracle.com/javase/7/docs/api/java/rmi/server/RMISocketFactory.html&quot;&gt;java.rmi.server.RMISocketFactory&lt;/a&gt;
+ *
+ * @since   2017-01-20
+ * @author  mk23
+ * @version 3.3.6
+ */
+public class TimeoutRMISocketFactory extends RMISocketFactory {
+<span class="fc" id="L28">    private static final Logger LOG = LoggerFactory.getLogger(TimeoutRMISocketFactory.class);</span>
+
+    private int timeout;
+
+    /**
+     * &lt;p&gt;Default constructor.&lt;/p&gt;
+     *
+     * Initializes the timeout to the specified value in milliseconds.
+     *
+     * @param timeout milliseconds to pass to Socket's connect() method.
+     */
+    public TimeoutRMISocketFactory(final int timeout) {
+<span class="fc" id="L40">        super();</span>
+
+<span class="fc" id="L42">        this.timeout = timeout;</span>
+<span class="fc" id="L43">    }</span>
+
+    /**
+     * &lt;p&gt;Setter for timeout.&lt;/p&gt;
+     *
+     * Resets the timeout to the specified milliseconds value.
+     *
+     * @param timeout milliseconds to pass to Socket's connect() method.
+     *
+     * @return Modified TimeoutRMISocketFactory for setter chaining.
+     */
+    public final TimeoutRMISocketFactory setTimeout(final int timeout) {
+<span class="fc" id="L55">        this.timeout = timeout;</span>
+<span class="fc" id="L56">        return this;</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Socket createSocket(final String host, final int port) throws IOException {
+<span class="fc" id="L62">        LOG.debug(&quot;creating new socket with &quot; + timeout + &quot;ms timeout&quot;);</span>
+
+<span class="fc" id="L64">        Socket socket = new Socket();</span>
+<span class="fc" id="L65">        socket.connect(new InetSocketAddress(host, port), timeout);</span>
+
+<span class="fc" id="L67">        return socket;</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final ServerSocket createServerSocket(final int port) throws IOException {
+<span class="fc" id="L73">        return new ServerSocket(port);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

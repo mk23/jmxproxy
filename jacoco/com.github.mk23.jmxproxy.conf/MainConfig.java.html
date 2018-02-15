@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy.conf</a> &gt; <span class="el_source">MainConfig.java</span></div><h1>MainConfig.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy.conf;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.dropwizard.Configuration;
+
+import javax.validation.Valid;
+
+/**
+ * &lt;p&gt;Main top-level configuration.&lt;/p&gt;
+ *
+ * Maintains the top-level application configuration object. The
+ * application initializer creates and marshals the object from
+ * JSON or Yaml config file.
+ *
+ * @since   2016-01-28
+ * @author  mk23
+ * @version 3.2.1
+ */
+<span class="fc" id="L20">public class MainConfig extends Configuration {</span>
+    /**
+     * Application service config.
+     */
+<span class="fc" id="L24">    @Valid</span>
+    @JsonProperty(&quot;jmxproxy&quot;)
+    private AppConfig appConfig = new AppConfig();
+
+    /**
+     * &lt;p&gt;Getter for appConfig.&lt;/p&gt;
+     *
+     * Application service config.
+     *
+     * @return Application subsection from the full configuration file.
+     */
+    public final AppConfig getAppConfig() {
+<span class="fc" id="L36">        return appConfig;</span>
+    }
+    /**
+     * &lt;p&gt;Setter for appConfig.&lt;/p&gt;
+     *
+     * @param appConfig Application subsection from the full configuration file.
+     */
+    public final void setAppConfig(final AppConfig appConfig) {
+<span class="fc" id="L44">        this.appConfig = appConfig;</span>
+<span class="fc" id="L45">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

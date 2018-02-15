@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConnectionWorker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JMXProxy</a> &gt; <a href="index.source.html" class="el_package">com.github.mk23.jmxproxy.jmx</a> &gt; <span class="el_source">ConnectionWorker.java</span></div><h1>ConnectionWorker.java</h1><pre class="source lang-java linenums">package com.github.mk23.jmxproxy.jmx;
+
+import com.github.mk23.jmxproxy.core.Host;
+import com.github.mk23.jmxproxy.core.MBean;
+
+import java.io.IOException;
+
+import java.net.MalformedURLException;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * &lt;p&gt;JMX fetcher and tracker.&lt;/p&gt;
+ *
+ * Creates a {@link ScheduledExecutorService} to periodically make to a {@link JMXConnector}
+ * to a JMX endpoint.  At every execution, discovers and fetches all remote registered mbeans
+ * and populates the local {@link Host} object with assicated {@link MBean}s and their
+ * {@link com.github.mk23.jmxproxy.core.Attribute}.  Also maintains the {@link Host} access
+ * time to allow reaping of
+ * unaccessed workers.
+ *
+ * @since   2015-05-11
+ * @author  mk23
+ * @version 3.2.0
+ */
+public class ConnectionWorker {
+<span class="fc" id="L46">    private static final Logger LOG = LoggerFactory.getLogger(ConnectionWorker.class);</span>
+
+    private Host host;
+    private ConnectionCredentials authCreds;
+
+    private boolean authValid;
+    private IOException connError;
+
+    private final Object fetchLock;
+    private final int historySize;
+    private final long cacheDuration;
+
+    private final JMXServiceURL url;
+
+    private long accessTime;
+
+    private ScheduledExecutorService pollerSvc;
+
+    /**
+     * &lt;p&gt;Default constructor.&lt;/p&gt;
+     *
+     * Initializes the {@link JMXServiceURL} to the specified hostName
+     * and starts the {@link ScheduledExecutorService} for periodically
+     * connecting and fetching JMX objects.
+     *
+     * @param hostName host:port {@link String} JMX agent target.
+     * @param cacheDuration period in milliseconds for how often to connect to the JMX agent.
+     * @param historySize number of {@link com.github.mk23.jmxproxy.core.Attribute}s to keep
+     *     per {@link MBean} {@link com.github.mk23.jmxproxy.util.History}.
+     *
+     * @throws MalformedURLException if the specified host is not a valid host:port {@link String}.
+     */
+    public ConnectionWorker(
+        final String hostName,
+        final long cacheDuration,
+        final int historySize
+<span class="fc" id="L82">    ) throws MalformedURLException {</span>
+<span class="fc" id="L83">        this.historySize = historySize;</span>
+<span class="fc" id="L84">        this.cacheDuration = cacheDuration;</span>
+
+<span class="fc" id="L86">        fetchLock = new Object();</span>
+<span class="fc" id="L87">        url = new JMXServiceURL(&quot;service:jmx:rmi:///jndi/rmi://&quot; + hostName + &quot;/jmxrmi&quot;);</span>
+<span class="fc" id="L88">    }</span>
+
+    /**
+     * &lt;p&gt;Getter for host.&lt;p&gt;
+     *
+     * Fetches the tracked {@link Host} object and resets the request access time.
+     *
+     * @param testCreds optional {@link ConnectionCredentials} for the provided JMX agent or null if none.
+     *
+     * @return {@link Host} as populated by the most recent fetch operation.
+     *
+     * @throws IOException if the specified host is unreachable.
+     * @throws SecurityException if the specified credentials to the host are incorrect.
+     */
+    public final Host getHost(final ConnectionCredentials testCreds) throws IOException, SecurityException {
+<span class="fc" id="L103">        accessTime = System.currentTimeMillis();</span>
+
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (host == null) {</span>
+<span class="fc" id="L106">            final CountDownLatch ready = new CountDownLatch(1);</span>
+
+<span class="fc" id="L108">            shutdown();</span>
+
+<span class="fc" id="L110">            host = new Host();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">            authCreds = (testCreds != null) ? testCreds : new ConnectionCredentials();</span>
+
+<span class="fc" id="L113">            pollerSvc = Executors.newSingleThreadScheduledExecutor();</span>
+<span class="fc" id="L114">            pollerSvc.scheduleAtFixedRate(new Runnable() {</span>
+                @Override
+                public void run() {
+                    try {
+<span class="fc" id="L118">                        fetchJMXValues();</span>
+<span class="nc" id="L119">                    } catch (Exception e) {</span>
+<span class="nc" id="L120">                        e.printStackTrace();</span>
+<span class="fc" id="L121">                    }</span>
+<span class="fc" id="L122">                    ready.countDown();</span>
+<span class="fc" id="L123">                }</span>
+            }, 0, cacheDuration, TimeUnit.MILLISECONDS);
+
+            try {
+<span class="fc" id="L127">                ready.await();</span>
+<span class="nc" id="L128">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L129">                LOG.error(&quot;unable to finish first run&quot;, e);</span>
+<span class="fc" id="L130">            }</span>
+        }
+
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        if (connError != null) {</span>
+<span class="fc" id="L134">            throw connError;</span>
+<span class="pc bpc" id="L135" title="1 of 4 branches missed.">        } else if (!authCreds.equals(testCreds) &amp;&amp; authValid) {</span>
+<span class="fc" id="L136">            throw new SecurityException();</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        } else if (!authValid) {</span>
+<span class="fc" id="L138">            throw new SecurityException();</span>
+        } else {
+<span class="fc" id="L140">            synchronized (fetchLock) {</span>
+<span class="fc" id="L141">                return host;</span>
+<span class="nc" id="L142">            }</span>
+        }
+    }
+
+    /**
+     * &lt;p&gt;Checks expiration of this worker object.&lt;/p&gt;
+     *
+     * Checks the last access time against the provided duration limit to determine if this worker
+     * is expired and can be purged.
+     *
+     * @param accessDuration time in milliseconds of no access after which this worker is expired.
+     *
+     * @return true if this worker hasn't been accessed recently, false otherwise.
+     */
+    public final boolean isExpired(final long accessDuration) {
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        return System.currentTimeMillis() - accessTime &gt; accessDuration;</span>
+    }
+
+    /**
+     * &lt;p&gt;Stops the scheduled fetcher.&lt;/p&gt;
+     *
+     * Signals the {@link ScheduledExecutorService} to shutdown for process termination cleanup.
+     */
+    public final void shutdown() {
+<span class="pc bpc" id="L166" title="1 of 4 branches missed.">        if (pollerSvc != null &amp;&amp; !pollerSvc.isShutdown()) {</span>
+<span class="fc" id="L167">            pollerSvc.shutdown();</span>
+        }
+<span class="fc" id="L169">    }</span>
+
+    private void fetchJMXValues() {
+<span class="fc" id="L172">        JMXConnector connection = null;</span>
+<span class="fc" id="L173">        MBeanServerConnection server = null;</span>
+
+<span class="fc" id="L175">        Map&lt;String, Object&gt; environment = new HashMap&lt;String, Object&gt;();</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        if (authCreds != null) {</span>
+<span class="fc" id="L177">            environment.put(JMXConnector.CREDENTIALS, new String[]{authCreds.getUsername(), authCreds.getPassword()});</span>
+        }
+
+        try {
+<span class="fc" id="L181">            LOG.debug(&quot;connecting to mbean server &quot; + url);</span>
+
+<span class="fc" id="L183">            synchronized (fetchLock) {</span>
+<span class="fc" id="L184">                connection = JMXConnectorFactory.connect(url, environment);</span>
+<span class="fc" id="L185">                server = connection.getMBeanServerConnection();</span>
+
+<span class="fc" id="L187">                authValid = true;</span>
+<span class="fc" id="L188">                connError = null;</span>
+
+<span class="fc" id="L190">                Set&lt;String&gt; freshMBeans = new HashSet&lt;String&gt;();</span>
+
+<span class="fc bfc" id="L192" title="All 2 branches covered.">                for (ObjectName mbeanName : server.queryNames(null, null)) {</span>
+<span class="fc" id="L193">                    LOG.debug(&quot;discovered mbean &quot; + mbeanName);</span>
+<span class="fc" id="L194">                    freshMBeans.add(mbeanName.toString());</span>
+
+<span class="fc" id="L196">                    MBean mbean = host.addMBean(mbeanName.toString(), historySize);</span>
+                    try {
+<span class="fc bfc" id="L198" title="All 2 branches covered.">                        for (MBeanAttributeInfo attributeObject : server.getMBeanInfo(mbeanName).getAttributes()) {</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">                            if (attributeObject.isReadable()) {</span>
+                                try {
+<span class="fc" id="L201">                                    Object attribute = server.getAttribute(mbeanName, attributeObject.getName());</span>
+
+<span class="fc" id="L203">                                    mbean.addAttribute(attributeObject.getName(), attribute);</span>
+<span class="fc" id="L204">                                } catch (java.lang.NullPointerException</span>
+                                        | java.rmi.RemoteException
+                                        | javax.management.JMException
+                                        | javax.management.JMRuntimeException e) {
+<span class="fc" id="L208">                                    LOG.error(&quot;failed to add attribute &quot; + attributeObject.toString() + &quot;: &quot; + e);</span>
+<span class="fc" id="L209">                                }</span>
+                            }
+                        }
+<span class="nc" id="L212">                    } catch (javax.management.JMException e) {</span>
+<span class="nc" id="L213">                        LOG.error(&quot;failed to get mbean info for &quot; + mbeanName, e);</span>
+<span class="fc" id="L214">                    }</span>
+<span class="fc" id="L215">                }</span>
+
+<span class="fc" id="L217">                Set&lt;String&gt; staleMBeans = new HashSet&lt;String&gt;(host.getMBeans());</span>
+<span class="fc" id="L218">                staleMBeans.removeAll(freshMBeans);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">                for (String mbeanName : staleMBeans) {</span>
+<span class="fc" id="L220">                    host.removeMBean(mbeanName);</span>
+<span class="fc" id="L221">                    LOG.debug(&quot;removed stale mbean &quot; + mbeanName);</span>
+<span class="fc" id="L222">                }</span>
+<span class="fc" id="L223">            }</span>
+<span class="fc" id="L224">        } catch (IOException e) {</span>
+<span class="fc" id="L225">            host = null;</span>
+<span class="fc" id="L226">            connError = e;</span>
+<span class="fc" id="L227">            LOG.error(&quot;communication failure with &quot; + url, e);</span>
+<span class="fc" id="L228">        } catch (SecurityException e) {</span>
+<span class="fc" id="L229">            host = null;</span>
+<span class="fc" id="L230">            authValid = false;</span>
+<span class="fc" id="L231">            LOG.error(&quot;invalid credentials for &quot; + url, e);</span>
+        } finally {
+<span class="pc bpc" id="L233" title="5 of 8 branches missed.">            if (connection != null) {</span>
+                try {
+<span class="pc" id="L235">                    connection.close();</span>
+<span class="pc" id="L236">                    LOG.debug(&quot;disconnected from &quot; + url);</span>
+<span class="nc" id="L237">                } catch (IOException e) {</span>
+<span class="nc" id="L238">                    LOG.error(&quot;failed to disconnect from &quot; + url, e);</span>
+                } finally {
+<span class="pc" id="L240">                    connection = null;</span>
+<span class="pc" id="L241">                }</span>
+            }
+        }
+<span class="fc" id="L244">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

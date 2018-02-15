@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package com.github.mk23.jmxproxy.util;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.util.ArrayList;<a name="line.3"></a>
+<span class="sourceLineNo">004</span>import java.util.Collections;<a name="line.4"></a>
+<span class="sourceLineNo">005</span>import java.util.List;<a name="line.5"></a>
+<span class="sourceLineNo">006</span><a name="line.6"></a>
+<span class="sourceLineNo">007</span>/**<a name="line.7"></a>
+<span class="sourceLineNo">008</span> * &lt;p&gt;Fixed size historical attribute value store.&lt;/p&gt;<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *<a name="line.9"></a>
+<span class="sourceLineNo">010</span> * Saves an object into a fixed size round robin store.  Allows clients to retreive latest<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * value, a subset of latest values, or the full stored history of values.  When number<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * of stored values exceeds the fixed size of the store, the oldest values are overwritten.<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * @param &lt;T&gt; type of objects held in this History.<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *<a name="line.15"></a>
+<span class="sourceLineNo">016</span> * @since   2015-05-11<a name="line.16"></a>
+<span class="sourceLineNo">017</span> * @author  mk23<a name="line.17"></a>
+<span class="sourceLineNo">018</span> * @version 3.3.2<a name="line.18"></a>
+<span class="sourceLineNo">019</span> */<a name="line.19"></a>
+<span class="sourceLineNo">020</span>public class History&lt;T&gt; {<a name="line.20"></a>
+<span class="sourceLineNo">021</span>    private List&lt;T&gt; objects;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>    private int length;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>    private int pointer;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>    private boolean wrapped;<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>    /**<a name="line.26"></a>
+<span class="sourceLineNo">027</span>     * &lt;p&gt;Default constructor.&lt;/p&gt;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>     *<a name="line.28"></a>
+<span class="sourceLineNo">029</span>     * Initializes the {@link Object} store {@link List} to the given history size.<a name="line.29"></a>
+<span class="sourceLineNo">030</span>     *<a name="line.30"></a>
+<span class="sourceLineNo">031</span>     * @param length number of {@link Object} values to keep in history.<a name="line.31"></a>
+<span class="sourceLineNo">032</span>     */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>    public History(final int length) {<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        this.length = length;<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>        pointer = -1;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        objects = new ArrayList&lt;T&gt;(Collections.nCopies(length, (T) null));<a name="line.37"></a>
+<span class="sourceLineNo">038</span>    }<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>    /**<a name="line.40"></a>
+<span class="sourceLineNo">041</span>     * &lt;p&gt;Adds a item to the store.&lt;/p&gt;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>     *<a name="line.42"></a>
+<span class="sourceLineNo">043</span>     * Adds a new item to the history store.  If the number of items exceeds the size<a name="line.43"></a>
+<span class="sourceLineNo">044</span>     * of the store, the oldest item is overwritten.<a name="line.44"></a>
+<span class="sourceLineNo">045</span>     *<a name="line.45"></a>
+<span class="sourceLineNo">046</span>     * @param item newest item to add to the store.<a name="line.46"></a>
+<span class="sourceLineNo">047</span>     */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>    public final void add(final T item) {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        wrapped = ++pointer == length;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        pointer = pointer % length;<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        objects.set(pointer, item);<a name="line.52"></a>
+<span class="sourceLineNo">053</span>    }<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>    /**<a name="line.55"></a>
+<span class="sourceLineNo">056</span>     * &lt;p&gt;Gets the latest item from the history store.&lt;/p&gt;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>     *<a name="line.57"></a>
+<span class="sourceLineNo">058</span>     * Gets the latest single item from the history store.<a name="line.58"></a>
+<span class="sourceLineNo">059</span>     *<a name="line.59"></a>
+<span class="sourceLineNo">060</span>     * @return Latest item from the history store or null if empty.<a name="line.60"></a>
+<span class="sourceLineNo">061</span>     */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>    public final T getLast() {<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        return pointer &lt; 0 ? null : objects.get(pointer % length);<a name="line.63"></a>
+<span class="sourceLineNo">064</span>    }<a name="line.64"></a>
+<span class="sourceLineNo">065</span><a name="line.65"></a>
+<span class="sourceLineNo">066</span>    /**<a name="line.66"></a>
+<span class="sourceLineNo">067</span>     * &lt;p&gt;Gets the full item history from the store.&lt;/p&gt;<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     *<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     * Gets the full item history from the store as a {@link List}.<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     *<a name="line.70"></a>
+<span class="sourceLineNo">071</span>     * @return {@link List} of the full history.  May be empty if history has no items.<a name="line.71"></a>
+<span class="sourceLineNo">072</span>     */<a name="line.72"></a>
+<span class="sourceLineNo">073</span>    public final List&lt;T&gt; get() {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        return get(length);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>    }<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>    /**<a name="line.77"></a>
+<span class="sourceLineNo">078</span>     * &lt;p&gt;Gets a limited item history from the store.&lt;/p&gt;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>     *<a name="line.79"></a>
+<span class="sourceLineNo">080</span>     * Gets a limited history from the store as a {@link List}, based<a name="line.80"></a>
+<span class="sourceLineNo">081</span>     * on requested item count.  If the specified count is less than 0 or greater than<a name="line.81"></a>
+<span class="sourceLineNo">082</span>     * the number of entries, a full history is returned instead.<a name="line.82"></a>
+<span class="sourceLineNo">083</span>     *<a name="line.83"></a>
+<span class="sourceLineNo">084</span>     * @param limit number of items to retreive from the history store.<a name="line.84"></a>
+<span class="sourceLineNo">085</span>     *<a name="line.85"></a>
+<span class="sourceLineNo">086</span>     * @return {@link List} of the requested slice of history.  May be empty if history has no items.<a name="line.86"></a>
+<span class="sourceLineNo">087</span>     */<a name="line.87"></a>
+<span class="sourceLineNo">088</span>    public final List&lt;T&gt; get(final int limit) {<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        if (pointer &lt; 0) {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>            return Collections.emptyList();<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>        int head = pointer + length * Boolean.compare(wrapped, false);<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        int size = Math.min(limit &gt; 0 ? limit : Integer.MAX_VALUE, Math.min(head + 1, length));<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        List&lt;T&gt; rval = new ArrayList&lt;T&gt;(size);<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>        for (int i = 0; i &lt; size; i++) {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>            rval.add(objects.get((head - i) % length));<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>        return rval;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>    }<a name="line.102"></a>
+<span class="sourceLineNo">103</span>}<a name="line.103"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>
