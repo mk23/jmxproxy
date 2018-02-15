@@ -52,7 +52,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jmxproxy.test.port>11123</jmxproxy.test.port>
     <github.repo.name>mk23/${project.artifactId}</github.repo.name>
-    <version.dropwizard>1.2.3</version.dropwizard>
+    <version.dropwizard>1.2.4</version.dropwizard>
     <version.jacoco>0.7.8</version.jacoco>
   </properties>
 
