@@ -758,7 +758,12 @@ var endpointHostClass = function(prefix, host) {
 
     var setupAuth = function(jqXHR) {
         if (jqXHR.status == 401) {
-            $('#endpoint-auth').modal();
+            displayError('Login required.');
+
+            $('#endpoint-auth')
+            .data('used', false)
+            .modal();
+
             $('#endpoint-creds .input-group:nth(0)')
             .find('input')
                 .remove()
@@ -787,7 +792,7 @@ var endpointHostClass = function(prefix, host) {
             );
             $('#endpoint-user').focus();
         } else if (jqXHR.status == 404) {
-            displayError('Selected endpoint is unavailable.');
+            displayError('Selected endpoint is unavailable.', true);
         }
     };
 
@@ -802,11 +807,14 @@ var endpointHostClass = function(prefix, host) {
     };
 
     var checkHost = function() {
-        $('#welcome-banner, #endpoint-select').addClass('hidden');
-        $('#endpoint-navbar, #endpoint-loader').removeClass('hidden');
+        $('#endpoint-loader').removeClass('hidden');
+        $('#endpoint-select').addClass('hidden');
+        $('#welcome-banner').addClass('hidden');
 
         fetchData('/java.lang:type=Runtime/Uptime', function(test) {
+            displayError();
             $('#endpoint-loader').addClass('hidden');
+            $('#endpoint-navbar').removeClass('hidden');
             $(document).attr('title', 'JMXProxy - ' + fetchName());
             $('#summary-cn, #navbar-label').text(fetchName());
             $('a[data-toggle="tab"]:first').tab('show');
@@ -949,7 +957,9 @@ $(document).ready(function() {
     $('#endpoint-creds').submit(function() {
         endpointHost.resetAuth($('#endpoint-user').val(), $('#endpoint-pass').val());
 
-        $('#endpoint-auth').modal('hide');
+        $('#endpoint-auth')
+        .data('used', true)
+        .modal('hide');
         return false;
     });
 
@@ -997,6 +1007,12 @@ $(document).ready(function() {
 
     $('form').submit(function(e) {
         return false;
+    });
+
+    $('#endpoint-auth').on('hidden.bs.modal', function() {
+        if (!$(this).data('used')) {
+            displayError('Missing required credentials.', true);
+        }
     });
 
     $('[data-toggle="tooltip"]').tooltip();
@@ -1130,15 +1146,21 @@ function formatPercent(s) {
     return s.toFixed(2) + '%';
 }
 
-function displayError(text) {
-    if (text != null) {
+function displayError(text, reload) {
+    if (text !== undefined) {
         $('#endpoint-error').text(text);
         $('#endpoint-alert').addClass('in');
 
         clearTimeout(alertTimeout);
         alertTimeout = setTimeout(function() {
             $('#endpoint-alert').removeClass('in');
+            if (reload) {
+                window.location.reload(true);
+            }
         }, 5000);
+    } else {
+        clearTimeout(alertTimeout);
+        $('#endpoint-alert').removeClass('in');
     }
 }
 
