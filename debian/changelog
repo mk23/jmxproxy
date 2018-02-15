@@ -1,3 +1,97 @@
+jmxproxy (3.4.0) xenial; urgency=medium
+
+  * Tagging 3.4.0
+  * [24fae09] Issue #176: Clean up error reporting in the UI. (Max
+    Kalika)
+  * [1be37e3] Issue #161: Upgrade fontawesome to 5.0.6.  Convert some
+    glyphicons to fa icons. (Max Kalika)
+  * [359212f] Issue #159: Upgrade fuelux to 3.16.5. (Max Kalika)
+  * [0fb80e2] Issue #158: Upgrade jquery to 3.3.1. (Max Kalika)
+  * [20a703f] Issue #153: Upgrade dropwizard to 1.2.4. (Max Kalika)
+  * [dfc4f1c] Issue #154: Upgrade shade mvn plugin to 3.0.0. (Max
+    Kalika)
+  * [9bf3f13] Issue #170: Add UI support when using bare host in
+    allowed_endpoints config. (Max Kalika)
+  * [6d868d0] Issue #170: Add documentation for using bare host in
+    allowed_endpoints config. (Max Kalika)
+  * [b4429cc] Issue #170: Add tests for bare host in allowed_endpoints
+    config. (Max Kalika)
+  * [0646d37] Issue #170: Change allowed_endpoints config to support a
+    bare host in the server backend. (Max Kalika)
+  * [173206d] Issue #155: Lintian: Fix build and runtime dependencies.
+    (Max Kalika)
+  * [796abe2] Issue #155: Lintian: Change distribution to xenial. (Max
+    Kalika)
+  * [a9d7d5e] Issue #155: Lintian: Wrap extended description. (Max
+    Kalika)
+  * [31b7a7f] Issue #155: Lintian: Ignore source-is-missing errors on
+    flot js files. (Max Kalika)
+  * [8806265] Issue #155: Lintian: Update standards version 3.9.5. (Max
+    Kalika)
+  * [d0f27b6] Issue #155: Lintian: Install jar in /usr/share. (Max
+    Kalika)
+  * [f74034a] Issue #155: Lintian: Don't install extra license file.
+    (Max Kalika)
+  * [39fd2bf] Issue #155: Lintian: Add debian copyright. (Max Kalika)
+  * [7236425] Issue #155: Lintian: Convert to native debian package.
+    (Max Kalika)
+  * [31464c9] Issue #162: Update copyright year to 2018. (Max Kalika)
+  * [d50b57f] Issue #169: Add mbean tests. (Max Kalika)
+  * [4a8d65f] Issue #169: Add host tests. (Max Kalika)
+  * [eee0949] Issue #175: Move setting the history size from attribute
+    to mbean creation. (Max Kalika)
+  * [43f701e] Issue #174: Switch to use ExpectedException rule in
+    TimeoutRMISocketFactoryTest.java. (Max Kalika)
+  * [fb61b0a] Issue #174: Switch to use ExpectedException rule in
+    JMXProxyResourceTest.java. (Max Kalika)
+  * [ca6192b] Issue #173: Add read only attribute test. (Max Kalika)
+  * [fb83a86] Issue #171: Test attribute types directly without going
+    through connection manager.  Add tests for big integer and negative
+    values. (Max Kalika)
+  * [0a2e7be] Issue #172: Refactor authenticated tests into junit
+    categories. (Max Kalika)
+  * [542f908] Issue #168: Refactor application and health check tests
+    for better coverage and acuracy. (Max Kalika)
+  * [3579d9c] Issue #167: Add single invalid attribute check for
+    connection manager test. (Max Kalika)
+  * [3bc4d67] Issue #167: Add malformed url check for connection manager
+    test. (Max Kalika)
+  * [4f0b5fe] Issue #167: Switch connection manager tests to use
+    expected exception rule. (Max Kalika)
+  * [48c9d70] Issue #164: Test connection credentials equals() and
+    hashCode() code paths. (Max Kalika)
+  * [d9310d2] Issue #154: Upgrade coveralls mvn plugin to 4.3.0. (Max
+    Kalika)
+  * [7baaa9d] Issue #154: Upgrade site mvn plugin to 3.6. (Max Kalika)
+  * [8e01e8c] Issue #154: Upgrade resources mvn plugin to 3.0.2. (Max
+    Kalika)
+  * [7e29a97] Issue #154: Upgrade jar mvn plugin to 3.0.2. (Max Kalika)
+  * [2201f6a] Issue #154: Upgrade compile mvn plugin to 3.6.1. (Max
+    Kalika)
+  * [8de0165] Issue #154: Upgrade minify mvn plugin to 1.7.6. (Max
+    Kalika)
+  * [9112749] Issue #154: Upgrade jacoco mvn plugin to 0.7.8. (Max
+    Kalika)
+  * [a0d0e15] Issue #153: Upgrade dropwizard to 1.2.3.  Prevent
+    incompatible hibernate-validator versions above 5.x from showing up
+    in reports. (Max Kalika)
+  * [b31e75e] Issue #166: Use 192.0.2.1 to test connection
+    failures/timeouts. (Max Kalika)
+  * [e3b09e8] Issue #165: Don't trim stack traces during testing phase.
+    (Max Kalika)
+  * [6ca34cc] Issue #157: Compile to java 1.8 for dropwizard
+    compatibility. (Max Kalika)
+  * [290c272] Issue #156: Have maven look for settings.xml in homedir
+    during debian build. (Max Kalika)
+  * [1f157c1] Issue #152: Use maven batch mode in debian build. (Max
+    Kalika)
+  * [9f79b35] Issue #152: Use maven batch mode in travis build. (Max
+    Kalika)
+  * [ed60bb8] Issue #132: Consolidate exception handling in
+    ConnectionWorker. (Max Kalika)
+
+ -- Max Kalika <max.kalika+projects@gmail.com>  Thu, 15 Feb 2018 11:29:46 -0800
+
 jmxproxy (3.3.7) stable; urgency=medium
 
   * Tagging 3.3.7
